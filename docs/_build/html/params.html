@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>params module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="person module" href="person.html" />
+    <link rel="prev" title="occupation module" href="occupation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-params">
+<span id="params-module"></span><h1>params module<a class="headerlink" href="#module-params" title="Permalink to this headline">¶</a></h1>
+<p>The purpose of this module is to assign parameters necessary to run the Agent-Based Model of Human Activity Patterns (ABMHAP) initialized with data from the Consolidated Human Activity Database (CHAD). This module also have constants used in default runs.</p>
+<p>This module contains class <a class="reference internal" href="#params.Params" title="params.Params"><code class="xref py py-class docutils literal"><span class="pre">params.Params</span></code></a>.</p>
+<blockquote>
+<div><em>Module author: Dr. Namdi Brandon</em></div></blockquote>
+<dl class="class">
+<dt id="params.Params">
+<em class="property">class </em><code class="descclassname">params.</code><code class="descname">Params</code><span class="sig-paren">(</span><em>dt=1</em>, <em>num_people=1</em>, <em>num_days=1</em>, <em>num_hours=0</em>, <em>num_min=0</em>, <em>t_start=1865</em>, <em>gender=None</em>, <em>sleep_start_mean=None</em>, <em>sleep_start_std=None</em>, <em>sleep_end_mean=None</em>, <em>sleep_end_std=None</em>, <em>job_id=None</em>, <em>do_alarm=None</em>, <em>dt_alarm=None</em>, <em>bf_start_mean=None</em>, <em>bf_start_std=None</em>, <em>bf_start_trunc=None</em>, <em>bf_dt_mean=None</em>, <em>bf_dt_std=None</em>, <em>bf_dt_trunc=None</em>, <em>lunch_start_mean=None</em>, <em>lunch_start_std=None</em>, <em>lunch_start_trunc=None</em>, <em>lunch_dt_mean=None</em>, <em>lunch_dt_std=None</em>, <em>lunch_dt_trunc=None</em>, <em>dinner_start_mean=None</em>, <em>dinner_start_std=None</em>, <em>dinner_start_trunc=None</em>, <em>dinner_dt_mean=None</em>, <em>dinner_dt_std=None</em>, <em>dinner_dt_trunc=None</em>, <em>work_start_mean=None</em>, <em>work_start_std=None</em>, <em>work_end_mean=None</em>, <em>work_end_std=None</em>, <em>commute_to_work_dt_mean=None</em>, <em>commute_to_work_dt_std=None</em>, <em>commute_from_work_dt_mean=None</em>, <em>commute_from_work_dt_std=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class contains the parameters that are needed to parametrize a household.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Some of the class attributes are <strong>not</strong> really used and need to be phased out in future versions of the         model. Some of these attribtues are:</p>
+<ul class="last simple">
+<li><code class="xref py py-attr docutils literal"><span class="pre">dt</span></code></li>
+<li><code class="xref py py-attr docutils literal"><span class="pre">do_alarm</span></code></li>
+<li><code class="xref py py-attr docutils literal"><span class="pre">dt_alarm</span></code></li>
+</ul>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dt</strong> (<em>int</em>) &#8211; the step size [in minutes] in the simulation</li>
+<li><strong>num_people</strong> (<em>int</em>) &#8211; the number of people in the household</li>
+<li><strong>num_days</strong> (<em>int</em>) &#8211; the number of days in the simulation</li>
+<li><strong>num_hours</strong> (<em>int</em>) &#8211; the number of additional hours in the simulation</li>
+<li><strong>num_min</strong> (<em>int</em>) &#8211; the number of additional minutes in the simulation</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time [in minutes] in the simulation</li>
+<li><strong>gender</strong> (<em>list</em>) &#8211; the gender of each person in the household</li>
+<li><strong>sleep_start_mean</strong> (<em>list</em>) &#8211; the mean sleep start time [in minutes, time of day] for each person in     the household</li>
+<li><strong>sleep_start_std</strong> (<em>list</em>) &#8211; the standard deviation of sleep start time [in minutes] for each person in the     household</li>
+<li><strong>sleep_end_mean</strong> (<em>list</em>) &#8211; the mean sleep end time [in minutes, time of day] for each person in the household</li>
+<li><strong>sleep_end_std</strong> (<em>list</em>) &#8211; the standard deviation of the sleep end time [in minutes] for each person in     the household</li>
+<li><strong>job_id</strong> (<em>list</em>) &#8211; the occupation identifier for each person in the household</li>
+<li><strong>do_alarm</strong> (<em>list</em>) &#8211; a flag indicating whether or not a person uses an alarm for each person in the household</li>
+<li><strong>dt_alarm</strong> (<em>list</em>) &#8211; the duration of time [in minutes] before an alarm goes off before its respective event</li>
+<li><strong>numpy.ndarray</strong> &#8211; bf_start_mean: the mean breakfast start time for each person in the household     [minutes, time of day]</li>
+<li><strong>bf_start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for breakfast start time for each person in the     household [minutes]</li>
+<li><strong>bf_start_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the breakfast start time     distribution for each person</li>
+<li><strong>bf_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean breakfast duration for each person in the household [minutes]</li>
+<li><strong>bf_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for breakfast duration for each person in the     household [minutes]</li>
+<li><strong>bf_dt_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the breakfast duration     distribution for each person</li>
+<li><strong>lunch_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean lunch duration for each person in the household [minutes]</li>
+<li><strong>lunch_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for lunch duration for each person in the     household [minutes]</li>
+<li><strong>lunch_dt_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the lunch duration     distribution for each person</li>
+<li><strong>lunch_start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean lunch start time for each person in the household     [minutes, time of day]</li>
+<li><strong>lunch_start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for lunch start time for each person in the     household [minutes]</li>
+<li><strong>lunch_start_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the lunch start time     distribution for each person</li>
+<li><strong>dinner_start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean dinner start time for each person in the household     [minutes, time of day]</li>
+<li><strong>dinner_start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for dinner start time for each person in the     household [minutes]</li>
+<li><strong>dinner_start_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the dinner start time     distribution for each person</li>
+<li><strong>dinner_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean dinner duration for each person in the household [minutes]</li>
+<li><strong>dinner_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for dinner duration for each person in the     household [minutes]</li>
+<li><strong>dinner_dt_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the number of standard deviations used in the dinner duration     distribution for each person</li>
+<li><strong>work_start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean work start time for each person in the household     [minutes, time of day]</li>
+<li><strong>work_start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation of work start time for each person in the     household [minutes]</li>
+<li><strong>work_end_mean</strong> (<em>numpy.ndarray</em>) &#8211; the work end time for each person in the household [minutes, time of day]</li>
+<li><strong>work_end_std</strong> (<em>numpy.ndarray</em>) &#8211; the work standard deviation for each person in the household     [minutes, time of day]</li>
+<li><strong>commute_to_work_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for commuting to work [minutes] for each     person in the household</li>
+<li><strong>commute_to_work_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for commuting to work [minutes] for each     person in the household</li>
+<li><strong>commute_from_work_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for commuting from work [minutes] for each     person in the household</li>
+<li><strong>commute_from_work_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for commuting from work [minutes] for     each person in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dt</strong> (<em>int</em>) &#8211; the step size [in minutes] in the simulation</li>
+<li><strong>num_people</strong> (<em>int</em>) &#8211; the number of people in the household</li>
+<li><strong>num_days</strong> (<em>int</em>) &#8211; the number of days in the simulation</li>
+<li><strong>num_hours</strong> (<em>int</em>) &#8211; the number of additional hours in the simulation</li>
+<li><strong>num_min</strong> (<em>int</em>) &#8211; the number of additional minutes in the simulation</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time [in minutes] in the simulation</li>
+<li><strong>gender</strong> (<em>list</em>) &#8211; the gender of each person in the household</li>
+<li><strong>sleep_start_mean</strong> (<em>list</em>) &#8211; the mean sleep start time [in minutes, time of day] for each person in     the household</li>
+<li><strong>sleep_start_std</strong> (<em>list</em>) &#8211; the standard deviation of sleep start time [in minutes] for each person in the     household</li>
+<li><strong>sleep_end_mean</strong> (<em>list</em>) &#8211; the mean sleep end time [in minutes, time of day] for each person in the household</li>
+<li><strong>sleep_end_std</strong> (<em>list</em>) &#8211; the standard deviation of the sleep end time [in minutes] for each person in     the household</li>
+<li><strong>job_id</strong> (<em>list</em>) &#8211; the occupation identifier for each person in the household</li>
+<li><strong>do_alarm</strong> (<em>list</em>) &#8211; a flag indicating whether or not a person uses an alarm for each person in the household</li>
+<li><strong>dt_alarm</strong> (<em>list</em>) &#8211; the duration of time [in minutes] before an alarm goes off before its respective event</li>
+<li><strong>breakfasts</strong> (<em>list</em>) &#8211; the breakfast meal objects for each person in the household</li>
+<li><strong>lunches</strong> (<em>list</em>) &#8211; the lunch meal objects for each person in the household</li>
+<li><strong>dinners</strong> (<em>list</em>) &#8211; the dinner meal objects for each person in the household</li>
+<li><strong>work_start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean work start time for each person in the household     [minutes, time of day]</li>
+<li><strong>work_start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation of work start time for each person in the     household [minutes]</li>
+<li><strong>work_end_mean</strong> (<em>numpy.ndarray</em>) &#8211; the work end time for each person in the household [minutes, time of day]</li>
+<li><strong>work_end_std</strong> (<em>numpy.ndarray</em>) &#8211; the work standard deviation for each person in the household     [minutes, time of day]</li>
+<li><strong>commute_to_work_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for commuting to work [minutes] for each person     in the household</li>
+<li><strong>commute_to_work_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for commuting to work [minutes] for     each person in the household</li>
+<li><strong>commute_from_work_dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for commuting from work [minutes] for     each person in the household</li>
+<li><strong>commute_from_work_dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for commuting from work [minutes] for each     person in the household</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="params.Params.init_help">
+<code class="descname">init_help</code><span class="sig-paren">(</span><em>val</em>, <em>default_val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.init_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.init_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function assigns a default value to an attribute in case it was not assigned already. This is,         function is particularly useful if the value to be assigned is an array depending on <code class="xref py py-attr docutils literal"><span class="pre">num_people</span></code></p>
+<p>More specifically,</p>
+<ul class="simple">
+<li>If val is not None, return val</li>
+<li>If val is None, return the default value (default_val)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>val</strong> &#8211; the value to be assigned</li>
+<li><strong>default_val</strong> &#8211; the default value to assign in case val is None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the non-None value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="params.Params.init_meal">
+<code class="descname">init_meal</code><span class="sig-paren">(</span><em>m_id</em>, <em>start_mean=None</em>, <em>start_std=None</em>, <em>start_trunc=None</em>, <em>dt_mean=None</em>, <em>dt_std=None</em>, <em>dt_trunc=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.init_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.init_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the data for each person in the household for the respective meal given by &#8220;m_id&#8221;</p>
+<ul class="simple">
+<li>if specific parameters have been assigned, create meals with the respective parameters</li>
+<li>if specific parameters have not been assigned, create meals with the default meal parameters for         each meal</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_id</strong> (<em>int</em>) &#8211; the identifier of meal type</li>
+<li><strong>start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean start time for the meal for each person in the household</li>
+<li><strong>start_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation of start time for the meal for each person in         the household</li>
+<li><strong>start_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the amount of standard deviations allowed before truncating the         start time distribution for each person in the household</li>
+<li><strong>dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for the meal for each person in the household</li>
+<li><strong>dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the standard deviation for the meal for each person in the household</li>
+<li><strong>dt_trunc</strong> (<em>numpy.ndarray</em>) &#8211; the amount of standard deviations allowed before truncating the         duration distribution for each person in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the meals for each person in the household</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="params.Params.init_meal_old">
+<code class="descname">init_meal_old</code><span class="sig-paren">(</span><em>id</em>, <em>start_mean=None</em>, <em>start_std=None</em>, <em>dt_mean=None</em>, <em>dt_std=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.init_meal_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.init_meal_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the data for each person in the household for the respective meal given by &#8220;id&#8221;</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function may be <strong>not</strong> used because it is antiquated.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id</strong> (<em>int</em>) &#8211; the id of meal type</li>
+<li><strong>start_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean start time for the meal for each person in the household</li>
+<li><strong>dt_mean</strong> (<em>numpy.ndarray</em>) &#8211; the mean duration for the meal for each person in the household</li>
+<li><strong>dt_std</strong> (<em>numpy.ndarray</em>) &#8211; the mean standard deviation for the meal for each person in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the meals for each person in the household</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="params.Params.set_num_steps">
+<code class="descname">set_num_steps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.set_num_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.set_num_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates and sets the number of time steps the ABM will run.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="params.Params.tester">
+<code class="descname">tester</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.tester"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.tester" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is just for testing. It checks to see whether the expected dinner time is before             the expected end time for work.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="params.Params.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/params.html#Params.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#params.Params.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function represents the <a class="reference internal" href="#params.Params" title="params.Params"><code class="xref py py-class docutils literal"><span class="pre">params.Params</span></code></a> object as a string. For now, it prints         the tuple (start time, duration, end time) in hours[0, 24] for the following activities:</p>
+<ol class="arabic simple">
+<li>eat breakfast</li>
+<li>commute to work</li>
+<li>work</li>
+<li>eat lunch</li>
+<li>commute from work</li>
+<li>eat dinner</li>
+<li>sleep</li>
+</ol>
+<p>in order of start time. The commute activities only have duration information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the parameter information</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="occupation.html" title="previous chapter">occupation module</a></li>
+      <li>Next: <a href="person.html" title="next chapter">person module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/params.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/params.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

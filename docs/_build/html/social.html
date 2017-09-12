@@ -1,0 +1,399 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>social module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="state module" href="state.html" />
+    <link rel="prev" title="sleep module" href="sleep.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-social">
+<span id="social-module"></span><h1>social module<a class="headerlink" href="#module-social" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code that governs the social behavior/ characteristics relevant to a Person.</p>
+<p>This module contains class <a class="reference internal" href="#social.Social" title="social.Social"><code class="xref py py-class docutils literal"><span class="pre">social.Social</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="social.Social">
+<em class="property">class </em><code class="descclassname">social.</code><code class="descname">Social</code><span class="sig-paren">(</span><em>age</em>, <em>num_meals=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class contains all of the relevant information governing the Person&#8217;s     social behavior.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The current version of the ABM does not have any &#8220;alarm&#8221; functionality / capability. The remnants of any         code that governs the use of an alarm  will be removed in future updates.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>age</strong> (<em>int</em>) &#8211; the age of the Person [years]</li>
+<li><strong>num_meals</strong> (<em>int</em>) &#8211; the number of meals per day</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>is_child</strong> (<em>bool</em>) &#8211; this flag is True if the Person is a child, False otherwise</li>
+<li><strong>job</strong> (<a class="reference internal" href="occupation.html#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the information pertaining the the job</li>
+<li><strong>num_meals</strong> (<em>int</em>) &#8211; the number of meals per day a person will eat</li>
+<li><strong>meals</strong> (<em>list</em>) &#8211; a list of the meals that a person eats (<a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal"><code class="xref py py-class docutils literal"><span class="pre">meal.Meal</span></code></a>)</li>
+<li><strong>current_meal</strong> (<a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal"><em>meal.Meal</em></a>) &#8211; the meal that is currently being eaten <strong>or</strong> if the Person is not eating a meal,     it is the upcoming meal</li>
+<li><strong>next_meal</strong> (<a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal"><em>meal.Meal</em></a>) &#8211; the meal that is after the meal indicated by <code class="xref py py-mod docutils literal"><span class="pre">current_meal</span></code></li>
+<li><strong>uses_alarm</strong> (<em>bool</em>) &#8211; indicates whether or not a person uses an alarm to wake up</li>
+<li><strong>is_alarm_set</strong> (<em>bool</em>) &#8211; indicates whether or not an alarm is set for the current day</li>
+<li><strong>t_alarm</strong> (<em>int</em>) &#8211; the time an alarm is supposed to go off [minutes, time of day]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="social.Social.duration_to_next_commute_event">
+<code class="descname">duration_to_next_commute_event</code><span class="sig-paren">(</span><em>clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.duration_to_next_commute_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.duration_to_next_commute_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called in in order to calculate the amount of time until the next commute event by         doing the following.</p>
+<ol class="arabic simple">
+<li>If the agent is unemployed, return infinity</li>
+<li>If the time indicates that the agent should be currently working, set the duration to be the         length of time remaining at work</li>
+<li>If the time indicates that the agent should be currently commuting to work, set the duration to be         the duration until the commute to work should start</li>
+<li>If the time indicates that the agent should be currently commuting from work, set the duration to be         the amount of time until the commute from work should end</li>
+<li>Else, calculate the amount of time until the next commute to work event</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The only reason this code is place here is because the work activity and the commute activity use it.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the current time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the duration in time [minutes] until the next commute event</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.duration_to_next_meal">
+<code class="descname">duration_to_next_meal</code><span class="sig-paren">(</span><em>t_univ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.duration_to_next_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.duration_to_next_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the amount of time until the next meal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t_univ</strong> (<em>int</em>) &#8211; the current time [minutes, universal time]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the duration to the next meal [minutes]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the scheduled next meal</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal">meal.Meal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.duration_to_work_event">
+<code class="descname">duration_to_work_event</code><span class="sig-paren">(</span><em>clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.duration_to_work_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.duration_to_work_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called in in order to calculate the amount of time until the next work event.</p>
+<ol class="arabic simple">
+<li>If the person is employed, the duration to the next meal is set to infinity</li>
+<li><dl class="first docutils">
+<dt>If the current time is a workday before the time work starts,</dt>
+<dd><ul class="first last">
+<li>set the duration to the amount of time until the start of work</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Else,</dt>
+<dd><ul class="first last">
+<li>set the duration until the next work event</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The only reason this code is place here is because the work activity and the commute activity use it.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the current time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the duration [minutes] until the next minutes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.get_current_meal">
+<code class="descname">get_current_meal</code><span class="sig-paren">(</span><em>time_of_day</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.get_current_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.get_current_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the closest meal to the time of day.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time_of_day</strong> (<em>int</em>) &#8211; the time of day</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">return the meal</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal">meal.Meal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.get_meal">
+<code class="descname">get_meal</code><span class="sig-paren">(</span><em>id_meal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.get_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.get_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the specific meal given by a meal identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id_meal</strong> (<em>int</em>) &#8211; the meal identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the meal given by the id</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal">meal.Meal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.get_next_meal">
+<code class="descname">get_next_meal</code><span class="sig-paren">(</span><em>clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.get_next_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.get_next_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the next meal. The meal must occur after the current time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the current time</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return the_meal:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">the next meal</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal">meal.Meal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.print_child_status">
+<code class="descname">print_child_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.print_child_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.print_child_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function represents the child status as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">the child/ adult status</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.set_child_flag">
+<code class="descname">set_child_flag</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.set_child_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.set_child_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the flag indicating whether a person is a child.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>age</strong> (<em>int</em>) &#8211; the age of the person [years]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.set_job">
+<code class="descname">set_job</code><span class="sig-paren">(</span><em>job_id</em>, <em>dt=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.set_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.set_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the job and the alarm time (if used) that corresponds to the job. The alarm  is set,         if a person is using the alarm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>job_id</strong> (<em>int</em>) &#8211; job identifier</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the amount of time before the job start.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.set_work_alarm">
+<code class="descname">set_work_alarm</code><span class="sig-paren">(</span><em>dt=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.set_work_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.set_work_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>This sets the alarm time due to work</p>
+<p>If a person uses an alarm, the alarm is set to be &#8220;dt&#8221; minutes before work time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the amount of time to wake up before the work event [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.test_func">
+<code class="descname">test_func</code><span class="sig-paren">(</span><em>time_of_day</em>, <em>the_meal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.test_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.test_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used for testing.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function has no real purpose and will be deleted in future versions.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>time_of_day</strong> (<em>int</em>) &#8211; the time of day in minutes</li>
+<li><strong>the_meal</strong> (<a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal"><em>meal.Meal</em></a>) &#8211; a meal object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="social.Social.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/social.html#Social.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#social.Social.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the Social object as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the representation of the Social object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="sleep.html" title="previous chapter">sleep module</a></li>
+      <li>Next: <a href="state.html" title="next chapter">state module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/social.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/social.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

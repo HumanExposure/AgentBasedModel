@@ -1,0 +1,500 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>my_globals &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for my_globals</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains constants and functions that are used for general use.</span>
+
+<span class="sd">This module contains information about the following constants:</span>
+
+<span class="sd">#. Identifiers for activity codes</span>
+<span class="sd">#. File names \ file paths for saving figures for the different demographics</span>
+<span class="sd">#. File names \ file paths for saving figures for the different activities</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># statistical modeling features</span>
+<span class="kn">from</span> <span class="nn">statsmodels.distributions.empirical_distribution</span> <span class="kn">import</span> <span class="n">ECDF</span>
+
+<span class="c1"># statistical capability</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">shutil</span>
+
+
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># constants</span>
+<span class="c1"># -----------------------------------------------</span>
+
+<span class="c1"># these are keys values to be used in dictionaries for the respective activities</span>
+<span class="n">KEY_IDLE</span>                <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">KEY_INTERRUPT</span>           <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+<span class="n">KEY_COMMUTE_FROM_WORK</span>   <span class="o">=</span> <span class="mi">1</span>
+<span class="n">KEY_COMMUTE_TO_WORK</span>     <span class="o">=</span> <span class="mi">2</span>
+<span class="n">KEY_EAT_BREAKFAST</span>       <span class="o">=</span> <span class="mi">3</span>
+<span class="n">KEY_EAT_DINNER</span>          <span class="o">=</span> <span class="mi">4</span>
+<span class="n">KEY_EAT_LUNCH</span>           <span class="o">=</span> <span class="mi">5</span>
+<span class="n">KEY_SLEEP</span>               <span class="o">=</span> <span class="mi">6</span>
+<span class="n">KEY_WORK</span>                <span class="o">=</span> <span class="mi">7</span>
+<span class="n">KEY_EDUCATION</span>           <span class="o">=</span> <span class="mi">8</span>
+
+<span class="c1"># keys for all of the activities</span>
+<span class="n">KEYS_ACTIVITIES</span>          <span class="o">=</span> <span class="p">(</span><span class="n">KEY_COMMUTE_FROM_WORK</span><span class="p">,</span> <span class="n">KEY_COMMUTE_TO_WORK</span><span class="p">,</span> <span class="n">KEY_EAT_BREAKFAST</span><span class="p">,</span> <span class="n">KEY_EAT_DINNER</span><span class="p">,</span> \
+                            <span class="n">KEY_EAT_LUNCH</span><span class="p">,</span> <span class="n">KEY_SLEEP</span><span class="p">,</span> <span class="n">KEY_WORK</span><span class="p">)</span>
+
+<span class="n">FDIR_MY_DATA</span>                <span class="o">=</span> <span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">my_data&#39;</span>
+<span class="n">FDIR_SAVE_FIG</span>               <span class="o">=</span> <span class="n">FDIR_MY_DATA</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">fig&#39;</span>
+
+<span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span>   <span class="o">=</span> <span class="n">FDIR_SAVE_FIG</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">demographic&#39;</span>
+
+<span class="n">FDIR_SAVE_FIG_ALL</span>               <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">all&#39;</span>
+<span class="n">FDIR_SAVE_FIG_ADULT</span>             <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult&#39;</span>
+<span class="n">FDIR_SAVE_FIG_ADULT_NON_WORK</span>    <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_non_work&#39;</span>
+<span class="n">FDIR_SAVE_FIG_ADULT_WORK</span>        <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_work&#39;</span>
+<span class="n">FDIR_SAVE_FIG_CHILD_SCHOOL</span>      <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_school&#39;</span>
+<span class="n">FDIR_SAVE_FIG_CHILD_YOUNG</span>       <span class="o">=</span> <span class="n">FDIR_SAVE_FIG_DEMOGRAPHIC</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_young&#39;</span>
+
+<span class="n">FDIR_SAVE_FIG_COMMUTE_FROM_WORK</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">commute_from_work&#39;</span>
+<span class="n">FDIR_SAVE_FIG_COMMUTE_TO_WORK</span>   <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">commute_to_work&#39;</span>
+<span class="n">FDIR_SAVE_FIG_EAT_BREAKFAST</span>     <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat_breakfast&#39;</span>
+<span class="n">FDIR_SAVE_FIG_EAT_DINNER</span>        <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat_dinner&#39;</span>
+<span class="n">FDIR_SAVE_FIG_EAT_LUNCH</span>         <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat_lunch&#39;</span>
+<span class="n">FDIR_SAVE_FIG_EDUCATION</span>         <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">education&#39;</span>
+<span class="n">FDIR_SAVE_FIG_SLEEP</span>             <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">sleep&#39;</span>
+<span class="n">FDIR_SAVE_FIG_WORK</span>              <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">work&#39;</span>
+
+<span class="n">FDIR_SAVE_FIG_RANDOM_DAY</span>        <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">random_day&#39;</span>
+<span class="n">FDIR_SAVE_FIG_WEEKDAY</span>           <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">weekday&#39;</span>
+<span class="n">FDIR_SAVE_FIG_WEEKEND</span>           <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">weekend&#39;</span>
+
+<span class="n">KEY_2_FDIR_SAVE_FIG</span> <span class="o">=</span> <span class="p">{</span> <span class="n">KEY_COMMUTE_FROM_WORK</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_COMMUTE_FROM_WORK</span><span class="p">,</span>
+                         <span class="n">KEY_COMMUTE_TO_WORK</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_COMMUTE_TO_WORK</span><span class="p">,</span>
+                         <span class="n">KEY_EAT_BREAKFAST</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_EAT_BREAKFAST</span><span class="p">,</span>
+                         <span class="n">KEY_EAT_DINNER</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_EAT_DINNER</span><span class="p">,</span>
+                         <span class="n">KEY_EAT_LUNCH</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_EAT_LUNCH</span><span class="p">,</span>
+                         <span class="n">KEY_EDUCATION</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_EDUCATION</span><span class="p">,</span>
+                         <span class="n">KEY_SLEEP</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_SLEEP</span><span class="p">,</span>
+                         <span class="n">KEY_WORK</span><span class="p">:</span> <span class="n">FDIR_SAVE_FIG_WORK</span><span class="p">,}</span>
+
+<span class="c1"># the number of statistical events</span>
+<span class="n">N_SOLO</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">N_LONG</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># file ending used for batch saves</span>
+<span class="n">F_BATCH_ENDING</span> <span class="o">=</span> <span class="s1">&#39;_b</span><span class="si">%04d</span><span class="s1">.pkl&#39;</span>
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># functions</span>
+<span class="c1"># -----------------------------------------------</span>
+
+<div class="viewcode-block" id="fill_out_data"><a class="viewcode-back" href="../my_globals.html#my_globals.fill_out_data">[docs]</a><span class="k">def</span> <span class="nf">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes an array of activity start times and activity codes from an activity diary and \</span>
+<span class="sd">    fills out the activity, minute-by-minute in between two adjacent activities.</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray t: the start times in an activity diary</span>
+<span class="sd">    :param numpy.ndarray y: the activity codes in an activity diary</span>
+<span class="sd">    :return: </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># a list of minute by minute times for each start activity</span>
+    <span class="n">t_group</span> <span class="o">=</span> <span class="n">group_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># a list of minute by minute activity codes for each activity</span>
+    <span class="n">y_group</span> <span class="o">=</span> <span class="p">[</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t_group</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># create 1 large numpy array</span>
+    <span class="n">y_fill</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">y_group</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y_fill</span>
+</div>
+<div class="viewcode-block" id="fill_out_time"><a class="viewcode-back" href="../my_globals.html#my_globals.fill_out_time">[docs]</a><span class="k">def</span> <span class="nf">fill_out_time</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes an array of activity start times from an activity diary and fills out the time, \</span>
+<span class="sd">    minute-by-minute in between two adjacent activities</span>
+<span class="sd">    </span>
+<span class="sd">    Example, if t = (0, 4, 7) (and :math:`t_{final}=10`) we get the following:</span>
+<span class="sd">        </span>
+<span class="sd">         * (0, 1, 2, 3)</span>
+<span class="sd">         * (4, 5, 6)</span>
+<span class="sd">         * (7, 8, 9, 10)</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray t: the start times in the activity diary [minutes, universal time]</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># a list of minute by minute times for each start activity</span>
+    <span class="n">t_group</span> <span class="o">=</span> <span class="n">group_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># fill out the times</span>
+    <span class="n">t_fill</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">t_group</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">t_fill</span>
+</div>
+<div class="viewcode-block" id="from_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.from_periodic">[docs]</a><span class="k">def</span> <span class="nf">from_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the time of day in a 24 hour format. It takes the time :math:`t \\in [-12, 12)` and \</span>
+<span class="sd">    expresses it at time :math:`x \\in [0, 24)` where 0 represents midnight. The same calculation can be \</span>
+<span class="sd">    done to represent the time in minutes</span>
+
+<span class="sd">    :param float t: the time in hours [-12, 12), or the respective minutes [-12 * 60, 12 * 60)</span>
+<span class="sd">    :param bool do_hours: a flag to do the calculations in hours (if True)</span>
+<span class="sd">    :return: the time in [0, 24) or in minutes [0, 24 * 60)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="k">if</span> <span class="n">do_hours</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="get_ecdf"><a class="viewcode-back" href="../my_globals.html#my_globals.get_ecdf">[docs]</a><span class="k">def</span> <span class="nf">get_ecdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given data, this function calculates the probability data from the empirical cumulative \</span>
+<span class="sd">    distribution function (ECDF).</span>
+
+<span class="sd">    :param float data: an array containing the relevant data to get the ECDF of</span>
+<span class="sd">    :param int N: the amount of samples in calculating the ECDF results</span>
+
+<span class="sd">    :return y: the ECDF</span>
+<span class="sd">    :rtype: float array</span>
+
+<span class="sd">    :return x: the values sampled for the ECDF</span>
+<span class="sd">    :rtype: float array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create the distribution function from the data</span>
+    <span class="n">ecdf</span> <span class="o">=</span> <span class="n">ECDF</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+    <span class="c1"># this allows the CDF to transition from  y=0 to y&gt;0 at the minimum x value</span>
+    <span class="n">x_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.01</span>
+
+    <span class="c1"># uniformly get values in the range of the data</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># calculate the cdf</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">ecdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</div>
+<div class="viewcode-block" id="group_time"><a class="viewcode-back" href="../my_globals.html#my_globals.group_time">[docs]</a><span class="k">def</span> <span class="nf">group_time</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes data from an activity diary and groups that activity diary into \,</span>
+<span class="sd">    minute by minute arrays from start to end for each activity (start, start + 1, ... end-1, end)</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray t: the start times from an activity diary [minutes, universal time] </span>
+<span class="sd">    :return: the grouped start/end pairs for ech activitiy</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># take all events except the last</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">t_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">t_group</span>
+</div>
+<div class="viewcode-block" id="hours_to_minutes"><a class="viewcode-back" href="../my_globals.html#my_globals.hours_to_minutes">[docs]</a><span class="k">def</span> <span class="nf">hours_to_minutes</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes a duration of time in hours and converts the time rounded to the nearest minutes.</span>
+
+<span class="sd">    :param float t: a duration of time [hours]</span>
+
+<span class="sd">    :return: the time in minutes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">t</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../my_globals.html#my_globals.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function loads data from a .pkl file.</span>
+
+<span class="sd">    :param str fname: the file name to be loaded from</span>
+<span class="sd">    :return: the data unpickled</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># open the file for reading</span>
+    <span class="n">fin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="c1"># load the data</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+
+    <span class="c1"># close the file</span>
+    <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="sample_normal"><a class="viewcode-back" href="../my_globals.html#my_globals.sample_normal">[docs]</a><span class="k">def</span> <span class="nf">sample_normal</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="n">dx</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function samples a normal distribution centered at zero assuming a max and minimum acceptable value [dx, -dx].</span>
+
+<span class="sd">    :param float std: the standard deviation</span>
+<span class="sd">    :param float dx: the amount of total deviation from the mean allowd</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the range of &quot;acceptable variation&quot;</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="o">-</span><span class="n">dx</span><span class="p">,</span> <span class="n">dx</span>
+
+    <span class="c1"># sample for variation centered at zero</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+
+    <span class="c1"># only accept values that are in the acceptable range</span>
+    <span class="n">is_bad_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x_min</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">x_max</span><span class="p">)</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># sample for &quot;good&quot; behaving variation</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">is_bad_value</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
+
+        <span class="c1"># re-sample for the variation</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+
+        <span class="c1"># check for an unacceptable value</span>
+        <span class="n">is_bad_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x_min</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">x_max</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># if there is still not a good value, set to zero variation</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">is_bad_value</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../my_globals.html#my_globals.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves a python variable by pickling it.</span>
+
+<span class="sd">    :param x: the data to be saved</span>
+<span class="sd">    :param str fname: the file name of the saved file. It must end with .pkl</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create the directory for the save file if it does not exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># open the file for writing</span>
+    <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+
+    <span class="c1"># save the file as a binary</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fout</span><span class="p">)</span>
+
+    <span class="c1"># close the file</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="save_zip"><a class="viewcode-back" href="../my_globals.html#my_globals.save_zip">[docs]</a><span class="k">def</span> <span class="nf">save_zip</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">source_dir</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function compresses an entire directory as a zip file.</span>
+
+<span class="sd">    :param str out_file: the filename of the save zip file with out the .zip extension</span>
+<span class="sd">    :param str source_dir: the directory to be compressed</span>
+<span class="sd">    :return: the name of the compressed directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create the file path to the save file if it does not exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_file</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># zip the source directory</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">make_archive</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;zip&#39;</span><span class="p">,</span> <span class="n">source_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="set_distribution"><a class="viewcode-back" href="../my_globals.html#my_globals.set_distribution">[docs]</a><span class="k">def</span> <span class="nf">set_distribution</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets the truncated normal probability distribution.</span>
+
+<span class="sd">    :param int lower: the lower bound in number of standard deviation from the mean</span>
+<span class="sd">    :param int upper: the upper bound in number of standard deviation from the mean</span>
+<span class="sd">    :param int mu: the mean</span>
+<span class="sd">    :param int std: the standard deviation</span>
+<span class="sd">    </span>
+<span class="sd">    :return: the function for the truncated normal distribution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">truncnorm</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span>
+
+    <span class="k">return</span> <span class="n">f</span>
+</div>
+<div class="viewcode-block" id="set_distribution_dt"><a class="viewcode-back" href="../my_globals.html#my_globals.set_distribution_dt">[docs]</a><span class="k">def</span> <span class="nf">set_distribution_dt</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">x_min</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function set the truncated normal probability distribution subject to the fact that there \</span>
+<span class="sd">    is an assigned lowest value.</span>
+<span class="sd">    </span>
+<span class="sd">    If the lowest value of the normal distribution is lower than the lowest \</span>
+<span class="sd">    allowed value, change the distribution so that the standard deviation allows the distribution to not be \</span>
+<span class="sd">    lower than the lowest allowed value.</span>
+
+<span class="sd">    :param int lower: the lower bound in number of standard deviation from the mean</span>
+<span class="sd">    :param int upper: the upper bound in number of standard deviation from the mean</span>
+<span class="sd">    :param int mu: the mean</span>
+<span class="sd">    :param int std: the standard deviation</span>
+<span class="sd">    :param int x_min: the lowest allowed value</span>
+<span class="sd">    </span>
+<span class="sd">    :return: the function for the truncated normal distribution, the standard deviation of the distribution </span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the lowest value assuming a truncated normal distribution</span>
+    <span class="n">y_min</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">-</span> <span class="n">lower</span> <span class="o">*</span> <span class="n">std</span>
+
+    <span class="c1"># if the lowest value assuming a truncated normal distribution is smaller than the lowest allowed value,</span>
+    <span class="c1"># change the distribution to have the same mean but a different standard deviation so that the</span>
+    <span class="c1"># lowest value from the new distribution is the lowest possible value</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">y_min</span> <span class="o">&lt;</span> <span class="n">x_min</span><span class="p">):</span>
+        <span class="c1"># the new standard deviation</span>
+        <span class="n">the_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">mu</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">lower</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">the_std</span> <span class="o">=</span> <span class="n">std</span>
+
+    <span class="c1"># set the truncated normal distribution</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">set_distribution</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">the_std</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">the_std</span>
+</div>
+<div class="viewcode-block" id="to_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.to_periodic">[docs]</a><span class="k">def</span> <span class="nf">to_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the time of day in a periodic format. It takes the time :math:`t \\in [0, 24)` and \</span>
+<span class="sd">    expresses it at time :math:`x \\in [-12, 12)` where 0 represents midnight.</span>
+
+<span class="sd">    :param float t: the time in hours [0, 24)</span>
+<span class="sd">    :param bool do_hours: a flag to do the calculations in hours (if True) or minutes if False</span>
+
+<span class="sd">    :return: the time in [-12, 12) or minutes [-12 * 60, 12 * 60)</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="k">if</span> <span class="n">do_hours</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">12</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># do the calculation in minutes</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

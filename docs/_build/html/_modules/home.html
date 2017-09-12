@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>home &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for home</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module governs the control of assets used in the simulation. Mainly, the home contains all of \</span>
+<span class="sd">the assets used in the simulation for the current version of the code.</span>
+
+<span class="sd">This module contains the following class: :class:`home.Home`</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># imports</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">location</span> <span class="kn">as</span> <span class="nn">loc</span>
+<span class="kn">import</span> <span class="nn">bed</span><span class="o">,</span> <span class="nn">food</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">transport</span><span class="o">,</span> <span class="nn">workplace</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># home categories</span>
+<span class="c1"># these are not used in the current version of ABMHAP</span>
+<span class="n">APARTMENT</span>   <span class="o">=</span> <span class="mi">1</span>
+<span class="n">HOUSE</span>       <span class="o">=</span> <span class="mi">2</span>
+<span class="n">TRAILER</span>     <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># home properties</span>
+<span class="c1"># these are not used in the current version of ABMHAP</span>
+<span class="n">POOL</span>     <span class="o">=</span> <span class="mi">0</span>
+<span class="n">OUTDOORS</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">PETS</span>     <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># this takes an INTEGER representation of a home category and represents it</span>
+<span class="c1"># as a STRING</span>
+<span class="n">INT_2_STR_CAT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">APARTMENT</span><span class="p">:</span> <span class="s1">&#39;Apartment&#39;</span><span class="p">,</span>
+    <span class="n">HOUSE</span><span class="p">:</span> <span class="s1">&#39;House&#39;</span><span class="p">,</span>
+    <span class="n">TRAILER</span><span class="p">:</span> <span class="s1">&#39;Trailer&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># this takes an STRING representation of a home category and represents it</span>
+<span class="c1"># as an INTEGER</span>
+<span class="c1"># this is not used in the current version of ABMHAP</span>
+<span class="n">STR_2_INT_CAT</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR_CAT</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># this takes an INTEGER representation of a home properties and represents it</span>
+<span class="c1"># as a STRING</span>
+<span class="c1"># this is not used in the current version of ABMHAP</span>
+<span class="n">INT_2_STR_PROP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">POOL</span><span class="p">:</span> <span class="s1">&#39;Pool&#39;</span><span class="p">,</span>
+    <span class="n">OUTDOORS</span><span class="p">:</span> <span class="s1">&#39;Outdoors&#39;</span><span class="p">,</span>
+    <span class="n">PETS</span><span class="p">:</span> <span class="s1">&#39;Pets&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="c1"># this takes an STRING representation of a home properties and represents it</span>
+<span class="c1"># as an INTEGER</span>
+<span class="c1"># this is not used in the current version of ABMHAP</span>
+<span class="n">STR_2_INT_PROP</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR_PROP</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># the number of properties</span>
+<span class="c1"># these are not used in the current version of ABMHAP</span>
+<span class="n">N_PROPERTIES</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">INT_2_STR_PROP</span><span class="p">)</span> 
+<span class="n">N_CATEGORIES</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">INT_2_STR_CAT</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Home"><a class="viewcode-back" href="../home.html#home.Home">[docs]</a><span class="k">class</span> <span class="nc">Home</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Contains all of the physical characteristics of a home/ residence. Currently, the home \</span>
+<span class="sd">    contains all of the assets within the simulation.</span>
+
+<span class="sd">    :param temporal.Temporal clock: the time</span>
+
+<span class="sd">    :ivar dict assets: contains a list of all of the assets available in the home.</span>
+<span class="sd">    :ivar int category: the type of home</span>
+<span class="sd">    :ivar temporal.Temporal clock: the time</span>
+<span class="sd">    :ivar int id: a unique home identification number</span>
+<span class="sd">    :ivar location.Location location: the location of the home</span>
+<span class="sd">    :ivar int population: the number of people who reside in a home</span>
+<span class="sd">    :ivar float revenue: the household revenue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Constructor</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">APARTMENT</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">clock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span> <span class="n">loc</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">loc</span><span class="o">.</span><span class="n">HOME</span><span class="p">)</span>
+        
+        <span class="c1"># list of assets all Homes have</span>
+        <span class="c1"># recall need to set the location of the work asset</span>
+        <span class="n">wp1</span> <span class="o">=</span> <span class="n">workplace</span><span class="o">.</span><span class="n">Workplace</span><span class="p">()</span>
+        
+        <span class="c1"># allows sleeping</span>
+        <span class="n">bed1</span> <span class="o">=</span> <span class="n">bed</span><span class="o">.</span><span class="n">Bed</span><span class="p">()</span>
+        
+        <span class="c1"># allows commuting</span>
+        <span class="n">the_transport</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">Transport</span><span class="p">()</span>
+        <span class="n">the_transport</span><span class="o">.</span><span class="n">max_users</span> <span class="o">=</span> <span class="mi">1</span>
+           
+        <span class="c1"># food1 allows eating at home</span>
+        <span class="n">food1</span> <span class="o">=</span> <span class="n">food</span><span class="o">.</span><span class="n">Food</span><span class="p">()</span>
+        
+        <span class="c1"># cafeteria allows eating at work</span>
+        <span class="n">cafeteria</span> <span class="o">=</span> <span class="n">food</span><span class="o">.</span><span class="n">Food</span><span class="p">()</span>
+        <span class="n">cafeteria</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">OFF_SITE</span>
+        
+        <span class="c1"># store all of the assets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;workplace&#39;</span><span class="p">:</span> <span class="n">wp1</span><span class="p">,</span>
+            <span class="s1">&#39;bed&#39;</span><span class="p">:</span> <span class="n">bed1</span><span class="p">,</span>
+            <span class="s1">&#39;transport&#39;</span><span class="p">:</span> <span class="n">the_transport</span><span class="p">,</span>
+            <span class="s1">&#39;food&#39;</span><span class="p">:</span> <span class="n">food1</span><span class="p">,</span>
+            <span class="s1">&#39;cafeteria&#39;</span><span class="p">:</span> <span class="n">cafeteria</span>
+        <span class="p">}</span>
+
+        <span class="c1"># the revenue of the house</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revenue</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span>
+    
+    <span class="c1">#-----------------------------------------------------</span>
+    <span class="c1"># functions</span>
+    <span class="c1">#-----------------------------------------------------</span>
+
+<div class="viewcode-block" id="Home.advertise"><a class="viewcode-back" href="../home.html#home.Home.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">do_interruption</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">locale</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles all of the Activities&#39; advertisements to a Person. This occurs by looping \</span>
+<span class="sd">        through each asset in the home and collecting a list of advertisements for each activity in each asset.</span>
+
+<span class="sd">        #. loop through each asset</span>
+<span class="sd">        #. if the asset is busy *and* is in the same location of the person</span>
+<span class="sd">            * for each activity in the given asset</span>
+<span class="sd">                #. advertise for interrupting activities</span>
+<span class="sd">                #. advertise for non interrupting activities</span>
+<span class="sd">                #. collect the advertisements</span>
+<span class="sd">                </span>
+<span class="sd">        :param person.Person p: a person to whom the assets are advertising</span>
+<span class="sd">        :param bool do_interruption: a flag that indicates whether or not we should advertise for interruptions</span>
+
+<span class="sd">        :param int locale: a local location identifier</span>
+
+<span class="sd">        :return: the advertisements (score, asset, activity, person) containing the various data for \</span>
+<span class="sd">                        each advertisement: (&quot;score&quot;, &quot;asset&quot;, &quot;activity&quot;, &quot;person&quot;) coupling</span>
+<span class="sd">        :rtype: dict        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ads</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#(score, Asset, Activity)</span>
+
+        <span class="c1"># find the free Assets</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+            <span class="c1"># can only use free assets</span>
+            <span class="c1"># and when assets and people are in the same location</span>
+            <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">BUSY</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span><span class="p">)</span> <span class="p">):</span>
+
+                <span class="n">score</span> <span class="o">=</span> <span class="bp">None</span>
+
+                <span class="c1"># calculate the score for each activity for the Asset</span>
+                <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">activities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">do_interruption</span> <span class="ow">and</span> <span class="n">act</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_start</span><span class="p">):</span>
+                        <span class="n">score</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">advertise_interruption</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">do_interruption</span><span class="p">):</span>
+                        <span class="n">score</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+                        <span class="c1"># add the score for each activity</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span> <span class="s1">&#39;asset&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;activity&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;person&#39;</span><span class="p">:</span> <span class="n">p</span><span class="p">}</span>
+                        <span class="n">ads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ads</span>
+</div>
+<div class="viewcode-block" id="Home.initialize"><a class="viewcode-back" href="../home.html#home.Home.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">people</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the assets in the home.        </span>
+
+<span class="sd">        :param list people: a list of people who reside in the home</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialize all of the assets</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Home.print_category"><a class="viewcode-back" href="../home.html#home.Home.print_category">[docs]</a>    <span class="k">def</span> <span class="nf">print_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function expresses the category variable as a string.</span>
+
+
+<span class="sd">        :return: string representation of the category</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an invalid choice for home.category!</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+
+        <span class="k">return</span> <span class="n">INT_2_STR_CAT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Home.reset"><a class="viewcode-back" href="../home.html#home.Home.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function resets the each asset in the home.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># reset the assets</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Home.set_population"><a class="viewcode-back" href="../home.html#home.Home.set_population">[docs]</a>    <span class="k">def</span> <span class="nf">set_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">people</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the population of the house.</span>
+
+<span class="sd">        :param list people: the list of people living in the home</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># people is a list of Person objects that share the same Home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Home.set_revenue"><a class="viewcode-back" href="../home.html#home.Home.set_revenue">[docs]</a>    <span class="k">def</span> <span class="nf">set_revenue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">people</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the revenue of the home by adding the revenue of each person in the home.</span>
+
+<span class="sd">        :param list people: the list of people living in the home</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># people is a list of Person objects that share the same Home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revenue</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">wage</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">people</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Home.toString"><a class="viewcode-back" href="../home.html#home.Home.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function expresses the Home object as a string</span>
+
+<span class="sd">        :return msg: the string representation of the home object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># the identification number of the home</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Home ID:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># the home type</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Home Type:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_category</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the revenue of the household</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Household Revenue:</span><span class="se">\t</span><span class="s1">$ </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">revenue</span>
+
+        <span class="c1"># population of the home</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Population:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span>
+
+        <span class="c1"># the location info about the home</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="c1"># assets in the home</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Assets</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

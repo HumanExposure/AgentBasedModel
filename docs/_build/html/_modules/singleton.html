@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>singleton &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for singleton</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains information for creating the default agent that represents a person that lives \</span>
+<span class="sd">alone in the home. Singleton will be \</span>
+<span class="sd">the name of this type of agent.</span>
+
+<span class="sd">This module contains :class:`singleton.Singleton`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">bio</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">person</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Singleton"><a class="viewcode-back" href="../singleton.html#singleton.Singleton">[docs]</a><span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">Person</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Singleton default is a person that has the following characteristics</span>
+
+<span class="sd">    #. female</span>
+<span class="sd">    #. 30 years old</span>
+<span class="sd">    #. goes to bed at 22:00 and sleeps for 8 hours</span>
+<span class="sd">    #. lives alone and has no children</span>
+<span class="sd">    #. works the Standard Job</span>
+<span class="sd">    #. eats breakfast at 7:30 for 15 minutes, lunch at 12:00 for 30 minutes, \</span>
+<span class="sd">    and dinner at 19:00 for 45 minutes</span>
+
+<span class="sd">    :param home.Home house: the place of residence</span>
+<span class="sd">    :param temporal.Temporal clock: the clock running in the simulation</span>
+<span class="sd">    :param scheduler.Scheduler schedule: the schedule for the agent</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># constructor</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">):</span>
+
+        <span class="c1"># constructor for the parent class</span>
+        <span class="n">person</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># create the biology</span>
+        <span class="c1">#</span>
+
+        <span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># get biological parameters</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># the gender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">gender</span>             <span class="o">=</span> <span class="n">bio</span><span class="o">.</span><span class="n">FEMALE</span>
+
+        <span class="c1"># the age [years]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">age</span>                <span class="o">=</span> <span class="mi">30</span>
+
+        <span class="c1"># the mean sleep start time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_start_mean</span>   <span class="o">=</span> <span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_START_MEAN</span>
+
+        <span class="c1"># the standard deviation of sleep start time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_start_std</span>    <span class="o">=</span> <span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_START_STD</span>
+
+        <span class="c1"># the mean sleep end time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end_mean</span>     <span class="o">=</span> <span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_END_MEAN</span>
+
+        <span class="c1"># the standard deviation of the sleep end time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end_std</span>      <span class="o">=</span> <span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_END_STD</span>
+
+        <span class="c1"># the mean duration for sleep</span>
+        <span class="n">dt_sleep</span>    <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end_mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_start_mean</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the mean duration of time awake</span>
+        <span class="n">dt_awake</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">calc_awake_duration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="c1"># set the decay rate for Rest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_decay_rate</span><span class="p">(</span><span class="n">dt_awake</span><span class="p">)</span>
+
+        <span class="c1"># set the recharge rate for Rest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_recharge_rate</span><span class="p">(</span><span class="n">dt_sleep</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># set the job</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># the job identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">STANDARD_JOB</span>
+
+        <span class="c1"># set the job</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">set_job_preset</span><span class="p">()</span>
+
+        <span class="c1"># set the alarm for work. This is not used and will be removed in future versions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">uses_alarm</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">set_work_alarm</span><span class="p">(</span><span class="n">HOUR_2_MIN</span><span class="p">)</span>
+
+        <span class="c1"># set the meals: breakfast, lunch, and dinner, respectively</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_MEAN</span><span class="p">,</span> \
+                                     <span class="n">start_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_STD</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_TRUNC</span><span class="p">,</span> \
+                                     <span class="n">dt_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_MEAN</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_STD</span><span class="p">,</span> \
+                                     <span class="n">dt_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_TRUNC</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_MEAN</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_STD</span><span class="p">,</span> \
+                                     <span class="n">start_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_TRUNC</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_MEAN</span><span class="p">,</span> \
+                                     <span class="n">dt_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_STD</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_TRUNC</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_MEAN</span><span class="p">,</span> \
+                                     <span class="n">start_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_STD</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_TRUNC</span><span class="p">,</span>\
+                                     <span class="n">dt_mean</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_MEAN</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_STD</span><span class="p">,</span> \
+                                     <span class="n">dt_trunc</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_TRUNC</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Singleton.print_params"><a class="viewcode-back" href="../singleton.html#singleton.Singleton.print_params">[docs]</a>    <span class="k">def</span> <span class="nf">print_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function prints the activity-parameter means in chronological order of start time. This \</span>
+<span class="sd">        results in the ability to print the mean daily routine.</span>
+
+<span class="sd">        :return: a representation of the parameters of the agent in increasing values of \</span>
+<span class="sd">        start time</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># constants</span>
+        <span class="n">HOUR_2_MIN</span>      <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># the output message</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># the work-related and commute-related parameters</span>
+        <span class="n">work_start</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+        <span class="n">work_dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">to_work_dt</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+        <span class="n">from_work_dt</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+        <span class="c1"># the format string (activity name, start time, duration)</span>
+        <span class="n">default_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%20s</span><span class="se">\t</span><span class="si">%.2f</span><span class="se">\t</span><span class="si">%.2f</span><span class="se">\t</span><span class="si">%0.2f</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># create a dictionary of terms. Make sure the times in an hours format [0, 24)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_start_mean</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end_mean</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;eat breakfast&#39;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt_mean</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">work_start</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">work_dt</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;eat lunch&#39;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dt_mean</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;eat dinner&#39;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">dt_mean</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;commute to work mean&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">work_start</span> <span class="o">-</span> <span class="n">to_work_dt</span><span class="p">)</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">to_work_dt</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="s1">&#39;commute from work mean&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">work_start</span> <span class="o">+</span> <span class="n">work_dt</span><span class="p">)</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">from_work_dt</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span><span class="p">),</span>
+             <span class="p">}</span>
+
+        <span class="c1"># sort the entries by increasing values of start time u = (activity name, (start time, duration) )</span>
+        <span class="n">od</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="c1"># write the (activity, start time, duration) tuple for most activities</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">od</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">default_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">%</span> <span class="mi">24</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Singleton.set"><a class="viewcode-back" href="../singleton.html#singleton.Singleton.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the Singleton&#39;s parameters.</span>
+
+<span class="sd">        The function does the following</span>
+
+<span class="sd">        #. Sets the biology</span>
+<span class="sd">        #. Sets the job information</span>
+<span class="sd">        #. Sets the alarm</span>
+<span class="sd">        #. Sets the meal information</span>
+
+<span class="sd">        :param params.Params param: parameters describing the household</span>
+<span class="sd">        :param int idx: the respective index number of the Person of interest in the household</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># create the biology</span>
+        <span class="c1">#</span>
+        <span class="n">gender</span>      <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">gender</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># set the biology</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">set_sleep_params</span><span class="p">(</span><span class="n">start_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">start_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">sleep_start_std</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> \
+                                  <span class="n">end_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">end_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">sleep_end_std</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">gender</span>
+
+        <span class="c1"># biologically related need</span>
+        <span class="n">dt_awake</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">calc_awake_duration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_decay_rate</span><span class="p">(</span><span class="n">dt_awake</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_recharge_rate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_dt</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># social</span>
+        <span class="c1">#</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># set the job</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">set_job_params</span><span class="p">(</span><span class="n">id_job</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">job_id</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>\
+                                      <span class="n">start_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">work_start_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">start_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">work_start_std</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>\
+                                      <span class="n">end_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">work_end_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">end_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">work_end_std</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> \
+                                      <span class="n">commute_to_work_dt_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> \
+                                      <span class="n">commute_to_work_dt_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> \
+                                      <span class="n">commute_from_work_dt_mean</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>\
+                                      <span class="n">commute_from_work_dt_std</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">uses_alarm</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">do_alarm</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">set_work_alarm</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">dt_alarm</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># meals</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># get meal parameters</span>
+        <span class="n">breakfast</span>   <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">breakfasts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">lunch</span>       <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">lunches</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">dinner</span>      <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dinners</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># set the meals, breakfast, lunch, dinner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> \
+                                     <span class="n">start_std</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">start_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> \
+                                     <span class="n">dt_mean</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">dt_std</span><span class="p">,</span> \
+                                     <span class="n">dt_trunc</span><span class="o">=</span><span class="n">breakfast</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> \
+                                     <span class="n">start_std</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">start_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> \
+                                     <span class="n">dt_mean</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">dt_std</span><span class="p">,</span> \
+                                     <span class="n">dt_trunc</span><span class="o">=</span><span class="n">lunch</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">)</span>
+
+        <span class="c1"># set the meals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> \
+                                     <span class="n">start_std</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">start_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> \
+                                     <span class="n">dt_mean</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">dt_std</span><span class="p">,</span> \
+                                     <span class="n">dt_trunc</span><span class="o">=</span><span class="n">dinner</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">)</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

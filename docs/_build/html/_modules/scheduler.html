@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scheduler &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scheduler</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that is is responsible for controlling the scheduler for the simulation. Note \</span>
+<span class="sd">that the simulation does **not** run continuously in from one adjacent time step to the next. Instead the \</span>
+<span class="sd">simulation jumps forward in time (i.e. move across multiple time steps in time), stopping only at time steps \</span>
+<span class="sd">in which an action could occur. The ability to jump forward in time is controlled by the scheduler.</span>
+
+<span class="sd">The scheduler will trigger the simulation to stop skipping time steps for the following reasons:</span>
+
+<span class="sd">#. an activity should start</span>
+<span class="sd">#. an activity should end</span>
+<span class="sd">#. a need is under threshold</span>
+
+<span class="sd">This module contains class :class:`scheduler.Scheduler`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># --------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># --------------------------------</span>
+
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model module</span>
+<span class="kn">import</span> <span class="nn">need</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Scheduler"><a class="viewcode-back" href="../scheduler.html#scheduler.Scheduler">[docs]</a><span class="k">class</span> <span class="nc">Scheduler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains the code for the scheduler. The scheduler is in charge of jumping forward in time and \</span>
+<span class="sd">    stopping at only potentially relevant time steps. The scheduler keeps track of the needs for every person in \</span>
+<span class="sd">    in the household and stops at time steps where any person should have an action / need that needs to be \</span>
+<span class="sd">    addressed.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    :param temporal.Temporal clock: the time</span>
+<span class="sd">    :param int num_people: the number of people in the household</span>
+<span class="sd">    </span>
+<span class="sd">    :var temporal.Temporal clock: the time</span>
+<span class="sd">    :var numpy.ndarray A: the schedule matrix of dimension (number of people x number of needs). This matrix \</span>
+<span class="sd">    contains the times [minutes, universal time] that the simulation should not skip over</span>
+<span class="sd">    :var int dt: the duration of time between events</span>
+<span class="sd">    :var int t_old: the time [minutes, universal time] of the prior event</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">num_people</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">clock</span>
+
+        <span class="c1"># the times when a need should be threshold in absolute time or an activity ends</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span><span class="n">num_people</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># the duration of time between events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Scheduler.get_next_event_time"><a class="viewcode-back" href="../scheduler.html#scheduler.Scheduler.get_next_event_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_event_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function searches the schedule matrix and finds the next time that that model should handle.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is only capable of handling **single-occupancy** households.</span>
+<span class="sd">            </span>
+<span class="sd">        :return: the next time [minutes, time of day] that the model should address</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the current time</span>
+        <span class="n">t_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># get the minimum time per person (minimum time for each row)</span>
+        <span class="n">num_people</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># the data for times that are the minimum times</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_people</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+
+            <span class="c1"># find the relevant indices</span>
+            <span class="c1"># i.e. get indices of times greater than the current time</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">A</span> <span class="o">&gt;</span> <span class="n">t_now</span>
+
+            <span class="c1"># if there is a time greater than the current time</span>
+            <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="c1"># get the next event time</span>
+                <span class="n">t_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># nothing scheduled should happen, increase the time by 1</span>
+                <span class="n">t_next</span> <span class="o">=</span> <span class="n">t_now</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># this makes sure that we do not stay in a time loop</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">t_next</span> <span class="o">==</span> <span class="n">t_now</span><span class="p">):</span>
+                <span class="n">t_next</span> <span class="o">=</span> <span class="n">t_now</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># update the old scheduled event times</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">idx</span> <span class="o">==</span> <span class="bp">False</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_next</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">scheduler.get_next_event_time() is NOT calibrated for populations greater than 1!</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">t_next</span> <span class="o">=</span> <span class="n">t_now</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># update the duration until the next activity from now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>     <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_now</span>
+
+        <span class="c1"># update the prior event to be the current time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_old</span>  <span class="o">=</span> <span class="n">t_now</span>
+
+        <span class="k">return</span> <span class="n">t_next</span>
+</div>
+<div class="viewcode-block" id="Scheduler.toString"><a class="viewcode-back" href="../scheduler.html#scheduler.Scheduler.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function presents the Scheduler object as a string.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: a string representation of the object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span>     <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span>     <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;dt: </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">msg</span>     <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;t_old: </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_old</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Scheduler.update"><a class="viewcode-back" href="../scheduler.html#scheduler.Scheduler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_person</span><span class="p">,</span> <span class="n">id_need</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function updates the schedule matrix for a given person and need with the duration for the next event, \ </span>
+<span class="sd">        for the respective person-need combination.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int id_person: the person identifier</span>
+<span class="sd">        :param int id_need: the need identifier </span>
+<span class="sd">        :param int dt: the duration to the next event </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">id_person</span><span class="p">,</span> <span class="n">id_need</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

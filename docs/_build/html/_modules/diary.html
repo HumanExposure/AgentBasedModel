@@ -1,0 +1,538 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>diary &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for diary</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that governs the activity-diaries. Each activity diary contains</span>
+<span class="sd">dataframes that store the activity-diaries for each person. The activity-diaries are the</span>
+<span class="sd">output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.</span>
+
+<span class="sd">This module contains class :class:`diary.Diary`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># dataframe capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">groupby</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># constants</span>
+<span class="c1"># -----------------------------------------------</span>
+
+<span class="c1"># the order of the columns in the activity-diary database</span>
+<span class="n">COLNAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;act&#39;</span><span class="p">,</span> <span class="s1">&#39;loc&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Diary"><a class="viewcode-back" href="../diary.html#diary.Diary">[docs]</a><span class="k">class</span> <span class="nc">Diary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class represents the activity-diaries for a person.</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray t: the start times for each activity [universal time, minutes]</span>
+<span class="sd">    :param numpy.ndarray act: the activity code done at each time step [integer] (flattened array)</span>
+<span class="sd">    :param numpy.ndarray local: the history of location codes done by a person</span>
+<span class="sd">     </span>
+<span class="sd">    </span>
+<span class="sd">    :ivar list colnames: the column names for the activity diary in order</span>
+<span class="sd">    :ivar pandas.core.frame.DataFrame df: the activity-diary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">local</span><span class="p">):</span>
+
+        <span class="c1"># the column names explaining the diary information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span> <span class="o">=</span> <span class="n">COLNAMES</span>
+
+        <span class="c1"># the activity-diary data frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_activity_diary</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">local</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colnames</span> <span class="p">)</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Diary.create_activity_diary"><a class="viewcode-back" href="../diary.html#diary.Diary.create_activity_diary">[docs]</a>    <span class="k">def</span> <span class="nf">create_activity_diary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">local</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates the activity diary for a given agent in the simulation.</span>
+
+<span class="sd">        The activity diary contains:</span>
+
+<span class="sd">        #. The start-time and end-time for each activity</span>
+<span class="sd">        #. The activity code</span>
+
+
+<span class="sd">        :param numpy.ndarray t: the simulation times [universal time, minutes]</span>
+<span class="sd">        :param numpy.ndarray act: the activity code done at each time step [integer] (flattened array)</span>
+
+<span class="sd">        :return: a tuple containing the following: the array indices for each activity grouping, the activity diaries \</span>
+<span class="sd">        in a numerical format, the activity diary in a string format, and the column names for each data type</span>
+
+<span class="sd">        Each diary is a tuple that contains the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. the day number of the start of the activity</span>
+<span class="sd">        #. the (start-time, end-time) for the activity event</span>
+<span class="sd">        #. the activity code for the activity event</span>
+<span class="sd">        #. the location of the event</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># constants</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+        <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># get an array of day number corresponding to each time</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">t</span> <span class="o">//</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the steps in the simulation</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">act</span><span class="p">)))</span>
+
+        <span class="c1"># time_step-activity_code pairings</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_activity</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+
+        <span class="c1"># the time steps in groups</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_activity_indices</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># store the start-time and end-time for each activity event</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># the start and end time of each activity in universal time</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># the start and end time of each activity in time of day</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">]</span>
+
+        <span class="c1"># calculate the duration (add + 1 because</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">]</span>
+
+        <span class="c1"># convert the time of day and duration to hours</span>
+        <span class="n">ranges</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+        <span class="n">dt</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># start and end time for each activity in military time</span>
+        <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># get the activity codes for each activity event</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># the activity code for each activity</span>
+        <span class="c1"># ech group entry g: list [ (index, activity code) ]</span>
+        <span class="n">act_code</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">]</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># get the location information</span>
+        <span class="c1">#</span>
+        <span class="c1"># first index for each event</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># the day the first activity starts</span>
+        <span class="n">act_day</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="c1"># numeric local location code</span>
+        <span class="n">loc_code</span> <span class="o">=</span> <span class="n">local</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># create the diary</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># numerical diary</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">act_day</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">act_code</span><span class="p">,</span> <span class="n">loc_code</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">y</span>
+</div>
+<div class="viewcode-block" id="Diary.get_day_end"><a class="viewcode-back" href="../diary.html#diary.Diary.get_day_end">[docs]</a>    <span class="k">def</span> <span class="nf">get_day_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day_start</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function gets the day that an activity ends.</span>
+<span class="sd">        </span>
+<span class="sd">        :param day_start: the day an activity starts</span>
+<span class="sd">        :type day_start: numpy.ndarray</span>
+<span class="sd">        </span>
+<span class="sd">        :param start: the time an activity starts [hours]</span>
+<span class="sd">        :type start: numpy.ndarray</span>
+<span class="sd">        </span>
+<span class="sd">        :param dt: the duration for an activity [hours]</span>
+<span class="sd">        :type dt: numpy.ndarray</span>
+<span class="sd">        </span>
+<span class="sd">        :return: the day an activity ends</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># the time is in hours</span>
+        <span class="c1"># this function assumes that the event is under 24 hours long</span>
+        <span class="c1"># time until midnight</span>
+        <span class="n">dt_midnight</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">-</span> <span class="n">start</span>
+
+        <span class="c1"># if the duration of the activity lasted longer than the amount of time until midnight,</span>
+        <span class="c1"># increase the end date from the start date</span>
+        <span class="n">day_end</span> <span class="o">=</span> <span class="n">day_start</span> <span class="o">+</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">dt_midnight</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">day_end</span>
+
+</div>
+<div class="viewcode-block" id="Diary.get_weekday_data"><a class="viewcode-back" href="../diary.html#diary.Diary.get_weekday_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_weekday_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function pulls out data that only corresponds to the weekday data.</span>
+<span class="sd">        </span>
+<span class="sd">        :param pandas.core.frame.DataFrame df: the activity-diary of interest. If df is None, then use the dataframe \</span>
+<span class="sd">        associated with the diary object</span>
+<span class="sd">         </span>
+<span class="sd">        :return: the activity-diary of data that occur on weekdays </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if there is no input dataframe, use this object&#39;s dataframe</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+
+        <span class="c1"># get the indices associated to the weekday events</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weekday_idx</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="c1"># the activity-diary associated with weekday events</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="Diary.get_weekday_idx"><a class="viewcode-back" href="../diary.html#diary.Diary.get_weekday_idx">[docs]</a>    <span class="k">def</span> <span class="nf">get_weekday_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the indices of the data that occurs on weekdays. An activity is considered to be on the weekday if \</span>
+<span class="sd">        the activity **ends** on Monday - Friday. </span>
+
+<span class="sd">        :param pandas.core.frame.DataFrame df: the activity-diary of interest. If df is None, then use the dataframe \</span>
+<span class="sd">        associated with the diary object</span>
+
+<span class="sd">        :return: boolean indices of which activities end during the weekend</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if no dataframe is passed, do the results on all the data</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+
+        <span class="c1"># the boolean indices of whether or not an activity DOES NOT end on a weekend</span>
+        <span class="c1">#(i.e. the indices are True if the event is a weekeday and false otherwise)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weekend_idx</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="n">idx</span>
+</div>
+<div class="viewcode-block" id="Diary.get_weekend_data"><a class="viewcode-back" href="../diary.html#diary.Diary.get_weekend_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_weekend_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function pulls out data that only corresponds to the weekend data.</span>
+<span class="sd">                </span>
+<span class="sd">        :param pandas.core.frame.DataFrame df: the activity-diary of interest. If df is None, the use  the dataframe \</span>
+<span class="sd">        associated with the current diary object</span>
+<span class="sd">        </span>
+<span class="sd">        :return: an activity-diary of data that occurs on weekends        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if there is no input dataframe, use this object&#39;s dataframe</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+
+        <span class="c1"># get the indices associated to the weekend events</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weekend_idx</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="c1"># the activity-diary associated with weekend events</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="Diary.get_weekend_idx"><a class="viewcode-back" href="../diary.html#diary.Diary.get_weekend_idx">[docs]</a>    <span class="k">def</span> <span class="nf">get_weekend_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the indices of the data that occurs on weekend. An activity is considered to be on the weekend if \</span>
+<span class="sd">        the activity **ends** on Saturday or Sunday. </span>
+<span class="sd">        </span>
+<span class="sd">        :param pandas.core.frame.DataFrame df: the activity-diary of interest. If df is None, then use the dataframe \</span>
+<span class="sd">        associated with the diary object</span>
+<span class="sd">        </span>
+<span class="sd">        :return: boolean indices of which activities end during the weekend</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if no dataframe is passed, do the results on all the data</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+
+        <span class="c1"># this indexes events that start and end on the same day</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">same_day</span><span class="p">(</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># these are the days that an event ends</span>
+        <span class="n">day_end</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="bp">False</span><span class="p">)</span>
+
+        <span class="c1"># the boolean indices of whether an activity ended on a weekend</span>
+        <span class="n">idx_weekend</span> <span class="o">=</span> <span class="n">day_end</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_weekend</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">idx_weekend</span>
+</div>
+<div class="viewcode-block" id="Diary.group_activity"><a class="viewcode-back" href="../diary.html#diary.Diary.group_activity">[docs]</a>    <span class="k">def</span> <span class="nf">group_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function groups activities in chronological order.</span>
+<span class="sd">        </span>
+<span class="sd">        :param numpy.ndarray t: the start time for activities</span>
+<span class="sd">        :param numpy.ndarray y: the activity code that corresponds with the respective time  </span>
+<span class="sd">        </span>
+<span class="sd">        :return: a list of each unique group-lists. Each group-list contains a tuple \</span>
+<span class="sd">        for (time step, activity code)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># make a time_step-activity_code pairing</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># a list for each group</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># group entries by consecutive time AND activity code</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groupby</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_activity_key</span><span class="p">):</span>
+
+            <span class="c1"># the group will contain tuples of (time step, activity code)</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">g</span><span class="p">))</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">groups</span>
+</div>
+<div class="viewcode-block" id="Diary.group_activity_indices"><a class="viewcode-back" href="../diary.html#diary.Diary.group_activity_indices">[docs]</a>    <span class="k">def</span> <span class="nf">group_activity_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the indices for each continuous activity in chronological order.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            The output is the time step number **not** the value of time</span>
+<span class="sd">            </span>
+<span class="sd">        :param list groups: a list of tuples of (time step, activity code)  </span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop through each entry and return the time step</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">g</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">idx</span>
+</div>
+<div class="viewcode-block" id="Diary.group_activity_key"><a class="viewcode-back" href="../diary.html#diary.Diary.group_activity_key">[docs]</a>    <span class="k">def</span> <span class="nf">group_activity_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the key function used in groupby in order to group consecutive time-step-activity pairs. This is \</span>
+<span class="sd">        necessary for creating an activity diary.</span>
+
+<span class="sd">        :param tuple x: the data in the form of ( index, (time step, activity code) )</span>
+
+<span class="sd">        :return the key for sorting ( , activity code)</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the index from enumerating each time step</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># the time step number and activity code</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># the key used in groupby</span>
+        <span class="c1"># the first entry is for grouping by consecutive times</span>
+        <span class="c1"># the second entry is for grouping by activity code</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="n">t</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">k</span>
+</div>
+<div class="viewcode-block" id="Diary.is_weekend"><a class="viewcode-back" href="../diary.html#diary.Diary.is_weekend">[docs]</a>    <span class="k">def</span> <span class="nf">is_weekend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns true if a day is in the weekend and false if it&#39;s in a weekday.</span>
+<span class="sd">        </span>
+<span class="sd">        :param numpy.ndarray day: the day of the weekend</span>
+<span class="sd">        :return:  boolean index of whether or not a day is in the weekend (True) or not (False)</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the weekend days</span>
+        <span class="n">weekend</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">SATURDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SUNDAY</span><span class="p">)</span>
+
+        <span class="c1"># the day of the week</span>
+        <span class="n">day_of_week</span> <span class="o">=</span> <span class="n">day</span> <span class="o">%</span> <span class="mi">7</span>
+
+        <span class="c1"># check to see if it is the weekend</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">day_of_week</span> <span class="ow">in</span> <span class="n">weekend</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="Diary.same_day"><a class="viewcode-back" href="../diary.html#diary.Diary.same_day">[docs]</a>    <span class="k">def</span> <span class="nf">same_day</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns true if the activity starts and ends on the same day.</span>
+<span class="sd">        </span>
+<span class="sd">        :param numpy.ndarray start: the time an activity starts [hours]</span>
+<span class="sd">        :param numpy.ndarray dt: the time an activity ends [hours]</span>
+<span class="sd">        </span>
+<span class="sd">        :return: a boolean index of whether or not an activity started and ended on the same day</span>
+<span class="sd">        :rtype: numpy.ndarray        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the time is in hours</span>
+
+        <span class="c1"># time until midnight</span>
+        <span class="n">dt_midnight</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">-</span> <span class="n">start</span>
+
+        <span class="c1"># if the duration of the activity lasted longer than the amount of time until midnight,</span>
+        <span class="c1"># increase the end date from the start date</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&lt;</span> <span class="n">dt_midnight</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Diary.toString"><a class="viewcode-back" href="../diary.html#diary.Diary.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This expresses the diary as a string</span>
+
+<span class="sd">        :return: an expression of the diary as a string</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the dataframe</span>
+        <span class="n">df</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+
+        <span class="c1"># the day</span>
+        <span class="n">act_day</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># the string version of each activity</span>
+        <span class="n">act_str</span> <span class="o">=</span> <span class="p">[</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;act&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="p">]</span>
+
+        <span class="c1"># string version of local location code</span>
+        <span class="n">loc_str</span> <span class="o">=</span> <span class="p">[</span> <span class="n">location</span><span class="o">.</span><span class="n">INT_2_STR_LOCAL</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="p">]</span>
+
+        <span class="c1"># write the start time, end time, and duration of each activity in military time</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">convert_decimal_to_min</span>
+
+        <span class="c1"># the corresponding times in minutes</span>
+        <span class="n">start_time</span>  <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span> <span class="p">]</span>
+        <span class="n">end_time</span>    <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span> <span class="p">]</span>
+        <span class="n">dt_time</span>     <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span> <span class="p">]</span>
+
+        <span class="c1"># the times in military time</span>
+        <span class="n">m_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">start_time</span><span class="p">]</span>
+        <span class="n">m_end</span>   <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">end_time</span><span class="p">]</span>
+        <span class="n">m_dt</span>    <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dt_time</span><span class="p">]</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># store the diary information as a string</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># the string to return</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">day</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">local</span>  <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">act_day</span><span class="p">,</span> <span class="n">m_start</span><span class="p">,</span> <span class="n">m_end</span><span class="p">,</span> <span class="n">m_dt</span><span class="p">,</span> <span class="n">act_str</span><span class="p">,</span> <span class="n">loc_str</span><span class="p">):</span>
+
+            <span class="c1"># write information to a string</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%20s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">local</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">msg</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

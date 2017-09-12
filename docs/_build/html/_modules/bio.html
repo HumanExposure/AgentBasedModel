@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>bio &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bio</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information about a :class:`person.Person`&#39;s biology.</span>
+
+<span class="sd">This module contains the following class: :class:`bio.Bio`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># constants</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># gender constants</span>
+<span class="n">FEMALE</span>  <span class="o">=</span> <span class="mi">0</span>
+<span class="n">MALE</span>    <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># the default age</span>
+<span class="n">AGE</span>     <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># default values for biology</span>
+
+<span class="c1"># default sleep duration mean [minutes]</span>
+<span class="n">SLEEP_DT_MEAN</span>       <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+<span class="c1"># default mean sleep start time [minutes]</span>
+<span class="n">SLEEP_START_MEAN</span>    <span class="o">=</span> <span class="mi">22</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">SLEEP_START_STD</span>     <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># default mean sleep end time [minutes]</span>
+<span class="n">SLEEP_END_MEAN</span>      <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">SLEEP_END_STD</span>       <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># the number of standard deviations to truncate the normal distribution</span>
+<span class="n">SLEEP_START_TRUNC</span>   <span class="o">=</span> <span class="mi">1</span>
+<span class="n">SLEEP_END_TRUNC</span>     <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># This dictionary takes the INTEGER representation of a the gender and</span>
+<span class="c1"># returns a STRING representation</span>
+<span class="n">INT_2_STR_GENDER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">FEMALE</span><span class="p">:</span> <span class="s1">&#39;Female&#39;</span><span class="p">,</span>
+    <span class="n">MALE</span><span class="p">:</span> <span class="s1">&#39;Male&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class Bio</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Bio"><a class="viewcode-back" href="../bio.html#bio.Bio">[docs]</a><span class="k">class</span> <span class="nc">Bio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class holds the biologically relevant information for a person. This information is:</span>
+
+<span class="sd">    * Age</span>
+<span class="sd">    * Gender</span>
+<span class="sd">    * Mean / standard deviation of start time for sleeping</span>
+<span class="sd">    * Mean / standard deviation of end time for sleeping</span>
+<span class="sd">    * Probability distribution function sleep start time / end time</span>
+
+<span class="sd">    :ivar int age: the age [years]</span>
+<span class="sd">    :ivar int gender: the gender</span>
+
+<span class="sd">    :ivar int sleep_dt: the duration of time for a sleep event [minutes]</span>
+<span class="sd">    </span>
+<span class="sd">    :ivar int sleep_start_mean: the mean start time for a sleep event [minutes]</span>
+<span class="sd">    :ivar int sleep_start_std: the standard deviation for a starting a sleep event [minutes]</span>
+<span class="sd">    :ivar int sleep_start: the start time for sleep [minutes, time of day]</span>
+<span class="sd">    :ivar int sleep_start_univ: the start time for sleep[minutes, universal time]</span>
+<span class="sd">    </span>
+<span class="sd">    :ivar int sleep_end_mean: the mean end time for a sleep event [minutes]</span>
+<span class="sd">    :ivar int sleep_end_std: the standard deviation for end time for a sleep event [minutes]</span>
+<span class="sd">    :ivar int sleep_end: the end time for sleep[minutes, time of day]</span>
+<span class="sd">    :ivar int sleep_end_univ: the end time for sleep [minutes, universal time]</span>
+
+<span class="sd">    :ivar int start_trunc: the number of standard deviations to allow when sampling sleep start time truncated \</span>
+<span class="sd">    distribution</span>
+<span class="sd">    :ivar int end_trunc: the number of standard deviations to allow when sampling sleep end time truncated \</span>
+<span class="sd">    distribution</span>
+<span class="sd">    </span>
+<span class="sd">    :ivar func f_sleep_start: the distribution data for start time for sleep</span>
+<span class="sd">    :ivar func f_sleep_end: the distribution data for end time for sleep</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the gender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">FEMALE</span>
+
+        <span class="c1"># the age [years]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">age</span>    <span class="o">=</span> <span class="n">AGE</span>
+
+        <span class="c1"># biology related to sleeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span>   <span class="o">=</span> <span class="n">SLEEP_START_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span>    <span class="o">=</span> <span class="n">SLEEP_START_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_univ</span>   <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span>     <span class="o">=</span> <span class="n">SLEEP_END_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span>      <span class="o">=</span> <span class="n">SLEEP_END_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_univ</span>     <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_dt</span>           <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span>        <span class="o">=</span> <span class="n">SLEEP_START_TRUNC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_trunc</span>          <span class="o">=</span> <span class="n">SLEEP_END_TRUNC</span>
+
+        <span class="c1"># these are the probability distributions for sampling start and end times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_start</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">,</span> \
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_end</span>    <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">end_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">,</span> \
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Bio.calc_awake_duration"><a class="viewcode-back" href="../bio.html#bio.Bio.calc_awake_duration">[docs]</a>    <span class="k">def</span> <span class="nf">calc_awake_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the amount of time the person is expected to be awake.</span>
+
+<span class="sd">        :param int t: time of day [minutes]</span>
+<span class="sd">        :return: the duration [minutes] until the agent is expected to awaken</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the duration until the agent is expected to awaken</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span> <span class="n">dt</span>
+</div>
+<div class="viewcode-block" id="Bio.print_gender"><a class="viewcode-back" href="../bio.html#bio.Bio.print_gender">[docs]</a>    <span class="k">def</span> <span class="nf">print_gender</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns a string representation of gender</span>
+
+<span class="sd">        :return: the string representation of gender</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># write an error message if an invalid choice for gender is given</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an invalid choice for gender!&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">gender</span>
+
+        <span class="c1"># If a valid choice for gender is given, write the gender</span>
+        <span class="c1"># If not, write the error message</span>
+        <span class="k">return</span> <span class="n">INT_2_STR_GENDER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Bio.set_sleep_params"><a class="viewcode-back" href="../bio.html#bio.Bio.set_sleep_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_sleep_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the biological sleep parameters themselves and the sleep parameter distribution functions.</span>
+
+<span class="sd">        :param int start_mean: the mean sleep start time [minutes]</span>
+<span class="sd">        :param int start_std: the standard deviation of start time [minutes]</span>
+
+<span class="sd">        :param int end_mean: the mean sleep end time [minutes]</span>
+<span class="sd">        :param int end_std: the standard deviation of end time [minutes]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the standard deviation of the sleep duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span>     <span class="o">=</span> <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span>         <span class="o">=</span> <span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_dt</span>       <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_start</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">,</span> \
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_end</span>    <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">end_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">,</span> \
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.toString"><a class="viewcode-back" href="../bio.html#bio.Bio.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_decimal</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the :class:`bio.Bio` object as a string.</span>
+
+<span class="sd">        :param bool do_decimal: This controls whether or not to represent the values in time in a \</span>
+<span class="sd">                                decimal (hours) format where [1:30pm is 13.5] if True or as the minutes \</span>
+<span class="sd">                                in the day if False [1:30pm is 13 * 60 + 30].</span>
+
+<span class="sd">        :return msg: the string representation of the Bio object        </span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># write the gender</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Gender:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_gender</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># write the age</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Age:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">age</span>
+
+        <span class="c1"># write the currently set duration of sleep</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;currently set sleep duration:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_dt</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_decimal</span><span class="p">):</span>
+            <span class="c1"># write the time data in an hours format</span>
+
+            <span class="c1"># convert the mean start time to a decimal format</span>
+            <span class="n">start_mean</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">convert_cyclical_to_decimal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">)</span>
+
+            <span class="c1"># convert the standard deviation of start time to a decimal format</span>
+            <span class="n">start_std</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">convert_cyclical_to_decimal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span><span class="p">)</span>
+
+            <span class="c1"># convert the mean start time to a decimal format</span>
+            <span class="n">end_mean</span>    <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">convert_cyclical_to_decimal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">)</span>
+
+            <span class="c1"># convert the standard deviation of start time to a decimal format</span>
+            <span class="n">end_std</span>     <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">convert_cyclical_to_decimal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># store the mean and standard deviation for start time for sleep [minutes]</span>
+            <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span>
+
+            <span class="c1"># store the mean and standard deviation for end time for sleep [minutes]</span>
+            <span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span>
+
+
+        <span class="c1"># write the mean and standard deviation of the sleep start time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;sleep start time</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;(mean, std):</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># write the mean and standard deviation of the sleep end time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;sleep end time</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;(mean, std):</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+
+</div>
+<div class="viewcode-block" id="Bio.update_sleep_start"><a class="viewcode-back" href="../bio.html#bio.Bio.update_sleep_start">[docs]</a>    <span class="k">def</span> <span class="nf">update_sleep_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function samples the sleep start time distribution and sets the start time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># rvs returns an array, so index it</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_start</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the start time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span> <span class="o">=</span> <span class="n">t_start</span>
+
+        <span class="c1"># update the duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_sleep_dt</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.update_sleep_end"><a class="viewcode-back" href="../bio.html#bio.Bio.update_sleep_end">[docs]</a>    <span class="k">def</span> <span class="nf">update_sleep_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function samples the sleep end time distribution and sets the end time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># rvs returns an array, so index it</span>
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_sleep_end</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">=</span> <span class="n">t_end</span>
+
+        <span class="c1"># update the duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_sleep_dt</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.update_sleep_dt"><a class="viewcode-back" href="../bio.html#bio.Bio.update_sleep_dt">[docs]</a>    <span class="k">def</span> <span class="nf">update_sleep_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the duration of sleep.</span>
+<span class="sd">         </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sleep_dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sleep_dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.update_sleep_start_univ"><a class="viewcode-back" href="../bio.html#bio.Bio.update_sleep_start_univ">[docs]</a>    <span class="k">def</span> <span class="nf">update_sleep_start_univ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the start time for sleep in terms of universal time.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int time_of_day: the current time of day [minutes] </span>
+<span class="sd">        :param int t_univ:  the universal time [minutes]</span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_univ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_time_univ</span><span class="p">(</span><span class="n">time_of_day</span><span class="o">=</span><span class="n">time_of_day</span><span class="p">,</span> <span class="n">t_univ</span><span class="o">=</span><span class="n">t_univ</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_start</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.update_sleep_end_univ"><a class="viewcode-back" href="../bio.html#bio.Bio.update_sleep_end_univ">[docs]</a>    <span class="k">def</span> <span class="nf">update_sleep_end_univ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the end time for sleep in terms of universal time.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int time_of_day: the current time of day [minutes] </span>
+<span class="sd">        :param int t_univ: the universal time [minutes]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_univ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_time_univ</span><span class="p">(</span><span class="n">time_of_day</span><span class="o">=</span><span class="n">time_of_day</span><span class="p">,</span> <span class="n">t_univ</span><span class="o">=</span><span class="n">t_univ</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_end</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Bio.update_time_univ"><a class="viewcode-back" href="../bio.html#bio.Bio.update_time_univ">[docs]</a>    <span class="k">def</span> <span class="nf">update_time_univ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function updates a time :math:`t`, which represents sleep start time or end time, to be in the \</span>
+<span class="sd">        next occurrence</span>
+<span class="sd">         </span>
+<span class="sd">        :param int time_of_day: the current time of day [minutes] </span>
+<span class="sd">        :param int t_univ:  the universal time [minutes]</span>
+<span class="sd">        :param int t: the time to be set[minutes, time of day]</span>
+<span class="sd">        </span>
+<span class="sd">        :return out: the time of the next event in universal time</span>
+<span class="sd">        :rtype: int        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># time until midnight</span>
+        <span class="n">dt_midnight</span> <span class="o">=</span> <span class="p">(</span><span class="n">DAY_2_MIN</span> <span class="o">-</span> <span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="c1"># the time until the next event</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">dt_midnight</span>
+
+        <span class="c1"># set the next time in universal time</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">out</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

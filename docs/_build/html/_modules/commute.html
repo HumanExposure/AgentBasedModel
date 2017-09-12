@@ -1,0 +1,648 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>commute &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for commute</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains about activities associated with commuting to and from work. This class is an \</span>
+<span class="sd">:class:`activity.Activity` that gives a :class:`person.Person` the ability to commute to/ from work/ \</span>
+<span class="sd">school and satisfy the need Travel :class:`travel.Travel`.</span>
+
+<span class="sd">This module contains the following classes:</span>
+
+<span class="sd">#. :class:`commute.Commute` (general commuting capability)</span>
+<span class="sd">#. :class:`commute.Commute_To_Work` (commute to work/ school)</span>
+<span class="sd">#. :class:`commute.Commute_From_Work` (commute from work/ school)</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">income</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class commute</span>
+<span class="c1"># ===============================================</span>
+
+
+<div class="viewcode-block" id="Commute"><a class="viewcode-back" href="../commute.html#commute.Commute">[docs]</a><span class="k">class</span> <span class="nc">Commute</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows for commuting. This class is to be derived from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Commute.end"><a class="viewcode-back" href="../commute.html#commute.Commute.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span> <span class="n">local</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the end of an Activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :param int local: the local location (work or home)</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># end the commute activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># do some logistics</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Commute</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>    
+</div>
+<div class="viewcode-block" id="Commute.end_commute"><a class="viewcode-back" href="../commute.html#commute.Commute.end_commute">[docs]</a>    <span class="k">def</span> <span class="nf">end_commute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function ends the commuting activity.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is to be overridden</span>
+
+<span class="sd">        :param person.Person p: the person of interest </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute.start"><a class="viewcode-back" href="../commute.html#commute.Commute.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles the start of the commute activity.</span>
+
+<span class="sd">        * If the current location of person is at home, the person is going to work, so set the \</span>
+<span class="sd">        location to :const:`location.OFF_SITE`</span>
+
+<span class="sd">        * If the current location of the person is off site, the person is going back home, so \</span>
+<span class="sd">        set the location to :const:`location.HOME`</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># store the end location of the commute</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">):</span>
+            <span class="n">end_loc</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span>
+            
+        <span class="k">elif</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">):</span>
+            <span class="n">end_loc</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span>
+            
+        <span class="c1"># start the commute, itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_loc</span><span class="p">)</span>
+                
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute.start_commute"><a class="viewcode-back" href="../commute.html#commute.Commute.start_commute">[docs]</a>    <span class="k">def</span> <span class="nf">start_commute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the variables pertaining to starting the commute activity.</span>
+
+
+<span class="sd">        #. set the status of the person to :const:`location.TRANSIT`</span>
+<span class="sd">        #. set the location of the asset to :const:`location.TRANSIT`</span>
+<span class="sd">        #. set the person&#39;s state start time of the commute         </span>
+<span class="sd">        #. set the person&#39;s state end time for the commute</span>
+<span class="sd">        #. update the asset</span>
+<span class="sd">        #. update the scheduler for the travel need for the end of the commute</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">local</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>
+
+        <span class="c1"># no updates in start functions()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">):</span>
+            <span class="c1">#p.socio.job.update_commute_to_work_dt()</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">):</span>
+            <span class="c1">#p.socio.job.update_commute_from_work_dt()</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>
+
+        <span class="c1"># update the state of the Person </span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">TRANSIT</span>
+        
+        <span class="c1"># set the location of the Person to be in transit</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">TRANSIT</span>
+
+        <span class="c1"># set the start time of the current state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># calculate the end time of commuting</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="c1"># update the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># update scheduler</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class Commute_From_Work</span>
+<span class="c1"># ===============================================</span>
+</div></div>
+<div class="viewcode-block" id="Commute_From_Work"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work">[docs]</a><span class="k">class</span> <span class="nc">Commute_From_Work</span><span class="p">(</span><span class="n">Commute</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows for the activity: commuting from work.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">Commute</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Commute_From_Work.advertise"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activities advertisement \</span>
+<span class="sd">        advertise the score to commute.</span>
+
+<span class="sd">        #. calculate advertisement only if the person is located at work (off-site)</span>
+<span class="sd">        #. calculate the score</span>
+<span class="sd">        </span>
+<span class="sd">            .. math::     </span>
+<span class="sd">                S = \\begin{cases}</span>
+<span class="sd">                0  &amp; n_{travel}(t) &gt; \\lambda \\\\</span>
+<span class="sd">                W( n_{travel}(t) ) - W( n_{travel}(t + \\Delta{t} )) &amp; n_{travel}(t) \\le \\lambda</span>
+<span class="sd">                \\end{cases}</span>
+<span class="sd">            </span>
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: the advertised score</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is the lowest score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># seek a non zero advertisement if the person&#39;s location is off site (at work)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">):</span>
+
+            <span class="c1"># the end of the commute to work sequence is:</span>
+            <span class="c1"># the current time + the time to commute to work + the time at work</span>
+            <span class="n">t_day</span>           <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># the duration of the commute</span>
+            <span class="n">dt_commute</span>      <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>
+
+            <span class="c1"># store the time in universal time</span>
+            <span class="n">t_univ_later</span>    <span class="o">=</span> <span class="n">t_day</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">+</span> <span class="n">dt_commute</span>
+
+            <span class="c1"># create a clock for the Need perception due the Activity when it&#39;s finished</span>
+            <span class="n">future_clock</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">(</span><span class="n">t_univ_later</span><span class="p">)</span>
+
+            <span class="c1"># the current need level and the resulting need level if an Activity is done</span>
+            <span class="n">n_now</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">magnitude</span>
+
+            <span class="c1"># if the Travel need association is under a threshold, do something</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">under_threshold</span><span class="p">(</span><span class="n">n_now</span><span class="p">)):</span>
+                <span class="c1"># calculate the magnitude of the need association assuming the commute activity has finished</span>
+                <span class="n">n_later</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">perceive</span><span class="p">(</span><span class="n">future_clock</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="p">)</span>
+
+                <span class="c1"># update the value of the advertisement</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">score</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_later</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Commute_From_Work.calc_end_time"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work.calc_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">calc_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        #. calculate the end time (minutes, universal time) of the commute</span>
+<span class="sd">        #. set the the end time in the person&#39;s state</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the start of the day (universal time)</span>
+        <span class="n">dt</span>              <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_From_Work.end"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the end of an Activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># end the commute activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># do some logistics</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Commute</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_From_Work.end_commute"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work.end_commute">[docs]</a>    <span class="k">def</span> <span class="nf">end_commute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the variables pertaining to ending the commute activity.</span>
+
+<span class="sd">        #. Sets the person&#39;s state to idle(:const:`state.IDLE`)</span>
+<span class="sd">        #. Updates the asset&#39;s state and number of users</span>
+<span class="sd">        #. Sets the travel magnitude</span>
+<span class="sd">        #. Sets the work magnitude to :const:`need.MAG_WORK`, to allow for work \</span>
+<span class="sd">        to be the next activity, even if commute ends begin the work-start time</span>
+<span class="sd">        #. Sets the person&#39;s state&#39;s end time</span>
+
+<span class="sd">        :param person.Person p: person of interest</span>
+<span class="sd">        :param int destination: a local location where the commute ends (home or workplace)</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># free the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1"># update the travel need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># update the person&#39;s status</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># change the location of the Person and the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>                <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>
+
+        <span class="c1"># change the status of the person</span>
+        <span class="c1"># if the commute ends at home</span>
+
+        <span class="c1"># update the commute from work duration</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">update_commute_from_work_dt</span><span class="p">()</span>
+
+        <span class="c1"># the time until the next commute event</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">duration_to_work_event</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="p">)</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>
+
+        <span class="c1"># update the schedule</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_From_Work.start"><a class="viewcode-back" href="../commute.html#commute.Commute_From_Work.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles the start of the commute activity.</span>
+
+<span class="sd">        If the current location of person is at home, the person is going to work, so set the \</span>
+<span class="sd">        location to :const:`location.OFF_SITE`</span>
+
+<span class="sd">        If the current location of the person is off site, the person is going back home, so \</span>
+<span class="sd">        set the location to :const:`location.HOME`</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># start the commute, itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class Commute_To_Work</span>
+<span class="c1"># ===============================================</span>
+</div></div>
+<div class="viewcode-block" id="Commute_To_Work"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work">[docs]</a><span class="k">class</span> <span class="nc">Commute_To_Work</span><span class="p">(</span><span class="n">Commute</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     This class allows for the activity: commute to work</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">Commute</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Commute_To_Work.advertise"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activities advertisement \</span>
+<span class="sd">        advertise the score to commute.</span>
+
+<span class="sd">        #. calculate advertisement only if the person is located at work (off-site)</span>
+<span class="sd">        #. calculate the score</span>
+<span class="sd">        </span>
+<span class="sd">            .. math::     </span>
+<span class="sd">                S = \\begin{cases}</span>
+<span class="sd">                0  &amp; n_{travel}(t) &gt; \\lambda \\\\</span>
+<span class="sd">                W( n_{travel}(t) ) - W( n_{travel}(t + \\Delta{t} )) &amp; n_{travel}(t) \\le \\lambda</span>
+<span class="sd">                \\end{cases}</span>
+<span class="sd">                </span>
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return score: the advertisement score</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># this is the lowest score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">):</span>
+
+            <span class="c1"># the end of the commute to work sequence is:</span>
+            <span class="c1"># the time that the travel need should increase to 1 if ignored</span>
+            <span class="c1"># the current time + the time to commute to work + the time at work</span>
+            <span class="n">t_univ_later</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># create a clock for the Need perception due the Activity when it&#39;s finished</span>
+            <span class="n">future_clock</span>    <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">(</span><span class="n">t_univ_later</span><span class="p">)</span>
+
+            <span class="c1"># the current need level and the resulting need level if an Activity is done</span>
+            <span class="n">n_now</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">magnitude</span>
+
+            <span class="c1"># if the Travel need association is under a threshold, do something</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">under_threshold</span><span class="p">(</span><span class="n">n_now</span><span class="p">)):</span>
+                <span class="c1"># calculate the magnitude of the need association assuming the commute activity has finished</span>
+                <span class="n">n_later</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">perceive</span><span class="p">(</span><span class="n">future_clock</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="p">)</span>
+
+                <span class="c1"># update the value of the advertisement</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">score</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_later</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Commute_To_Work.calc_end_time"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.calc_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">calc_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the commute duration, store the end time.</span>
+<span class="sd">        </span>
+<span class="sd">        #. calculate the end time [universal time] of the commute.</span>
+<span class="sd">        #. store the end time in the person.state </span>
+
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dt</span>              <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_To_Work.end_commute"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.end_commute">[docs]</a>    <span class="k">def</span> <span class="nf">end_commute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the logistics concerning ending the commute.</span>
+<span class="sd">        </span>
+<span class="sd">        #. the asset is freed up from use</span>
+<span class="sd">        #. the magnitude of the travel need is set :math:`n_{travel}=1`</span>
+<span class="sd">        #. the person&#39;s state is set to idle (:const:`state.IDLE`)</span>
+<span class="sd">        #. the person&#39;s location is set to the location of the job</span>
+<span class="sd">        #. the asset&#39;s location is set to the location of the job</span>
+<span class="sd">        #. the person&#39;s income need is set to :math:`n_{income}=\\eta_{work}`</span>
+<span class="sd">        #. update the commute to work duration</span>
+<span class="sd">        #. calculate the time until the next leave work event</span>
+<span class="sd">        #. update the schedule for the travel need</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person of interest </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># free the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1"># update the travel need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># update the person&#39;s status</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># change the location of the Person and the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>                <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>
+
+        <span class="c1"># update income</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="n">need</span><span class="o">.</span><span class="n">MAG_WORK</span>
+
+        <span class="c1"># update the commute to work duration</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">update_commute_to_work_dt</span><span class="p">()</span>
+
+        <span class="c1"># update travel</span>
+        <span class="c1"># time until the next leave work event</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># update the schedule</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_To_Work.end"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the logistics of ending the commute to work activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># end the commute activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># do some logistics</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Commute</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_To_Work.start"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the start of the commute to work activity. If the current location of person is \</span>
+<span class="sd">        at home, the person is going to work, so set the location to workplace location (:const:`location.OFF_SITE`)</span>
+
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># start the commute, itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_commute</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Commute_To_Work.start_commute"><a class="viewcode-back" href="../commute.html#commute.Commute_To_Work.start_commute">[docs]</a>    <span class="k">def</span> <span class="nf">start_commute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the variables pertaining to starting the commute to work activity.</span>
+<span class="sd">        </span>
+<span class="sd">        #. set the person&#39;s status to :const:`state.TRANSIT`</span>
+<span class="sd">        #. set the asset&#39;s location to :const:`location.TRANSIT`</span>
+<span class="sd">        #. set the person&#39;s state start time to the current time</span>
+<span class="sd">        #. calculate the end time of commute to work</span>
+<span class="sd">        #. update the asset&#39;s update</span>
+<span class="sd">        #. update the scheduler for the travel need to take into account the end of the commute</span>
+<span class="sd">        #. update the scheduler for the income need to take into account the end of the commute</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the commute to work duration is used by other activities</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>
+
+        <span class="c1"># update the state of the Person</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">TRANSIT</span>
+
+        <span class="c1"># set the location of the Person to be in transit</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">TRANSIT</span>
+
+        <span class="c1"># set the start time of the current state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># calculate the end time of commuting</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="c1"># update the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># update scheduler for travel AND income</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INCOME</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

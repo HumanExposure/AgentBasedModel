@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>singleton module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="prev" title="scenario module" href="scenario.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-singleton">
+<span id="singleton-module"></span><h1>singleton module<a class="headerlink" href="#module-singleton" title="Permalink to this headline">¶</a></h1>
+<p>This file contains information for creating the default agent that represents a person that lives alone in the home. Singleton will be the name of this type of agent.</p>
+<p>This module contains <a class="reference internal" href="#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal"><span class="pre">singleton.Singleton</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="singleton.Singleton">
+<em class="property">class </em><code class="descclassname">singleton.</code><code class="descname">Singleton</code><span class="sig-paren">(</span><em>house</em>, <em>clock</em>, <em>schedule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/singleton.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#singleton.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a></p>
+<p>Singleton default is a person that has the following characteristics</p>
+<ol class="arabic simple">
+<li>female</li>
+<li>30 years old</li>
+<li>goes to bed at 22:00 and sleeps for 8 hours</li>
+<li>lives alone and has no children</li>
+<li>works the Standard Job</li>
+<li>eats breakfast at 7:30 for 15 minutes, lunch at 12:00 for 30 minutes,     and dinner at 19:00 for 45 minutes</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>house</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) &#8211; the place of residence</li>
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the clock running in the simulation</li>
+<li><strong>schedule</strong> (<a class="reference internal" href="scheduler.html#scheduler.Scheduler" title="scheduler.Scheduler"><em>scheduler.Scheduler</em></a>) &#8211; the schedule for the agent</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="singleton.Singleton.print_params">
+<code class="descname">print_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/singleton.html#Singleton.print_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#singleton.Singleton.print_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prints the activity-parameter means in chronological order of start time. This         results in the ability to print the mean daily routine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a representation of the parameters of the agent in increasing values of         start time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="singleton.Singleton.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>param</em>, <em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/singleton.html#Singleton.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#singleton.Singleton.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Singleton&#8217;s parameters.</p>
+<p>The function does the following</p>
+<ol class="arabic simple">
+<li>Sets the biology</li>
+<li>Sets the job information</li>
+<li>Sets the alarm</li>
+<li>Sets the meal information</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>param</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; parameters describing the household</li>
+<li><strong>idx</strong> (<em>int</em>) &#8211; the respective index number of the Person of interest in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="scenario.html" title="previous chapter">scenario module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/singleton.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/singleton.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

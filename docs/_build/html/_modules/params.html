@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>params &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for params</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The purpose of this module is to assign parameters necessary to run the Agent-Based \</span>
+<span class="sd">Model of Human Activity Patterns (ABMHAP) initialized with data from the Consolidated \</span>
+<span class="sd">Human Activity Database (CHAD). This module also have constants used in default runs.</span>
+
+<span class="sd">This module contains class :class:`params.Params`.</span>
+
+<span class="sd"> .. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ------------------------------</span>
+<span class="c1"># Import</span>
+<span class="c1"># -----------------------------</span>
+
+<span class="c1"># for an ordered dictionary</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">bio</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">social</span><span class="o">,</span> <span class="nn">temporal</span><span class="o">,</span> <span class="nn">transport</span>
+
+<span class="c1"># ----------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ---------------------------------------</span>
+
+<span class="c1">#</span>
+<span class="c1"># defaults for household parameters</span>
+<span class="c1">#</span>
+
+<span class="c1"># the step size in the simulation</span>
+<span class="n">DT</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">NUM_PEOPLE</span>  <span class="o">=</span> <span class="mi">1</span>
+<span class="n">NUM_DAYS</span>    <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">NUM_HOURS</span>   <span class="o">=</span> <span class="mi">0</span>
+<span class="n">NUM_MIN</span>     <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># default start time is Monday, Day 1 at 07:05</span>
+<span class="n">t_monday</span>    <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+<span class="n">T_START</span>     <span class="o">=</span> <span class="n">t_monday</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span> <span class="o">+</span> <span class="mi">5</span>
+
+
+<span class="c1"># will need to add meal information</span>
+<span class="c1"># make a default mean object in meal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Params"><a class="viewcode-back" href="../params.html#params.Params">[docs]</a><span class="k">class</span> <span class="nc">Params</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains the parameters that are needed to parametrize a household.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Some of the class attributes are **not** really used and need to be phased out in future versions of the \</span>
+<span class="sd">        model. Some of these attribtues are:</span>
+<span class="sd">        </span>
+<span class="sd">        * :attr:`dt`</span>
+<span class="sd">        * :attr:`do_alarm`</span>
+<span class="sd">        * :attr:`dt_alarm`</span>
+<span class="sd">        </span>
+<span class="sd">    :param int dt: the step size [in minutes] in the simulation</span>
+<span class="sd">    :param int num_people: the number of people in the household</span>
+<span class="sd">    :param int num_days: the number of days in the simulation</span>
+<span class="sd">    :param int num_hours: the number of additional hours in the simulation</span>
+<span class="sd">    :param int num_min: the number of additional minutes in the simulation</span>
+<span class="sd">    :param int t_start: the start time [in minutes] in the simulation</span>
+<span class="sd">    </span>
+<span class="sd">    :param list gender: the gender of each person in the household    </span>
+<span class="sd">    :param list sleep_start_mean: the mean sleep start time [in minutes, time of day] for each person in \</span>
+<span class="sd">    the household</span>
+<span class="sd">    :param list sleep_start_std: the standard deviation of sleep start time [in minutes] for each person in the \</span>
+<span class="sd">    household            </span>
+<span class="sd">    :param list sleep_end_mean: the mean sleep end time [in minutes, time of day] for each person in the household</span>
+<span class="sd">    :param list sleep_end_std: the standard deviation of the sleep end time [in minutes] for each person in \</span>
+<span class="sd">    the household</span>
+<span class="sd">            </span>
+<span class="sd">    </span>
+<span class="sd">    :param list job_id: the occupation identifier for each person in the household</span>
+<span class="sd">    :param list do_alarm: a flag indicating whether or not a person uses an alarm for each person in the household</span>
+<span class="sd">    :param list dt_alarm: the duration of time [in minutes] before an alarm goes off before its respective event</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray: bf_start_mean: the mean breakfast start time for each person in the household \</span>
+<span class="sd">    [minutes, time of day]</span>
+<span class="sd">    :param numpy.ndarray bf_start_std: the standard deviation for breakfast start time for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray bf_start_trunc: the number of standard deviations used in the breakfast start time \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray bf_dt_mean: the mean breakfast duration for each person in the household [minutes]</span>
+<span class="sd">    :param numpy.ndarray bf_dt_std: the standard deviation for breakfast duration for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray bf_dt_trunc: the number of standard deviations used in the breakfast duration \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">        </span>
+<span class="sd">    :param numpy.ndarray lunch_dt_mean: the mean lunch duration for each person in the household [minutes]</span>
+<span class="sd">    :param numpy.ndarray lunch_dt_std: the standard deviation for lunch duration for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray lunch_dt_trunc: the number of standard deviations used in the lunch duration \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray lunch_start_mean: the mean lunch start time for each person in the household \</span>
+<span class="sd">    [minutes, time of day]</span>
+<span class="sd">    :param numpy.ndarray lunch_start_std: the standard deviation for lunch start time for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray lunch_start_trunc: the number of standard deviations used in the lunch start time \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">        </span>
+<span class="sd">    :param numpy.ndarray dinner_start_mean: the mean dinner start time for each person in the household \</span>
+<span class="sd">    [minutes, time of day]</span>
+<span class="sd">    :param numpy.ndarray dinner_start_std: the standard deviation for dinner start time for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray dinner_start_trunc: the number of standard deviations used in the dinner start time \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray dinner_dt_mean: the mean dinner duration for each person in the household [minutes]</span>
+<span class="sd">    :param numpy.ndarray dinner_dt_std: the standard deviation for dinner duration for each person in the \</span>
+<span class="sd">    household [minutes] </span>
+<span class="sd">    :param numpy.ndarray dinner_dt_trunc: the number of standard deviations used in the dinner duration \</span>
+<span class="sd">    distribution for each person</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray work_start_mean: the mean work start time for each person in the household \</span>
+<span class="sd">    [minutes, time of day] </span>
+<span class="sd">    :param numpy.ndarray work_start_std: the standard deviation of work start time for each person in the \</span>
+<span class="sd">    household [minutes]</span>
+<span class="sd">    :param numpy.ndarray work_end_mean: the work end time for each person in the household [minutes, time of day]</span>
+<span class="sd">    :param numpy.ndarray work_end_std: the work standard deviation for each person in the household \</span>
+<span class="sd">    [minutes, time of day]</span>
+<span class="sd">    </span>
+<span class="sd">    :param numpy.ndarray commute_to_work_dt_mean: the mean duration for commuting to work [minutes] for each \</span>
+<span class="sd">    person in the household</span>
+<span class="sd">    :param numpy.ndarray commute_to_work_dt_std: the standard deviation for commuting to work [minutes] for each \</span>
+<span class="sd">    person in the household</span>
+<span class="sd">    :param numpy.ndarray commute_from_work_dt_mean: the mean duration for commuting from work [minutes] for each \</span>
+<span class="sd">    person in the household</span>
+<span class="sd">    :param numpy.ndarray commute_from_work_dt_std: the standard deviation for commuting from work [minutes] for \</span>
+<span class="sd">    each person in the household</span>
+<span class="sd">    </span>
+<span class="sd">    :var int dt: the step size [in minutes] in the simulation</span>
+<span class="sd">    :var int num_people: the number of people in the household</span>
+<span class="sd">    :var int num_days: the number of days in the simulation</span>
+<span class="sd">    :var int num_hours: the number of additional hours in the simulation</span>
+<span class="sd">    :var int num_min: the number of additional minutes in the simulation</span>
+<span class="sd">    :var int t_start: the start time [in minutes] in the simulation</span>
+<span class="sd">    </span>
+<span class="sd">    :var list gender: the gender of each person in the household    </span>
+<span class="sd">    :var list sleep_start_mean: the mean sleep start time [in minutes, time of day] for each person in \</span>
+<span class="sd">    the household</span>
+<span class="sd">    :var list sleep_start_std: the standard deviation of sleep start time [in minutes] for each person in the \</span>
+<span class="sd">    household            </span>
+<span class="sd">    :var list sleep_end_mean: the mean sleep end time [in minutes, time of day] for each person in the household</span>
+<span class="sd">    :var list sleep_end_std: the standard deviation of the sleep end time [in minutes] for each person in \</span>
+<span class="sd">    the household            </span>
+<span class="sd">    </span>
+<span class="sd">    :var list job_id: the occupation identifier for each person in the household</span>
+<span class="sd">    :var list do_alarm: a flag indicating whether or not a person uses an alarm for each person in the household</span>
+<span class="sd">    :var list dt_alarm: the duration of time [in minutes] before an alarm goes off before its respective event</span>
+<span class="sd">    </span>
+<span class="sd">    :var list breakfasts: the breakfast meal objects for each person in the household</span>
+<span class="sd">    :var list lunches: the lunch meal objects for each person in the household</span>
+<span class="sd">    :var list dinners: the dinner meal objects for each person in the household</span>
+<span class="sd">    </span>
+<span class="sd">    :var numpy.ndarray work_start_mean: the mean work start time for each person in the household \</span>
+<span class="sd">    [minutes, time of day] </span>
+<span class="sd">    :var numpy.ndarray work_start_std: the standard deviation of work start time for each person in the \</span>
+<span class="sd">    household [minutes]</span>
+<span class="sd">    :var numpy.ndarray work_end_mean: the work end time for each person in the household [minutes, time of day]</span>
+<span class="sd">    :var numpy.ndarray work_end_std: the work standard deviation for each person in the household \</span>
+<span class="sd">    [minutes, time of day]</span>
+<span class="sd">    </span>
+<span class="sd">    :var numpy.ndarray commute_to_work_dt_mean: the mean duration for commuting to work [minutes] for each person \</span>
+<span class="sd">    in the household</span>
+<span class="sd">    :var numpy.ndarray commute_to_work_dt_std: the standard deviation for commuting to work [minutes] for \</span>
+<span class="sd">    each person in the household</span>
+<span class="sd">    :var numpy.ndarray commute_from_work_dt_mean: the mean duration for commuting from work [minutes] for \</span>
+<span class="sd">    each person in the household</span>
+<span class="sd">    :var numpy.ndarray commute_from_work_dt_std: the standard deviation for commuting from work [minutes] for each \</span>
+<span class="sd">    person in the household</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">DT</span><span class="p">,</span> <span class="n">num_people</span><span class="o">=</span><span class="n">NUM_PEOPLE</span><span class="p">,</span> <span class="n">num_days</span><span class="o">=</span><span class="n">NUM_DAYS</span><span class="p">,</span> <span class="n">num_hours</span><span class="o">=</span><span class="n">NUM_HOURS</span><span class="p">,</span> <span class="n">num_min</span><span class="o">=</span><span class="n">NUM_MIN</span><span class="p">,</span>
+                 <span class="n">t_start</span><span class="o">=</span><span class="n">T_START</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">sleep_start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sleep_start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>  <span class="n">sleep_end_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sleep_end_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">job_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">do_alarm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">dt_alarm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">bf_start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">bf_start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">bf_start_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">bf_dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">bf_dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">bf_dt_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">lunch_start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lunch_start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lunch_start_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">lunch_dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lunch_dt_std</span><span class="o">=</span><span class="bp">None</span> <span class="p">,</span> <span class="n">lunch_dt_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">dinner_start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dinner_start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dinner_start_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">dinner_dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dinner_dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dinner_dt_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">work_start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">work_start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">work_end_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">work_end_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">commute_to_work_dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">commute_to_work_dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">commute_from_work_dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">commute_from_work_dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="c1"># parametrize the sleep start, end, and duration</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># timing</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>         <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span>   <span class="o">=</span> <span class="n">num_days</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hours</span>  <span class="o">=</span> <span class="n">num_hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_min</span>    <span class="o">=</span> <span class="n">num_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_num_steps</span><span class="p">()</span>
+
+        <span class="c1"># population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span>         <span class="o">=</span> <span class="n">num_people</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gender</span>             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">gender</span><span class="p">,</span> <span class="p">(</span><span class="n">bio</span><span class="o">.</span><span class="n">MALE</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+
+        <span class="c1"># sleep info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">sleep_start_mean</span><span class="p">,</span> <span class="p">(</span><span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_START_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_std</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">sleep_start_std</span><span class="p">,</span> <span class="p">(</span><span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_START_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">sleep_end_mean</span><span class="p">,</span> <span class="p">(</span><span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_END_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_std</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">sleep_end_std</span><span class="p">,</span> <span class="p">(</span><span class="n">bio</span><span class="o">.</span><span class="n">SLEEP_END_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="c1"># work info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_start_mean</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">work_start_mean</span><span class="p">,</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">START_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_start_std</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">work_start_std</span><span class="p">,</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">START_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_end_mean</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">work_end_mean</span><span class="p">,</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">END_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_end_std</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">work_end_std</span><span class="p">,</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">END_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="c1"># commute to and from work info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">commute_to_work_dt_mean</span><span class="p">,</span> \
+                                                             <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK_DT_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">commute_to_work_dt_std</span><span class="p">,</span> \
+                                                             <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK_DT_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">commute_from_work_dt_mean</span><span class="p">,</span> \
+                                                      <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK_DT_MEAN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span><span class="n">commute_from_work_dt_std</span><span class="p">,</span> \
+                                                     <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK_DT_STD</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+        <span class="c1"># meals info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakfasts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_meal</span><span class="p">(</span><span class="n">m_id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">bf_start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">bf_start_std</span><span class="p">,</span> \
+                                         <span class="n">start_trunc</span><span class="o">=</span><span class="n">bf_start_trunc</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">bf_dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">bf_dt_std</span><span class="p">,</span> \
+                                         <span class="n">dt_trunc</span><span class="o">=</span><span class="n">bf_dt_trunc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lunches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_meal</span><span class="p">(</span><span class="n">m_id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">lunch_start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">lunch_start_std</span><span class="p">,</span> \
+                                          <span class="n">start_trunc</span><span class="o">=</span><span class="n">lunch_start_trunc</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">lunch_dt_mean</span><span class="p">,</span> \
+                                          <span class="n">dt_std</span><span class="o">=</span><span class="n">lunch_dt_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="n">lunch_dt_trunc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dinners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_meal</span><span class="p">(</span><span class="n">m_id</span><span class="o">=</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">dinner_start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">dinner_start_std</span><span class="p">,</span> \
+                                          <span class="n">start_trunc</span><span class="o">=</span><span class="n">dinner_start_trunc</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">dinner_dt_mean</span><span class="p">,</span> \
+                                          <span class="n">dt_std</span><span class="o">=</span><span class="n">dinner_dt_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="n">dinner_dt_trunc</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># other info</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_id</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">job_id</span><span class="p">,</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">STANDARD_JOB</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_alarm</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">do_alarm</span><span class="p">,</span> <span class="p">(</span><span class="bp">False</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_alarm</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_help</span><span class="p">(</span> <span class="n">dt_alarm</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="p">)</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Params.init_help"><a class="viewcode-back" href="../params.html#params.Params.init_help">[docs]</a>    <span class="k">def</span> <span class="nf">init_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">default_val</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function assigns a default value to an attribute in case it was not assigned already. This is, \</span>
+<span class="sd">        function is particularly useful if the value to be assigned is an array depending on :attr:`num_people`</span>
+
+<span class="sd">        More specifically,</span>
+<span class="sd">        </span>
+<span class="sd">        * If val is not None, return val</span>
+<span class="sd">        * If val is None, return the default value (default_val)</span>
+<span class="sd">        </span>
+<span class="sd">        :param val: the value to be assigned</span>
+<span class="sd">        :param default_val: the default value to assign in case val is None</span>
+
+<span class="sd">        :return: the non-None value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if val is none, assign the default value</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">default_val</span>
+
+        <span class="k">return</span> <span class="n">val</span>
+</div>
+<div class="viewcode-block" id="Params.init_meal"><a class="viewcode-back" href="../params.html#params.Params.init_meal">[docs]</a>    <span class="k">def</span> <span class="nf">init_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> \
+                      <span class="n">dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the data for each person in the household for the respective meal given by &quot;m_id&quot;</span>
+
+<span class="sd">        * if specific parameters have been assigned, create meals with the respective parameters</span>
+<span class="sd">        * if specific parameters have not been assigned, create meals with the default meal parameters for \</span>
+<span class="sd">        each meal</span>
+<span class="sd">        </span>
+<span class="sd">        :param int m_id: the identifier of meal type</span>
+<span class="sd">        :param numpy.ndarray start_mean: the mean start time for the meal for each person in the household</span>
+<span class="sd">        :param numpy.ndarray start_std: the standard deviation of start time for the meal for each person in \</span>
+<span class="sd">        the household</span>
+<span class="sd">        :param numpy.ndarray start_trunc: the amount of standard deviations allowed before truncating the \</span>
+<span class="sd">        start time distribution for each person in the household</span>
+
+<span class="sd">        :param numpy.ndarray dt_mean: the mean duration for the meal for each person in the household</span>
+<span class="sd">        :param numpy.ndarray dt_std: the standard deviation for the meal for each person in the household</span>
+<span class="sd">        :param numpy.ndarray dt_trunc: the amount of standard deviations allowed before truncating the \</span>
+<span class="sd">        duration distribution for each person in the household</span>
+
+<span class="sd">        :return: the meals for each person in the household</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is a dictionary of the default parameters for each meal</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="p">{</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_TRUNC</span><span class="p">,</span> \
+                                    <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_TRUNC</span><span class="p">),</span>
+
+                   <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_TRUNC</span><span class="p">,</span> \
+                                <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_TRUNC</span><span class="p">),</span>
+
+                   <span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_TRUNC</span><span class="p">,</span> \
+                                 <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_STD</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_TRUNC</span><span class="p">),</span>
+                   <span class="p">}</span>
+
+        <span class="c1"># if data was not specifically assigned to a person, assign the default values for the meal</span>
+        <span class="c1"># for each person in the household</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">start_mean</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">start_std</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>  <span class="ow">and</span> <span class="p">(</span><span class="n">start_trunc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt_mean</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="n">dt_std</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt_trunc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+
+            <span class="c1"># start time (s) and duration (d) parameters</span>
+            <span class="n">s_mean</span><span class="p">,</span> <span class="n">s_std</span><span class="p">,</span> <span class="n">s_trunc</span><span class="p">,</span> <span class="n">d_mean</span><span class="p">,</span> <span class="n">d_std</span><span class="p">,</span> <span class="n">d_trunc</span> <span class="o">=</span> <span class="n">default</span><span class="p">[</span><span class="n">m_id</span><span class="p">]</span>
+
+            <span class="n">the_meal</span>    <span class="o">=</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">m_id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">s_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">s_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">s_trunc</span><span class="p">,</span> \
+                                    <span class="n">dt_mean</span><span class="o">=</span><span class="n">d_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">d_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="n">d_trunc</span><span class="p">)</span>
+
+            <span class="n">meals</span>       <span class="o">=</span> <span class="p">(</span><span class="n">the_meal</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span>
+
+        <span class="c1"># enter the assigned parameters for the meal for each person in the household</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="p">)</span>
+
+            <span class="n">meals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">m_id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">s_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">s_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="o">=</span><span class="n">s_trunc</span><span class="p">,</span> \
+                                    <span class="n">dt_mean</span><span class="o">=</span><span class="n">d_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">d_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="o">=</span><span class="n">d_trunc</span><span class="p">)</span> \
+                      <span class="k">for</span> <span class="p">(</span><span class="n">s_mean</span><span class="p">,</span> <span class="n">s_std</span><span class="p">,</span> <span class="n">s_trunc</span><span class="p">,</span> <span class="n">d_mean</span><span class="p">,</span> <span class="n">d_std</span><span class="p">,</span> <span class="n">d_trunc</span><span class="p">)</span> <span class="ow">in</span> <span class="n">z</span> <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">meals</span>
+</div>
+<div class="viewcode-block" id="Params.init_meal_old"><a class="viewcode-back" href="../params.html#params.Params.init_meal_old">[docs]</a>    <span class="k">def</span> <span class="nf">init_meal_old</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the data for each person in the household for the respective meal given by &quot;id&quot;</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            This function may be **not** used because it is antiquated.</span>
+<span class="sd">            </span>
+<span class="sd">        :param int id: the id of meal type</span>
+<span class="sd">        :param numpy.ndarray start_mean: the mean start time for the meal for each person in the household</span>
+<span class="sd">        :param numpy.ndarray dt_mean: the mean duration for the meal for each person in the household</span>
+<span class="sd">        :param numpy.ndarray dt_std: the mean standard deviation for the meal for each person in the household</span>
+
+<span class="sd">        :return: the meals for each person in the household</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the default parameters for each meal</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="p">{</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_START_STD</span><span class="p">,</span> \
+                                    <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST_DT_STD</span><span class="p">),</span>
+                   <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_START_STD</span><span class="p">,</span> \
+                                <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH_DT_STD</span><span class="p">),</span>
+                   <span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">:</span> <span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_START_STD</span><span class="p">,</span> \
+                                 <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_MEAN</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER_DT_STD</span><span class="p">),</span>
+                   <span class="p">}</span>
+
+        <span class="c1"># default parameters for the meal</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">start_mean</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt_mean</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt_std</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+
+            <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span> <span class="o">=</span> <span class="n">default</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="n">the_meal</span>    <span class="o">=</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">start_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">dt_std</span><span class="p">)</span>
+            <span class="n">meals</span>       <span class="o">=</span> <span class="p">(</span><span class="n">the_meal</span><span class="p">,)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span>
+
+        <span class="c1"># enter the parameters for the meal</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">meals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">s_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">s_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">d_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">d_std</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="p">(</span><span class="n">s_mean</span><span class="p">,</span> <span class="n">s_std</span><span class="p">,</span> <span class="n">d_mean</span><span class="p">,</span> <span class="n">d_std</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">)</span> <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">meals</span>
+</div>
+<div class="viewcode-block" id="Params.set_num_steps"><a class="viewcode-back" href="../params.html#params.Params.set_num_steps">[docs]</a>    <span class="k">def</span> <span class="nf">set_num_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates and sets the number of time steps the ABM will run.        </span>
+
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># convert the number of days into minutes</span>
+        <span class="n">t_days</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># convert the number of hours into minutes</span>
+        <span class="n">t_hours</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_hours</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># the total amount of time</span>
+        <span class="n">total_time</span> <span class="o">=</span> <span class="n">t_days</span> <span class="o">+</span> <span class="n">t_hours</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_min</span>
+
+        <span class="c1"># the total number of steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">total_time</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Params.tester"><a class="viewcode-back" href="../params.html#params.Params.tester">[docs]</a>    <span class="k">def</span> <span class="nf">tester</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. warning::</span>
+<span class="sd">            This function is just for testing. It checks to see whether the expected dinner time is before \</span>
+<span class="sd">            the expected end time for work.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_dt_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinners</span><span class="p">)</span>
+
+        <span class="n">is_problem</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">work_start</span><span class="p">,</span> <span class="n">work_dt</span><span class="p">,</span> <span class="n">dinner</span> <span class="ow">in</span> <span class="n">z</span><span class="p">:</span>
+
+            <span class="n">work_end</span> <span class="o">=</span> <span class="p">(</span> <span class="n">work_start</span> <span class="o">+</span> <span class="n">work_dt</span> <span class="p">)</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+            <span class="n">dinner_start</span> <span class="o">=</span> <span class="n">dinner</span><span class="o">.</span><span class="n">t_start</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+
+            <span class="k">if</span> <span class="p">(</span> <span class="n">dinner_start</span> <span class="o">&lt;</span> <span class="n">work_end</span><span class="p">):</span>
+                <span class="n">is_problem</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">is_problem</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;EXPECT A PROBLEM</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;dinner starts before work ends &#39;</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Params.toString"><a class="viewcode-back" href="../params.html#params.Params.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the :class:`params.Params` object as a string. For now, it prints \</span>
+<span class="sd">        the tuple (start time, duration, end time) in hours[0, 24] for the following activities:</span>
+
+<span class="sd">        #. eat breakfast</span>
+<span class="sd">        #. commute to work</span>
+<span class="sd">        #. work</span>
+<span class="sd">        #. eat lunch</span>
+<span class="sd">        #. commute from work</span>
+<span class="sd">        #. eat dinner</span>
+<span class="sd">        #. sleep</span>
+
+<span class="sd">        in order of start time. The commute activities only have duration information.</span>
+
+<span class="sd">        :return: the parameter information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 hour</span>
+        <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_end_mean</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">breakfasts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_start_mean</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">work_end_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lunches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinners</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span><span class="p">)</span>
+
+        <span class="c1"># the format string (activity name, start time, duration)</span>
+        <span class="n">default_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%20s</span><span class="se">\t</span><span class="si">%.2f</span><span class="se">\t</span><span class="si">%.2f</span><span class="se">\t</span><span class="si">%0.2f</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1">#  or each person in the household, loop through the parameters</span>
+        <span class="k">for</span> <span class="n">sleep_start_mean</span><span class="p">,</span> <span class="n">sleep_end_mean</span><span class="p">,</span> <span class="n">breakfast</span><span class="p">,</span> <span class="n">work_start_mean</span><span class="p">,</span> <span class="n">work_end_mean</span><span class="p">,</span> <span class="n">lunch</span><span class="p">,</span> \
+            <span class="n">dinner</span><span class="p">,</span> <span class="n">to_work_dt</span><span class="p">,</span> <span class="n">from_work_dt</span> <span class="ow">in</span> <span class="n">z</span><span class="p">:</span>
+
+            <span class="c1"># create a dictionary of terms. Make sure the times in an hours format [0, 24)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">sleep_start_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">sleep_end_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="s1">&#39;eat breakfast&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">breakfast</span><span class="o">.</span><span class="n">t_start</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">dt_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">work_start_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">work_end_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="s1">&#39;eat lunch&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">lunch</span><span class="o">.</span><span class="n">t_start</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">lunch</span><span class="o">.</span><span class="n">dt_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="s1">&#39;eat dinner&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">dinner</span><span class="o">.</span><span class="n">t_start</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">dinner</span><span class="o">.</span><span class="n">dt_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="s1">&#39;commute to work&#39;</span><span class="p">:</span> <span class="p">(</span> <span class="p">(</span><span class="n">work_start_mean</span> <span class="o">-</span><span class="n">to_work_dt</span> <span class="p">)</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">to_work_dt</span><span class="o">/</span><span class="n">HOUR_2_MIN</span> <span class="p">),</span>
+                  <span class="s1">&#39;commute from work&#39;</span><span class="p">:</span> <span class="p">(</span> <span class="n">work_end_mean</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">,</span>  <span class="n">from_work_dt</span><span class="o">/</span><span class="n">HOUR_2_MIN</span><span class="p">),</span>
+                  <span class="p">}</span>
+
+            <span class="c1"># sort the entries by increasing values of start time u = (activity name, (start time, duration) )</span>
+            <span class="n">od</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="c1"># write the (activity, start time, duration) tuple for most activities</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">od</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">default_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">%</span> <span class="mi">24</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

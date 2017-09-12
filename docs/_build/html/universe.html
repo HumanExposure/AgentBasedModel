@@ -1,0 +1,477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>universe module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="work module" href="work.html" />
+    <link rel="prev" title="travel module" href="travel.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-universe">
+<span id="universe-module"></span><h1>universe module<a class="headerlink" href="#module-universe" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code that is responsible for running the simulation. This file contains <a class="reference internal" href="#universe.Universe" title="universe.Universe"><code class="xref py py-class docutils literal"><span class="pre">universe.Universe</span></code></a>. The Universe contains all agents and objects. The Universe is responsible for running the simulation itself.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="universe.Universe">
+<em class="property">class </em><code class="descclassname">universe.</code><code class="descname">Universe</code><span class="sig-paren">(</span><em>num_steps</em>, <em>dt</em>, <em>t_start</em>, <em>num_people</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The Universe is the governing engine of the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_steps</strong> (<em>int</em>) &#8211; the number of time steps in the simulation</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the step size in the simulation [minutes]</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time for the simulation [minutes, universal time]</li>
+<li><strong>num_people</strong> (<em>int</em>) &#8211; the number of people in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; does the timekeeping in the simulation</li>
+<li><strong>&quot;home&quot;</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) &#8211; the home the Persons live in</li>
+<li><strong>people</strong> (<em>list</em>) &#8211; a list of all Person objects created in the Universe object</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time for the simulation [minutes, universal time]</li>
+<li><strong>t_end</strong> (<em>int</em>) &#8211; the last time for the simulation [minutes, universal time]</li>
+<li><strong>schedule</strong> (<a class="reference internal" href="scheduler.html#scheduler.Scheduler" title="scheduler.Scheduler"><em>scheduler.Scheduler</em></a>) &#8211; the schedule governing each agent&#8217;s needs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="universe.Universe.address_needs">
+<code class="descname">address_needs</code><span class="sig-paren">(</span><em>do_interruption=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.address_needs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.address_needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function checks the needs of the agents</p>
+<p>The function uses a recursion loop to choose activities.</p>
+<p>The Recursion:</p>
+<ol class="arabic simple">
+<li>Gather all of the advertisements (object-person pairings)</li>
+<li>Assigns 1 activity to the Person with the highest score.</li>
+<li>That Person starts the activity, thereby updating the state of available activities in the home.</li>
+<li>The recursion starts again, where the Home advertises to all remaining Person(s).</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">If no activity will be done this time step to a Person, a Person is set to             the temporary status <code class="xref py py-const docutils literal"><span class="pre">state.IDLE_TEMP</span></code>, so that the Home knows not to advertise to that Person.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>do_interruption</strong> (<em>bool</em>) &#8211; this flag indicates whether or not advertisements should be made             for activities that will interrupt the current activity (if True). If False, the advertisements             are made for non-interrupting activities.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>do_interruption=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obtains a list of all of the possible activities each person could potentially start in         this time step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>do_interruption</strong> (<em>bool</em>) &#8211; this flag indicates whether to make advertisements due to an         interrupting activity (if True) or not (if False).</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return ads:</th><td class="field-body"><p class="first">ads is a list of dictionaries for advertisements:</p>
+<p>Dictionary  (score, asset, activity, person) containing the various data for
+each advertisement: (score, asset, activity, person) coupling</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.check_expired_activities">
+<code class="descname">check_expired_activities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.check_expired_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.check_expired_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function checks for expired activities. If found, end the activities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.decay_needs">
+<code class="descname">decay_needs</code><span class="sig-paren">(</span><em>dt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.decay_needs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.decay_needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function decays the needs according to the default behavior. That is, assume the needs are not         addressed earlier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the number of minutes to decay the needs by. The default behavior is to use the scheduler&#8217;s         time. If a number is specified, then it should be the number of minutes until the end of the simulation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.initial_step">
+<code class="descname">initial_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.initial_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.initial_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is supposed to run the first time step of the run() loop</p>
+<ol class="arabic simple">
+<li>store the current time</li>
+<li>address the needs assuming interruption</li>
+<li>address the needs assuming NO interruption</li>
+<li>update the history</li>
+<li>update the clock</li>
+<li>decay the needs</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function is <strong>NOT</strong> called on in the current implementation yet</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.initialize_needs">
+<code class="descname">initialize_needs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.initialize_needs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.initialize_needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes the need state of each Person at the beginning of simulation based on         the current time.</p>
+<p>The needs are initialized in this order (the order matters)</p>
+<ol class="arabic simple">
+<li>Rest</li>
+<li>Hunger</li>
+<li>Income</li>
+<li>Travel</li>
+<li>Interruption</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.print_activity_info">
+<code class="descname">print_activity_info</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.print_activity_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.print_activity_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function stores activity info used for testing / developing/ debugging as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>t_univ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This code resets the simulation by initializing the agents, home, and clock to the beginning status         of the simulation.</p>
+<p>This code does the following:</p>
+<ol class="arabic simple">
+<li>reset the clock</li>
+<li>reset the home</li>
+<li>reset each person</li>
+<li>initialize each person</li>
+<li>initialize the home</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; the parameters</li>
+<li><strong>t_univ</strong> (<em>int</em>) &#8211; the time of the beginning of the simulation [seconds]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is responsible for running the simulation. Instead of running the simulation minute-by-minute,         in an effort to reduce run-time, the simulation skips time steps and addresses the agent at times that         actions should occur. These times are dictated by the scheduler.</p>
+<p>The function proceeds as following:</p>
+<p>While the current time is less than the final time</p>
+<ol class="arabic simple">
+<li>check for expired activities for all agents. If activities should have expired, tell the agent to end them</li>
+<li>start new activities by addressing the needs for all agents (assuming no interruption)</li>
+<li>decay the satiation for Interruption for all agents</li>
+<li>start new activities by addressing the needs for all agents (assuming interruptions only)</li>
+<li>update the history of the status of each agent</li>
+<li>find the next time to jump to in the simulation according to the scheduler</li>
+<li>update the clock to the new time</li>
+<li>decay the needs for all agents</li>
+<li>Repeat</li>
+</ol>
+<p>For the last time step</p>
+<ol class="arabic simple">
+<li>update the clock</li>
+<li>decay the needs for each agent</li>
+<li>update the history of the status of each agent</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">I must change N_MAX to N_MAX = DAY_2_MIN * 365</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.select_activity">
+<code class="descname">select_activity</code><span class="sig-paren">(</span><em>ads</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.select_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.select_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of activity advertisements, this function selects the Person
+with the largest activity score and outputs the score, asset, activity, and person.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ads</strong> (<em>list</em>) &#8211; a list of advertisements for this time step</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return chosen:</th><td class="field-body">the selected activity advertisement (score, asset, activity, person)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.set_alarm">
+<code class="descname">set_alarm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.set_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.set_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the alarm for those Person(s) who use an alarm</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is <strong>NOT</strong> used. There is currently no alarm capability.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.test_func">
+<code class="descname">test_func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.test_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.test_func" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is just for debugging.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the Universe object as a string.</p>
+<p>This function outputs the representation of:</p>
+<ol class="arabic simple">
+<li>the clock</li>
+<li>the home</li>
+<li>agent person residing in the home</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">a representation of the Universe object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.update_clock">
+<code class="descname">update_clock</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.update_clock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.update_clock" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function updates the clock by</p>
+<ol class="arabic simple">
+<li>setting the clock to the given time</li>
+<li>updating the step of the simulation</li>
+<li>storing the history of the time nodes used in the simulation</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>int</em>) &#8211; the time the clock should be set to</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.update_history">
+<code class="descname">update_history</code><span class="sig-paren">(</span><em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.update_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.update_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the histories for each Person by storing the following:</p>
+<ol class="arabic simple">
+<li>the current state&#8217;s status</li>
+<li>the current activity</li>
+<li>the current satiation value for each needs</li>
+<li>the current location</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>step</strong> (<em>int</em>) &#8211; the time step</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="universe.Universe.update_history_new">
+<code class="descname">update_history_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/universe.html#Universe.update_history_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#universe.Universe.update_history_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the histories of each person.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="travel.html" title="previous chapter">travel module</a></li>
+      <li>Next: <a href="work.html" title="next chapter">work module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/universe.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/universe.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

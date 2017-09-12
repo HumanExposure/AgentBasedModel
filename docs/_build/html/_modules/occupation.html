@@ -1,0 +1,1258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>occupation &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for occupation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains info needed for the occupation of a Person. In addition, this file also contains functions \</span>
+<span class="sd">useful for the module itself.</span>
+
+<span class="sd">This module contains class :class:`occupation.Occupation`.</span>
+
+<span class="sd">This module contains constants relevant to the occupational information:</span>
+
+<span class="sd">* job identifiers</span>
+<span class="sd">* job categories</span>
+<span class="sd">* default start time information</span>
+<span class="sd">* default end time information</span>
+<span class="sd">* default commuting to work information</span>
+<span class="sd">* default commuting from work information</span>
+<span class="sd">* default summer vacation (from school) information</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># constants</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># job IDs</span>
+<span class="n">NO_JOB</span>          <span class="o">=</span> <span class="mi">0</span>
+<span class="n">STANDARD_JOB</span>    <span class="o">=</span> <span class="mi">1</span>
+<span class="n">GRAVE_SHIFT</span>     <span class="o">=</span> <span class="mi">2</span>
+<span class="n">STUDENT</span>         <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># job categories</span>
+<span class="n">NO_TIME</span>     <span class="o">=</span> <span class="mi">0</span>
+<span class="n">FIXED_SHIFT</span> <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># the worker works on a fixed shift. Has to be there</span>
+                    <span class="c1"># at t_start and</span>
+                    <span class="c1"># leaves at t_end. If the employee shows up late, the employee</span>
+                    <span class="c1"># still leaves at the end of the shift</span>
+            
+<span class="n">FIXED_DURATION</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># always work for a fixed duration of time.</span>
+                    <span class="c1"># it doesn&#39;t matter as much if you are late</span>
+
+<span class="c1"># default mean occupation start time [minutes]</span>
+<span class="n">START_MEAN</span>          <span class="o">=</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">START_MEAN_SCHOOl</span>   <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">START_STD</span>           <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">END_MEAN</span>            <span class="o">=</span> <span class="mi">17</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">END_MEAN_SCHOOL</span>     <span class="o">=</span> <span class="mi">15</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">END_STD</span>             <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># default commuting time</span>
+<span class="n">COMMUTE_TO_WORK_DT_MEAN</span>     <span class="o">=</span> <span class="mi">30</span>
+<span class="n">COMMUTE_TO_WORK_DT_STD</span>      <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">COMMUTE_FROM_WORK_DT_MEAN</span>   <span class="o">=</span> <span class="mi">60</span>
+<span class="n">COMMUTE_FROM_WORK_DT_STD</span>    <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># the amount of standard deviations before truncation when sampling work start and end times</span>
+<span class="n">WORK_START_TRUNC</span>    <span class="o">=</span> <span class="mi">1</span>
+<span class="n">WORK_END_TRUNC</span>      <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># the amount of standard deviations before truncation when sampling commuting start and end times</span>
+<span class="n">COMMUTE_TO_WORK_DT_TRUNC</span>        <span class="o">=</span> <span class="mi">1</span>
+<span class="n">COMMUTE_FROM_WORK_DT_TRUNC</span>      <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># minimum amount of time to commute [minutes]</span>
+<span class="n">DT_COMMUTE_MIN</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># summer vacation start [weeks]</span>
+<span class="n">SUMMER_VACATION_START</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SUMMER</span>  <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SEASON_2_WEEK</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="n">SUMMER_VACTION_END</span>      <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FALL</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SEASON_2_WEEK</span>
+
+<span class="c1"># This dictionary takes the INTEGER representation of a the job identifier and</span>
+<span class="c1"># returns a STRING representation</span>
+<span class="n">INT_2_STR_ID</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">NO_JOB</span><span class="p">:</span> <span class="s1">&#39;No Job&#39;</span><span class="p">,</span>
+    <span class="n">STANDARD_JOB</span><span class="p">:</span> <span class="s1">&#39;Standard Job&#39;</span><span class="p">,</span>
+    <span class="n">GRAVE_SHIFT</span><span class="p">:</span> <span class="s1">&#39;Grave Shift&#39;</span><span class="p">,</span>
+    <span class="n">STUDENT</span><span class="p">:</span> <span class="s1">&#39;Student&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># This dictionary takes the STRING representation of a the job identifier and</span>
+<span class="c1"># returns an INTEGER representation</span>
+<span class="n">STR_2_INT_ID</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR_ID</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># This dictionary takes the INTEGER representation of a the Occupation category and</span>
+<span class="c1"># returns a STRING representation</span>
+<span class="n">INT_2_STR_CAT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">NO_TIME</span><span class="p">:</span> <span class="s1">&#39;No time&#39;</span><span class="p">,</span>
+    <span class="n">FIXED_SHIFT</span><span class="p">:</span> <span class="s1">&#39;Fixed Shift&#39;</span><span class="p">,</span>
+    <span class="n">FIXED_DURATION</span><span class="p">:</span> <span class="s1">&#39;Fixed Duration&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># This dictionary takes the STRING representation of a the Occupation category and</span>
+<span class="c1"># returns an INTEGER G representation</span>
+<span class="n">STR_2_INT_CAT</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR_CAT</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Occupation"><a class="viewcode-back" href="../occupation.html#occupation.Occupation">[docs]</a><span class="k">class</span> <span class="nc">Occupation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains information relevant to an occupation of a Person.</span>
+
+<span class="sd">    :var int category: the category of the job</span>
+<span class="sd">    :var int id: the identifier for the job</span>
+<span class="sd">    </span>
+<span class="sd">    :var int commute_to_work_dt_mean: the mean duration to commute to work [minutes]</span>
+<span class="sd">    :var int commute_to_work_dt_std: the standard deviation to commute to work [minutes]</span>
+<span class="sd">    :var int commute_to_work_dt: the duration to commute to work [minutes]</span>
+<span class="sd">    :var int commute_to_work_dt_trunc: the number of standard deviation in the commute to work \</span>
+<span class="sd">    duration distribution</span>
+<span class="sd">    </span>
+<span class="sd">    :var int commute_to_work_start: the start time for the commute to work activity [minutes]</span>
+<span class="sd">    :var int dt_commute: the duration of the commute [minutes]</span>
+<span class="sd">    :var int dt: the duration of the work activity [minutes]</span>
+<span class="sd">    </span>
+<span class="sd">    :var int commute_from_work_dt_mean: the mean duration to commute from work [minutes]</span>
+<span class="sd">    :var int commute_from_work_dt_std: the standard deviation to commute from work [minutes]</span>
+<span class="sd">    :var int commute_from_work_dt: the duration to commute from work [minutes]</span>
+<span class="sd">    :var int commute_from_work_dt_trunc: the number of standard deviations in the commute from work \</span>
+<span class="sd">    duration distribution</span>
+<span class="sd">    </span>
+<span class="sd">    :var int t_start_mean: the mean start time for the job [minutes, time of day]</span>
+<span class="sd">    :var int t_start_std: the standard deviation of the start time for the job</span>
+<span class="sd">    :var int t_start: the start time for the job [minutes, time of day]</span>
+<span class="sd">    :var int t_start_univ: the start time for the job [minutes, universal time]</span>
+<span class="sd">    :var int work_start_trunc: the number of standard deviations in the work start time distribution    </span>
+<span class="sd">    :var int day_start: the day the work activity start [minutes]</span>
+<span class="sd">    </span>
+<span class="sd">    :var int t_end_mean: the mean end time for the job [minutes, time of day]</span>
+<span class="sd">    :var int t_end_std: the standard deviation of the end time for the job</span>
+<span class="sd">    :var int t_end: the end time for the job [minutes, time of day]</span>
+<span class="sd">    :var int t_end_univ: the end time for the job [minutes, universal time]</span>
+<span class="sd">    :var int work_end_trunc: the number of standard deviations in the work end time distribution</span>
+<span class="sd">    </span>
+
+<span class="sd">    :var bool is_employed: this is a flag saying whether this is a job or not</span>
+<span class="sd">    :var bool is_same_day: This is a flag to see whether the start time and end time of a job are \</span>
+<span class="sd">                            on the same day. If so, True. Else, False. If a person has :const:`NO_JOB`, the flag \</span>
+<span class="sd">                            is set to True</span>
+<span class="sd">                            </span>
+<span class="sd">    :var location.Location &#39;location&#39;: the location of the Occupation        </span>
+<span class="sd">    :var float wage: the yearly wage for that job [U.S. dollars]</span>
+<span class="sd">    :var list work_days: a list of ints, giving the days the job starts</span>
+<span class="sd">    </span>
+<span class="sd">    :var f_commute_to_work_dt: the commute to work duration distribution</span>
+<span class="sd">    :var f_commute_from_work_dt: the commute from work duration distribution</span>
+<span class="sd">    :var f_work_start: the work start time distribution</span>
+<span class="sd">    :var f_work_end: the work end time distribution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Constructor </span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># the occupation ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">NO_JOB</span>
+
+        <span class="c1"># the category of Job type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">NO_TIME</span>
+
+        <span class="c1"># commute to work duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>    <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span>     <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span>         <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># commute from work duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>  <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span>       <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_trunc</span>   <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_TRUNC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_trunc</span> <span class="o">=</span> <span class="n">COMMUTE_FROM_WORK_DT_TRUNC</span>
+
+        <span class="c1"># the start time for work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span>    <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>        <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_univ</span>   <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># the end time for work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span>     <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span>      <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>          <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_univ</span>     <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># the number of stnadard deviation for the work start time and end time distributions, respectively</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_start_trunc</span>   <span class="o">=</span> <span class="n">WORK_START_TRUNC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_end_trunc</span>     <span class="o">=</span> <span class="n">WORK_END_TRUNC</span>
+
+        <span class="c1"># the duration of the commute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_commute</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1"># the start time for commuting to work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1"># the duration of working</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># the days of the week that I start working</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="bp">None</span>   <span class="c1"># the days you start your job</span>
+
+        <span class="c1"># the wage of the occupation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># a flag indicating whether or not an agent is unemployed or not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># a flag indicating whether or not, work starts and ends on the same day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_same_day</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># the location of the job</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># set the job to a preset one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_job_preset</span><span class="p">()</span>
+
+        <span class="c1"># these are the probability distributions for sampling start and end times for work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_start</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_end</span>     <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># the probability distribution for sampling commute to work and commute from work duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_to_work_dt</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_from_work_dt</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># the day the work activity starts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day_start</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Occupation.is_summer_vacation"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.is_summer_vacation">[docs]</a>    <span class="k">def</span> <span class="nf">is_summer_vacation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">week_of_year</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns True if the agent should not go to school due to summer vacation. False, otherwise.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int week_of_year: the week of the year </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">STUDENT</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">week_of_year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">SUMMER_VACATION_START</span><span class="p">,</span> <span class="n">SUMMER_VACTION_END</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="Occupation.print_category"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.print_category">[docs]</a>    <span class="k">def</span> <span class="nf">print_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the Occupation category as a string</span>
+
+<span class="sd">        :return: the string representation of a Occupation category</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the error message if category is an invalid choice</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an invalid choice for the type of job category!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span>
+
+        <span class="c1"># if the category is valid, express it as a string. If not, write the error message</span>
+        <span class="k">return</span> <span class="n">INT_2_STR_CAT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Occupation.print_id"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.print_id">[docs]</a>    <span class="k">def</span> <span class="nf">print_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function writes the Occupation id as a string</span>
+
+<span class="sd">        :return: a string representation of the job ID</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the error message if id is an invalid choice</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an invalid choice for the type of job id!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># if the id is valid, express it as a string. If not, write the error message</span>
+        <span class="k">return</span> <span class="n">INT_2_STR_ID</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_commute_distribution"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_commute_distribution">[docs]</a>    <span class="k">def</span> <span class="nf">set_commute_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the following: </span>
+<span class="sd">        </span>
+<span class="sd">        * commute to work duration distribution </span>
+<span class="sd">        * commute from work duration distribution.</span>
+<span class="sd">         </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create the commute to work distribution</span>
+        <span class="n">f_to_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution_dt</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_trunc</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span><span class="p">,</span> \
+                <span class="n">x_min</span><span class="o">=</span><span class="n">DT_COMMUTE_MIN</span><span class="p">)</span>
+
+        <span class="c1"># create the commute from work distribution</span>
+        <span class="n">f_from_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution_dt</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_trunc</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span><span class="p">,</span> \
+                <span class="n">x_min</span><span class="o">=</span><span class="n">DT_COMMUTE_MIN</span><span class="p">)</span>
+
+        <span class="c1"># set the distributions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_to_work_dt</span>   <span class="o">=</span> <span class="n">f_to_work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_from_work_dt</span> <span class="o">=</span> <span class="n">f_from_work</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_is_job"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_is_job">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function checks to see if the current job is actually a job (eg. that it is not \</span>
+<span class="sd">        :const:`NO_JOB`).</span>
+
+<span class="sd">        Sets self.is_job to True if the Occupation is :const:`NO_JOB`, returns False otherwise</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if an occupation id is named in this dictionary, set it to False</span>
+        <span class="c1"># otherwise, set everything else to True</span>
+        <span class="n">switcher</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">NO_JOB</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_job</span> <span class="o">=</span> <span class="n">switcher</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_is_same_day"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_is_same_day">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_same_day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets a flag indicating whether or not a job starts and ends \</span>
+<span class="sd">        on the same day. The function sets :mod:`is_same_day` to True if the Occupation start time and end time \</span>
+<span class="sd">        are within the same day. False, otherwise.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 day</span>
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the duration of the job</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># if the job ends before midnight</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">DAY_2_MIN</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_same_day</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_same_day</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_job_params"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_job_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_job_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_job</span><span class="p">,</span> <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span><span class="p">,</span> <span class="n">commute_to_work_dt_mean</span><span class="p">,</span>\
+                       <span class="n">commute_to_work_dt_std</span><span class="p">,</span> <span class="n">commute_from_work_dt_mean</span><span class="p">,</span> <span class="n">commute_from_work_dt_std</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the Occupation parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int id_job: the job identifier </span>
+<span class="sd">        :param int start_mean: the mean start time for the occupation</span>
+<span class="sd">        :param int start_std: the standard deviation of the start time for the occupation</span>
+<span class="sd">        :param int end_mean: the mean end time for the occupation</span>
+<span class="sd">        :param int end_std: the standard deviation for the end time</span>
+<span class="sd">        :param int commute_to_work_dt_mean: the mean commute to work duration</span>
+<span class="sd">        :param int commute_to_work_dt_std: the standard deviation of the commute to work duration</span>
+<span class="sd">        :param int commute_from_work_dt_mean: the mean commute from work duration</span>
+<span class="sd">        :param int commute_from_work_dt_std: the standard deviation to commute from work duration</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># how many minutes in one day</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the id number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span>     <span class="o">=</span> <span class="n">id_job</span>
+
+        <span class="c1"># this sets the job to one of the presets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_job_preset</span><span class="p">()</span>
+
+        <span class="c1"># if the occupation is a job</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">NO_JOB</span><span class="p">:</span>
+
+            <span class="c1"># set information about job start time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>   <span class="o">=</span> <span class="n">start_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span>    <span class="o">=</span> <span class="n">start_std</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>
+
+            <span class="c1"># set information about job end time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span>     <span class="o">=</span> <span class="n">end_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span>      <span class="o">=</span> <span class="n">end_std</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span>
+
+            <span class="c1"># set the work distribution functions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+            <span class="c1"># commute to work duration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>    <span class="o">=</span> <span class="n">commute_to_work_dt_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span>     <span class="o">=</span> <span class="n">commute_to_work_dt_std</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+
+            <span class="c1"># commute from work duration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>  <span class="o">=</span> <span class="n">commute_from_work_dt_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span>   <span class="o">=</span> <span class="n">commute_from_work_dt_std</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+            <span class="c1"># set the commuting distribution functions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+
+            <span class="c1"># for easy recall, set the commute to work start time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># job duration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_job_preset"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_job_preset">[docs]</a>    <span class="k">def</span> <span class="nf">set_job_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets Occupation to one of the following preset jobs:</span>
+<span class="sd">        </span>
+<span class="sd">        * :const:`NO_JOB`</span>
+<span class="sd">        * :const:`STANDARD_JOB`</span>
+<span class="sd">        * :const:`STUDENT`</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">NO_JOB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_no_job</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">STANDARD_JOB</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_standard_job</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">STUDENT</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_student</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the error message if the job-identifier is an invalid choice</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is in INVALID choice for id_job in set_job_preset()!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_no_job"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_no_job">[docs]</a>    <span class="k">def</span> <span class="nf">set_no_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the Occupation to having no job.</span>
+
+<span class="sd">        :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">NO_JOB</span>
+
+        <span class="c1"># set the job category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="n">NO_TIME</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+
+        <span class="c1"># the start time of the job [time of day, minutes]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+        <span class="c1"># for easy recall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># set job duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># set the flag indicating whether or not the job starts and end on the same day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_same_day</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># set work days to none</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">()</span>
+
+        <span class="c1"># set to no wage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># set employment flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c1"># set the location to home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_standard_job"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_standard_job">[docs]</a>    <span class="k">def</span> <span class="nf">set_standard_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the Occupation to the standard job.</span>
+
+<span class="sd">        * has fixed shift of 9:00 - 17:00</span>
+<span class="sd">        * Monday through Friday </span>
+<span class="sd">        * wage of $40,000 </span>
+<span class="sd">        * 30 minute commute to work</span>
+<span class="sd">        * 60 minute commute from work</span>
+
+<span class="sd">        :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>       <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span>         <span class="o">=</span> <span class="n">STANDARD_JOB</span>
+
+        <span class="c1"># set the occupation type to a fixed shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span>   <span class="o">=</span> <span class="n">FIXED_SHIFT</span>
+
+        <span class="c1"># the start time of the job [time of day, minutes]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>   <span class="o">=</span> <span class="n">START_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span>    <span class="o">=</span> <span class="n">START_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span> <span class="o">=</span> <span class="n">END_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span>  <span class="o">=</span> <span class="n">END_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_start</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_end</span>     <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+        <span class="c1"># the commute time [minutes]</span>
+        <span class="c1"># commute duration to and from work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>    <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span>     <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>  <span class="o">=</span> <span class="n">COMMUTE_FROM_WORK_DT_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span>   <span class="o">=</span> <span class="n">COMMUTE_FROM_WORK_DT_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+        <span class="c1"># for easy recall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the probability distribution for commute to work and commute from work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+
+        <span class="c1"># occupation duration 8:00 hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>             <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the flag indicating that the job starts and ends on the same day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+        <span class="c1"># set the work days</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">TUESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEDNESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">THURSDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FRIDAY</span><span class="p">)</span>
+
+        <span class="c1"># set the wage in U.S. dollars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">40000.0</span>
+
+        <span class="c1"># set the is_employed flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># set the job location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_student"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_student">[docs]</a>    <span class="k">def</span> <span class="nf">set_student</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the Occupation to the standard job.</span>
+
+<span class="sd">        * Fixed shift of 8:00 - 15:00</span>
+<span class="sd">        * Monday through Friday </span>
+<span class="sd">        * wage of $0</span>
+<span class="sd">        * 30 minute commute to school</span>
+<span class="sd">        * 60 minute commute from school</span>
+
+<span class="sd">        :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>       <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span>         <span class="o">=</span> <span class="n">STUDENT</span>
+
+        <span class="c1"># set the occupation type to a fixed shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span>   <span class="o">=</span> <span class="n">FIXED_SHIFT</span>
+
+        <span class="c1"># the start time of the job [time of day, minutes]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>   <span class="o">=</span> <span class="n">START_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span>    <span class="o">=</span> <span class="n">START_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span> <span class="o">=</span> <span class="n">END_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span>  <span class="o">=</span> <span class="n">END_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_start</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_end</span>     <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+        <span class="c1"># the commute time [minutes]</span>
+        <span class="c1"># commute duration to and from work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>    <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_std</span>     <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>  <span class="o">=</span> <span class="n">COMMUTE_FROM_WORK_DT_MEAN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_std</span>   <span class="o">=</span> <span class="n">COMMUTE_FROM_WORK_DT_STD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+        <span class="c1"># for easy recall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the probability distribution for commute to work and commute from work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+
+        <span class="c1"># occupation duration 8:00 hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>             <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the flag indicating that the job starts and ends on the same day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+        <span class="c1"># set the work days</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">TUESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEDNESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">THURSDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FRIDAY</span><span class="p">)</span>
+
+        <span class="c1"># set the wage in U.S. dollars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">0.00</span>
+
+        <span class="c1"># set the is_employed flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># set the job location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.set_work_distribution"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.set_work_distribution">[docs]</a>    <span class="k">def</span> <span class="nf">set_work_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the following distributions for work:</span>
+<span class="sd">        </span>
+<span class="sd">        * work start time distribution</span>
+<span class="sd">        * work end time distribution</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_start</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">work_start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_start_trunc</span><span class="p">,</span> \
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">t_start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_std</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_work_end</span>     <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">work_end_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_end_trunc</span><span class="p">,</span> \
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">t_end_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end_std</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.toString"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents the Occupation object as a string</span>
+
+<span class="sd">        :return msg: The representation of the Occupation object as a string</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># the occupation identifier</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Job ID:</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_id</span><span class="p">()</span>
+
+        <span class="c1"># the occupation category</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Category:</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_category</span><span class="p">()</span>
+
+        <span class="c1"># the wage</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Wage:</span><span class="se">\t</span><span class="s1">$ </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">wage</span>
+
+        <span class="c1"># the current job start day flag</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Current Start Day:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_start</span>
+
+        <span class="c1"># the start time in military time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Start time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the duration in military time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Duration:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the end time in military time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;End time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the commute duration in military time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Commute to work time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Commute from work time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the days of the week that the job starts</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Work days:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_days</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># whether or not the job starts and end on the same day</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Start and End on the same day?:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_same_day</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># a flag indicating employment</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Is employed?:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_employed</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the location</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Location</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_commute_from_work_dt"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_commute_from_work_dt">[docs]</a>    <span class="k">def</span> <span class="nf">update_commute_from_work_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pull a commute from work duration from the respective distribution.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># sample the duration</span>
+        <span class="n">dt</span>                          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_from_work_dt</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_from_work_dt</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_commute_to_work_dt"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_commute_to_work_dt">[docs]</a>    <span class="k">def</span> <span class="nf">update_commute_to_work_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pull a commute to work duration from the respective distribution. Also, update the commute to work \</span>
+<span class="sd">        start time place holder.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># sample the duration</span>
+        <span class="n">dt</span>                          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_commute_to_work_dt</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># update the commute to work start time place holder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_commute_to_work_start</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_commute_to_work_start"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_commute_to_work_start">[docs]</a>    <span class="k">def</span> <span class="nf">update_commute_to_work_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the commute to work start time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 day</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># this is just a parameter for ease of use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">commute_to_work_dt</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_work_start"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_work_start">[docs]</a>    <span class="k">def</span> <span class="nf">update_work_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the work start time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 day</span>
+        <span class="n">DAY_2_MIN</span>       <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># sample the work start time</span>
+        <span class="n">t</span>               <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_work_start</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># update the work duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_work_dt</span><span class="p">()</span>
+
+        <span class="c1"># update the commute to work start time place holder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_commute_to_work_start</span><span class="p">()</span>
+
+        <span class="c1"># update the day to start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day_start</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_work_dt"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_work_dt">[docs]</a>    <span class="k">def</span> <span class="nf">update_work_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the work duration</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Occupation.update_work_end"><a class="viewcode-back" href="../occupation.html#occupation.Occupation.update_work_end">[docs]</a>    <span class="k">def</span> <span class="nf">update_work_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the work end time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 day</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># sample the work end time</span>
+        <span class="n">t</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_work_end</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># update the work duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_work_dt</span><span class="p">()</span>
+
+        <span class="k">return</span>
+
+
+<span class="c1"># --------------------------------------------------------------</span>
+<span class="c1"># OUTSIDE of class Occupation definition.</span>
+<span class="c1"># Module functions</span>
+<span class="c1"># --------------------------------------------------------------</span>
+
+</div></div>
+<div class="viewcode-block" id="is_work_time"><a class="viewcode-back" href="../occupation.html#occupation.is_work_time">[docs]</a><span class="k">def</span> <span class="nf">is_work_time</span><span class="p">(</span><span class="n">clock</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">is_commute_to_work</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a clock and a job, this function says whether the clock&#39;s time corresponds \</span>
+<span class="sd">    to a time to be at work **or** a time to commute to work.</span>
+
+<span class="sd">    If :math:`\\Delta{t} &gt; 0`, it indicates when it&#39;s time to commute to work.</span>
+
+<span class="sd">    :param temporal.Temporal clock: the time</span>
+<span class="sd">    :param occupation.Occupation job: the job to inquiry</span>
+<span class="sd">    :param bool is_commute_to_work: a flag indicating whether we are interested in calculating if it is \</span>
+<span class="sd">                            time to commute to work</span>
+
+<span class="sd">    :return: a flag indicating if it is / is not work time (or commute time if is_commute_to_work is True)</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if we are commuting to work, set the job start time to be the commute start time</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">is_commute_to_work</span><span class="p">):</span>
+
+        <span class="c1"># do calculations for the commute time</span>
+
+        <span class="c1"># the original start time</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="c1"># the start time to be the time the commute begins</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_start</span>
+
+    <span class="c1"># find out if it&#39;s time to work</span>
+    <span class="n">is_time</span> <span class="o">=</span> <span class="n">is_work_time_help</span><span class="p">(</span><span class="n">clock</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
+
+    <span class="c1"># restore the commute to work start time</span>
+    <span class="k">if</span> <span class="n">is_commute_to_work</span><span class="p">:</span>
+
+        <span class="c1"># reset the value</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">t_start</span>
+
+
+    <span class="k">return</span> <span class="n">is_time</span>
+</div>
+<div class="viewcode-block" id="is_work_time_help"><a class="viewcode-back" href="../occupation.html#occupation.is_work_time_help">[docs]</a><span class="k">def</span> <span class="nf">is_work_time_help</span><span class="p">(</span><span class="n">clock</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a clock and a job, this function says whether the clock&#39;s time corresponds to</span>
+<span class="sd">    a time at work.</span>
+
+<span class="sd">    :param temporal.Temporal clock: the time</span>
+<span class="sd">    :param occupation.Occupation job: the job to inquiry</span>
+
+<span class="sd">    :return: is_work_time: a flag indicating if the time (clock) corresponds to a work time</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set the flag to output to False</span>
+    <span class="n">is_work_time</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="c1"># store the time of day [minutes]</span>
+    <span class="n">time_of_day</span> <span class="o">=</span> <span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span>
+
+    <span class="c1"># store the day of the week</span>
+    <span class="n">today</span> <span class="o">=</span> <span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span>
+
+    <span class="c1"># store the next day of the week</span>
+    <span class="n">tomorrow</span>  <span class="o">=</span> <span class="p">(</span><span class="n">today</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">7</span>
+
+    <span class="c1"># store the previous day of the week</span>
+    <span class="n">yesterday</span> <span class="o">=</span> <span class="p">(</span><span class="n">today</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span> <span class="o">%</span> <span class="mi">7</span>
+
+    <span class="c1"># find out if it is time to be at work, if employed</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">job</span><span class="o">.</span><span class="n">is_employed</span> <span class="p">):</span>
+
+        <span class="c1"># supposed to be a workday when not on summer vacation</span>
+        <span class="n">check_work_day</span>  <span class="o">=</span> <span class="p">(</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">is_summer_vacation</span><span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">week_of_year</span><span class="p">)</span> <span class="p">)</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">is_same_day</span>
+
+        <span class="k">if</span> <span class="n">check_work_day</span><span class="p">:</span>
+
+            <span class="c1"># set is_work_time to true if today is a workday and the time of day is between</span>
+            <span class="c1"># the start time and the end time</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">today</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">work_days</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">&gt;=</span> <span class="n">job</span><span class="o">.</span><span class="n">day_start</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time_of_day</span> <span class="o">&gt;=</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> \
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">time_of_day</span> <span class="o">&lt;</span> <span class="n">job</span><span class="o">.</span><span class="n">t_end</span><span class="p">):</span>
+
+                <span class="n">is_work_time</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c1"># return whether or not is is time for work</span>
+    <span class="k">return</span> <span class="n">is_work_time</span>
+</div>
+<div class="viewcode-block" id="set_grave_shift"><a class="viewcode-back" href="../occupation.html#occupation.set_grave_shift">[docs]</a><span class="k">def</span> <span class="nf">set_grave_shift</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets the Occupation to a grave shift.</span>
+
+<span class="sd">    * shift job from  22:00 to 6:00 </span>
+<span class="sd">    * Monday through Friday</span>
+<span class="sd">    * 30 minute commute to work</span>
+<span class="sd">    * 60 minute commute from work</span>
+<span class="sd">    * wage of $40,0000.</span>
+
+<span class="sd">    :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOUR_2_MIN</span>      <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># identifier</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">id</span>          <span class="o">=</span> <span class="n">GRAVE_SHIFT</span>
+
+    <span class="c1"># set the job category</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">category</span>    <span class="o">=</span> <span class="n">FIXED_SHIFT</span>
+
+    <span class="c1"># set the start time to be 22:00</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>     <span class="o">=</span> <span class="mi">22</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># set the job duration</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">dt</span>          <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># set the end time</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_t_end</span><span class="p">()</span>
+
+    <span class="c1"># set the flag indicating whether or not the job starts and ends on the same day</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+    <span class="c1"># set the work days</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">TUESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEDNESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">THURSDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FRIDAY</span><span class="p">)</span>
+
+    <span class="c1"># set the wage in U.S dollars</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">40000.0</span>
+
+    <span class="c1"># set the employment flag</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c1"># set the location</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">)</span>
+
+    <span class="c1"># set the commute</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>   <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>      <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>    <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+    <span class="k">return</span>
+    </div>
+<div class="viewcode-block" id="set_no_job"><a class="viewcode-back" href="../occupation.html#occupation.set_no_job">[docs]</a><span class="k">def</span> <span class="nf">set_no_job</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the Occupation to having no job.</span>
+
+<span class="sd">    :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the job identifier</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">id</span>          <span class="o">=</span> <span class="n">NO_JOB</span>
+
+    <span class="c1"># set the job category</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">category</span>    <span class="o">=</span> <span class="n">NO_TIME</span>
+
+    <span class="c1"># set start time</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># set job duration</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># set end time</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_t_end</span><span class="p">()</span>
+
+    <span class="c1"># set the flag indicating whether or not the job starts and end on the same day</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+    <span class="c1"># set work days to none</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="c1"># set to no wage</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># set employment flag</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="c1"># set the location to home</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">)</span>
+
+    <span class="c1"># set to no commute</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>   <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>   <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+    <span class="k">return</span>
+    </div>
+<div class="viewcode-block" id="set_standard_job"><a class="viewcode-back" href="../occupation.html#occupation.set_standard_job">[docs]</a><span class="k">def</span> <span class="nf">set_standard_job</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets the Occupation to the standard job.</span>
+
+<span class="sd">    * fixed shift of 9:00 - 17:00</span>
+<span class="sd">    * Monday through Friday </span>
+<span class="sd">    * wage $40,000 </span>
+<span class="sd">    * 30 minute commute to work</span>
+<span class="sd">    * 60 minute commute from work</span>
+
+<span class="sd">    :param occupation.Occupation job: the job of which to set the attributes</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">HOUR_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># identifier</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">id</span>          <span class="o">=</span> <span class="n">STANDARD_JOB</span>
+
+    <span class="c1"># set the occupation type to a fixed shift</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">category</span>    <span class="o">=</span> <span class="n">FIXED_SHIFT</span>
+
+    <span class="c1"># start at 9:00</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>     <span class="o">=</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">t_end</span>       <span class="o">=</span> <span class="mi">17</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># occupation duration 8:00 hours</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+    <span class="c1"># set the end time</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_t_end</span><span class="p">()</span>
+
+    <span class="c1"># set the flag indicating that the job starts and ends on the same day</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+    <span class="c1"># set the work days</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">TUESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEDNESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">THURSDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FRIDAY</span><span class="p">)</span>
+
+    <span class="c1"># set the wage in U.S. dollars</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">40000.0</span>
+
+    <span class="c1"># set the is_employed flag</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c1"># set the job location</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">)</span>
+
+    <span class="c1"># set the commute</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>   <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>      <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>    <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+    <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="set_student"><a class="viewcode-back" href="../occupation.html#occupation.set_student">[docs]</a><span class="k">def</span> <span class="nf">set_student</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets a job to the preset values of student occupation.</span>
+
+<span class="sd">    * fixed shift of 08:00 - 15:00</span>
+<span class="sd">    * Monday through Friday</span>
+<span class="sd">    * wage of $0</span>
+<span class="sd">    * 30 minute commute to school</span>
+<span class="sd">    * 60 minute commute from school</span>
+<span class="sd">    </span>
+<span class="sd">    :param occupation.Occupation job: the job to set</span>
+<span class="sd">     </span>
+<span class="sd">    :return: None </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of minutes in 1 day, the number of minutes in 1 hour</span>
+    <span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># job identifier</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">id</span>          <span class="o">=</span> <span class="n">STUDENT</span>
+
+    <span class="c1"># set the occupation type to a fixed shift</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">category</span>    <span class="o">=</span> <span class="n">FIXED_SHIFT</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>     <span class="o">=</span> <span class="n">START_MEAN_SCHOOl</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">t_end</span>       <span class="o">=</span> <span class="n">END_MEAN_SCHOOL</span>
+
+    <span class="c1"># occupation duration 8:00 hours</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+    <span class="c1"># set the end time</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_t_end</span><span class="p">()</span>
+
+    <span class="c1"># set the flag indicating that the job starts and ends on the same day</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_is_same_day</span><span class="p">()</span>
+
+    <span class="c1"># set the work days</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">work_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">TUESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEDNESDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">THURSDAY</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">FRIDAY</span><span class="p">)</span>
+
+    <span class="c1"># set the wage in U.S. dollars</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">wage</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># set the is_employed flag</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">is_employed</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c1"># set the job location</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span><span class="p">)</span>
+
+    <span class="c1"># set the commute</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>   <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>          <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt_mean</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span>        <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt_mean</span>
+
+    <span class="n">job</span><span class="o">.</span><span class="n">set_commute_distribution</span><span class="p">()</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">set_work_distribution</span><span class="p">()</span>
+
+    <span class="k">return</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

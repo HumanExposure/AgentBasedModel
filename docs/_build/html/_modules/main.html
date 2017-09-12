@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>main &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for main</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is code is runs the simulation for the Agent-Based Model of Human Activity Patterns \</span>
+<span class="sd">(ABMHAP) module of the Life Cycle Human Exposure Model (LC-HEM) project.</span>
+
+<span class="sd">In order to run the code, do the following:</span>
+
+<span class="sd">#. set the user-defined parameters of the simulation in main_params.py</span>
+<span class="sd">#. run the code via</span>
+<span class="sd">    \&gt; python main.py</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    In order to run the debugger do the following in windows:</span>
+
+<span class="sd">    \&gt; python -m pdb main.py</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+
+<span class="c1"># to access python files in the parent directory</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># for plotting</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">diary</span><span class="o">,</span> <span class="nn">main_params</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">params</span><span class="o">,</span> <span class="nn">scenario</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================================================</span>
+<span class="c1"># RUN</span>
+<span class="c1"># ===============================================================================</span>
+
+<div class="viewcode-block" id="get_diary"><a class="viewcode-back" href="../main.html#main.get_diary">[docs]</a><span class="k">def</span> <span class="nf">get_diary</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function output the result of the simulation in terms of an activity diary.</span>
+
+<span class="sd">    :param universe.Universe u: the governing engine of the simulation</span>
+<span class="sd">    :return: the activity diary describing the behavior of the agent</span>
+<span class="sd">    :rtype: diary.Diary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the agent</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># the indices of simulation data</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="c1"># the time</span>
+    <span class="n">t</span>           <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="c1"># the array of the activities</span>
+    <span class="n">hist_act</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the array of the locations</span>
+    <span class="n">hist_loc</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">hist_local</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># make the time continuous</span>
+    <span class="n">t_all</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># fill out the time in between events to get data that corresponds to contiguous time</span>
+    <span class="n">act_all</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">hist_act</span><span class="p">)</span>
+
+    <span class="c1"># fill out the location data in between events that corresponds to contiguous time</span>
+    <span class="n">loc_all</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">hist_loc</span><span class="p">)</span>
+
+    <span class="c1"># create the activity diary</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">diary</span><span class="o">.</span><span class="n">Diary</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">t_all</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">act_all</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="n">loc_all</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span>
+</div>
+<div class="viewcode-block" id="plot_cdfs"><a class="viewcode-back" href="../main.html#main.plot_cdfs">[docs]</a><span class="k">def</span> <span class="nf">plot_cdfs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function of start time, end time, and duration for \</span>
+<span class="sd">    each activity in the the simulation.</span>
+
+<span class="sd">    :param diary.Diary d: the results of the simulation</span>
+<span class="sd">    :param list keys: list of activities to graph</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># title</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="c1"># plot the start time distribution</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="mf">1e3</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot the end time distribution</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot the duration distribution</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span>
+
+</div>
+<div class="viewcode-block" id="plot_histograms"><a class="viewcode-back" href="../main.html#main.plot_histograms">[docs]</a><span class="k">def</span> <span class="nf">plot_histograms</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the histograms of start time, end time, and duration for each activity in \</span>
+<span class="sd">    the the simulation.</span>
+
+<span class="sd">    :param diary.Diary d: the results of the simulation</span>
+<span class="sd">    :param list keys: list of activities to graph</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">24</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="c1"># title</span>
+
+        <span class="c1"># plot the start time distribution</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot the end time distribution</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+        <span class="c1"># plot the duration distribution</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="save_output"><a class="viewcode-back" href="../main.html#main.save_output">[docs]</a><span class="k">def</span> <span class="nf">save_output</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves the output of the simulation.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity-diary output of the simulation</span>
+<span class="sd">    :param str fname: the file name of the saved file. It must end with &quot;.csv&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the conversion of 1 hour into minutes</span>
+    <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># copy the data frame to avoid changing the original data in df</span>
+    <span class="n">data</span>        <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># convert the end time in minutes.</span>
+    <span class="c1"># Add the + 1 minute to the end time so that 16:00 - 16:59 becomes 16:00 - 17:00</span>
+    <span class="n">end</span>         <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">hours_to_minutes</span><span class="p">(</span> <span class="n">data</span><span class="o">.</span><span class="n">end</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># convert the end time into hours</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">end</span>    <span class="o">=</span> <span class="n">end</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># create the directory for the save file if it does not exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># save the data</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">return</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># run</span>
+<span class="c1"># ===============================================</span>
+</div>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># close all open plots</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set up the parameters</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># print messages to string if True, do not if False</span>
+    <span class="n">do_print</span>    <span class="o">=</span> <span class="n">main_params</span><span class="o">.</span><span class="n">do_print</span>
+
+    <span class="c1"># print plots of the data if True, do not if False</span>
+    <span class="n">do_plot</span>     <span class="o">=</span> <span class="n">main_params</span><span class="o">.</span><span class="n">do_plot</span>
+
+    <span class="c1"># print the output to the screen</span>
+    <span class="n">do_print</span>    <span class="o">=</span> <span class="n">main_params</span><span class="o">.</span><span class="n">do_print</span>
+
+    <span class="c1"># save the output flag if True, do not if False</span>
+    <span class="n">do_save</span>     <span class="o">=</span> <span class="n">main_params</span><span class="o">.</span><span class="n">do_save</span>
+
+    <span class="c1"># the household parameters for the simulation</span>
+    <span class="n">hhld_param</span>  <span class="o">=</span> <span class="n">main_params</span><span class="o">.</span><span class="n">hhld_param</span>
+
+    <span class="c1"># set up the simulation</span>
+    <span class="n">scene</span>       <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">Solo</span><span class="p">(</span><span class="n">hhld_param</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># run the simulation</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># start timing</span>
+    <span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># run the simulation</span>
+    <span class="n">scene</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># stop timing</span>
+    <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># calculate the elapsed duration</span>
+    <span class="n">dt_elapsed</span> <span class="o">=</span> <span class="n">toc</span> <span class="o">-</span> <span class="n">tic</span>
+
+    <span class="c1"># print the elapsed simulation time</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;elapsed time: </span><span class="si">%.2f</span><span class="s1">[s]&#39;</span> <span class="o">%</span> <span class="n">dt_elapsed</span><span class="p">)</span>
+
+    <span class="c1"># get the activity diary from the results of the simulation</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">get_diary</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+
+    <span class="c1"># print the diary</span>
+    <span class="k">if</span> <span class="n">do_print</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span> <span class="n">d</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="c1"># save the output diary</span>
+    <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+        <span class="n">save_output</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">main_params</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># plot results of the simulation for each activity</span>
+    <span class="k">if</span> <span class="n">do_plot</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;plotting...&#39;</span><span class="p">)</span>
+
+        <span class="c1"># all of the activities used in the simulation as well as idle time</span>
+        <span class="n">act_all</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="c1"># the activities used in the simulation, not including the idle time</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">act_all</span><span class="p">[</span> <span class="n">act_all</span> <span class="o">!=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_IDLE</span> <span class="p">]</span>
+
+        <span class="c1"># plot the histograms</span>
+        <span class="n">plot_histograms</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+        <span class="c1"># plot the cumulative distribution function</span>
+        <span class="n">plot_cdfs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+        <span class="c1"># show the plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

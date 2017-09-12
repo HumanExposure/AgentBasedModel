@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>eat module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="food module" href="food.html" />
+    <link rel="prev" title="diary module" href="diary.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-eat">
+<span id="eat-module"></span><h1>eat module<a class="headerlink" href="#module-eat" title="Permalink to this headline">¶</a></h1>
+<p>This module contains information about the activities associated with eating. This class is an <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a> that gives a <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a> the ability to eat and satisfy the need <a class="reference internal" href="hunger.html#hunger.Hunger" title="hunger.Hunger"><code class="xref py py-class docutils literal"><span class="pre">hunger.Hunger</span></code></a>.</p>
+<p>This module contains the following classes:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#eat.Eat" title="eat.Eat"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat</span></code></a> (general eating capabilities)</li>
+<li><a class="reference internal" href="#eat.Eat_Breakfast" title="eat.Eat_Breakfast"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat_Breakfast</span></code></a> (eating breakfast)</li>
+<li><a class="reference internal" href="#eat.Eat_Lunch" title="eat.Eat_Lunch"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat_Lunch</span></code></a> (eating lunch)</li>
+<li><a class="reference internal" href="#eat.Eat_Dinner" title="eat.Eat_Dinner"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat_Dinner</span></code></a> (eating dinner)</li>
+</ol>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="eat.Eat">
+<em class="property">class </em><code class="descclassname">eat.</code><code class="descname">Eat</code><a class="reference internal" href="_modules/eat.html#Eat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a></p>
+<p>This class has general capabilities that allow the person to eat in order to satisfy <a class="reference internal" href="hunger.html#hunger.Hunger" title="hunger.Hunger"><code class="xref py py-class docutils literal"><span class="pre">hunger.Hunger</span></code></a>.     This class acts as a parent class and is expected to inherited.</p>
+<dl class="method">
+<dt id="eat.Eat.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles advertising the score to an agent. This function returns 0.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function should be overloaded when inherited.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the score (0)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.advertise_help">
+<code class="descname">advertise_help</code><span class="sig-paren">(</span><em>p</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.advertise_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.advertise_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function does some of the logistics needed for <a class="reference internal" href="#eat.Eat.advertise" title="eat.Eat.advertise"><code class="xref py py-func docutils literal"><span class="pre">advertise()</span></code></a>.</p>
+<p>This function does the following:</p>
+<ol class="arabic simple">
+<li>sets the suggested recharge rate for hunger</li>
+<li>calculates the score</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who is being advertised to</li>
+<li><strong>dt</strong> (<em>float</em>) &#8211; the duration of the activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the score</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.advertise_interruption">
+<code class="descname">advertise_interruption</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.advertise_interruption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.advertise_interruption" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activity advertisement when a person is going to interrupt an         ongoing activity in order to do an eating activity.</p>
+<p>This function does the following:</p>
+<ol class="arabic simple">
+<li>temporarily sets the satiation of hunger  <img class="math" src="_images/math/241c1ce57879277ad39ec6d8814e4efaa9288304.png" alt="n_{hunger}(t) = \eta_{interruption}"/></li>
+<li>calculate the score advertised for the potential eating activity that will interrupt a current activity</li>
+<li>restores the the satiation for hunger to the original value</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body">the value of the advertisement</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ends the eat activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person whose activity is ending</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.end_meal">
+<code class="descname">end_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.end_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.end_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ends the eat activity by doing the following.</p>
+<ol class="arabic simple">
+<li>frees the person&#8217;s use of the asset</li>
+<li>sets the state to idle (<code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code>)</li>
+<li>sets the satiation of hunger</li>
+<li>set the current meal for the next day</li>
+<li>set any skipped meals to be on the next day</li>
+<li>find the the next meal</li>
+<li>sets the decay rate of hunger</li>
+<li>update the scheduler so that hunger will trigger the schedule to stop at the next meal</li>
+<li>set the next meal to the current meal</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; The person whose meal is ending.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.set_end_time">
+<code class="descname">set_end_time</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.set_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.set_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the end time of eating (universal time).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return t_end:</th><td class="field-body">the end time of eating [minutes, universal time]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function starts the eating activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; The person whose activity is starting.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.start_meal">
+<code class="descname">start_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.start_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.start_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function starts the eat activity by doing the following.</p>
+<ol class="arabic simple">
+<li>sets the person&#8217;s state to busy (<code class="xref py py-const docutils literal"><span class="pre">state.BUSY</span></code>)</li>
+<li>set the decay rate of hunger to 0</li>
+<li>store the start time to the state</li>
+<li>sets the end time</li>
+<li>sets the hunger recharge rate</li>
+<li>updates the asset&#8217;s state and number of users</li>
+<li>update the schedule for the hunger need to trigger when the eat activity is scheduled to end</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who is starting the meal</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat.test_func">
+<code class="descname">test_func</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat.test_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat.test_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eat.Eat_Breakfast">
+<em class="property">class </em><code class="descclassname">eat.</code><code class="descname">Eat_Breakfast</code><a class="reference internal" href="_modules/eat.html#Eat_Breakfast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Breakfast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eat.Eat" title="eat.Eat"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat</span></code></a></p>
+<p>This class is used to handle the logistics for eating breakfast.</p>
+<dl class="method">
+<dt id="eat.Eat_Breakfast.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Breakfast.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Breakfast.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activities advertisement to a person.</p>
+<p>Advertise to the agent if the following conditions are met</p>
+<ol class="arabic simple">
+<li>the current meal is breakfast</li>
+<li>the agent&#8217;s location is at home (<code class="xref py py-const docutils literal"><span class="pre">location.HOME</span></code>)</li>
+<li>calculate the score</li>
+</ol>
+<div class="math">
+<p><img src="_images/math/7b443e3516e17aa89b1b4afc436193065bbb47e1.png" alt="S = \begin{cases}
+0  &amp; n_{hunger}(t) &gt; \lambda \\
+W( n_{hunger}(t) ) - W( n_{hunger}(t + \Delta{t} )) &amp; n_{hunger}(t) \le \lambda
+\end{cases}"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body">the advertised score of doing the eat breakfast activity</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Breakfast.end_meal">
+<code class="descname">end_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Breakfast.end_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Breakfast.end_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the logistics for ending the eat activity by doing the following.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>call <code class="xref py py-func docutils literal"><span class="pre">eat.end_meal()</span></code></li>
+<li>If planning to skip lunch, update the lunch event to be the next day</li>
+</ol>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who&#8217;s meal is ending</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Breakfast.start_meal">
+<code class="descname">start_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Breakfast.start_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Breakfast.start_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the logistics for starting the eat activity by doing the following</p>
+<ol class="arabic simple">
+<li>set the current meal to breakfast</li>
+<li>call <code class="xref py py-func docutils literal"><span class="pre">eat.start_meal()</span></code></li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who is starting the eat activity</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eat.Eat_Dinner">
+<em class="property">class </em><code class="descclassname">eat.</code><code class="descname">Eat_Dinner</code><a class="reference internal" href="_modules/eat.html#Eat_Dinner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Dinner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eat.Eat" title="eat.Eat"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat</span></code></a></p>
+<p>This class is used to handle the logistics for eating dinner.</p>
+<dl class="method">
+<dt id="eat.Eat_Dinner.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Dinner.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Dinner.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activities advertisement to a Person.</p>
+<p>Advertise to the agent if the following conditions are met</p>
+<ol class="arabic simple">
+<li>the current meal is lunch</li>
+<li>the agent&#8217;s location is at home (<code class="xref py py-const docutils literal"><span class="pre">location.HOME</span></code>)</li>
+<li>calculate the score</li>
+</ol>
+<div class="math">
+<p><img src="_images/math/7b443e3516e17aa89b1b4afc436193065bbb47e1.png" alt="S = \begin{cases}
+0  &amp; n_{hunger}(t) &gt; \lambda \\
+W( n_{hunger}(t) ) - W( n_{hunger}(t + \Delta{t} )) &amp; n_{hunger}(t) \le \lambda
+\end{cases}"/></p>
+</div><p>If the threshold is not met, score is 0. The advertisements assume that the duration         of the activity is the mean duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; The person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body">the advertised score of doing the Eat activity</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Dinner.end_meal">
+<code class="descname">end_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Dinner.end_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Dinner.end_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function goes through the logistics of ending the dinner meal by doing the following:</p>
+<ol class="arabic simple">
+<li>calls <code class="xref py py-func docutils literal"><span class="pre">end.end_meal()</span></code></li>
+<li>If breakfast will be skipped, update the lunch event to be 2 days from the current day</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who is finishing the eating dinner event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Dinner.start_meal">
+<code class="descname">start_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Dinner.start_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Dinner.start_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function goes through the logistics of starting the dinner meal by doing the following:</p>
+<ol class="arabic simple">
+<li>set the current meal to dinner</li>
+<li>call <code class="xref py py-func docutils literal"><span class="pre">eat.start_meal()</span></code></li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person who is starting the eat dinner event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eat.Eat_Lunch">
+<em class="property">class </em><code class="descclassname">eat.</code><code class="descname">Eat_Lunch</code><a class="reference internal" href="_modules/eat.html#Eat_Lunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Lunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eat.Eat" title="eat.Eat"><code class="xref py py-class docutils literal"><span class="pre">eat.Eat</span></code></a></p>
+<p>This class is used to handle the logistics for eating lunch.</p>
+<dl class="method">
+<dt id="eat.Eat_Lunch.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Lunch.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Lunch.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activities advertisement to a person.</p>
+<p>Advertise to the agent if the following conditions are met</p>
+<ol class="arabic simple">
+<li>the current meal is lunch</li>
+<li>the agent&#8217;s location is at home (<code class="xref py py-const docutils literal"><span class="pre">location.HOME</span></code>) or the agent&#8217;s location is at the         workplace (<code class="xref py py-const docutils literal"><span class="pre">location.OFF_SITE</span></code>)</li>
+<li>calculate the score</li>
+</ol>
+<div class="math">
+<p><img src="_images/math/7b443e3516e17aa89b1b4afc436193065bbb47e1.png" alt="S = \begin{cases}
+0  &amp; n_{hunger}(t) &gt; \lambda \\
+W( n_{hunger}(t) ) - W( n_{hunger}(t + \Delta{t} )) &amp; n_{hunger}(t) \le \lambda
+\end{cases}"/></p>
+</div><p>If the threshold is not met, score is 0. The advertisements assume that the duration         of the activity is the mean duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; The person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body">the advertised score of doing the Eat activity</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Lunch.end_meal">
+<code class="descname">end_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Lunch.end_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Lunch.end_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ends the eat activity by doing the following:</p>
+<ol class="arabic simple">
+<li>calls <code class="xref py py-func docutils literal"><span class="pre">eat.end_meal()</span></code></li>
+<li><dl class="first docutils">
+<dt>if dinner is to be skipped, update the dinner event by doing the following:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>if the lunch is an interrupting activity</dt>
+<dd><ul class="first last">
+<li>set the time until the next lunch activity</li>
+<li>update the schedule for the interruption to the next lunch activity</li>
+<li>set the interruption state to False</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; The person whose meal is ending.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat.Eat_Lunch.start_meal">
+<code class="descname">start_meal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat.html#Eat_Lunch.start_meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat.Eat_Lunch.start_meal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the logistics for starting the eat activity by doing the following:</p>
+<ol class="arabic simple">
+<li>sets the current meal to lunch</li>
+<li>call <code class="xref py py-func docutils literal"><span class="pre">eat.start_meal()</span></code></li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person starting the eat lunch event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="diary.html" title="previous chapter">diary module</a></li>
+      <li>Next: <a href="food.html" title="next chapter">food module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/eat.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/eat.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>main_params &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for main_params</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module is responsible for containing parameters that main.py uses to control \</span>
+<span class="sd">the simulation.</span>
+
+<span class="sd">The user should set the parameters in this module **before** running the driver (main.py)</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># general mathematical capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">params</span><span class="o">,</span> <span class="nn">scenario</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># constants</span>
+<span class="c1"># ===========================================</span>
+
+<span class="c1"># the number of minutes in 1 day and the number of minutes in 1 hour, respectively</span>
+<span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">HOUR_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+<span class="c1"># -----------------------------------------------------</span>
+<span class="c1"># functions</span>
+<span class="c1"># -----------------------------------------------------</span>
+<div class="viewcode-block" id="set_no_variation"><a class="viewcode-back" href="../main_params.html#main_params.set_no_variation">[docs]</a><span class="k">def</span> <span class="nf">set_no_variation</span><span class="p">(</span><span class="n">num_people</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets the standard deviations in all of the activity-parameters to zero.</span>
+
+<span class="sd">    :param int num_people: the number of people in the simulation</span>
+<span class="sd">    :return: a tuple of the standard deviations of all of the activity-parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sleep_start_std</span><span class="p">,</span> <span class="n">sleep_end_std</span>  <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">bf_start_std</span><span class="p">,</span> <span class="n">bf_dt_std</span>         <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">lunch_start_std</span><span class="p">,</span> <span class="n">lunch_dt_std</span>   <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">dinner_start_std</span><span class="p">,</span> <span class="n">dinner_dt_std</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">work_start_std</span><span class="p">,</span> <span class="n">work_end_std</span>    <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">commute_to_work_dt_std</span>          <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">1</span>
+    <span class="n">commute_from_work_dt_std</span>        <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_people</span><span class="p">,))]</span> <span class="o">*</span> <span class="mi">1</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">sleep_start_std</span><span class="p">,</span> <span class="n">sleep_end_std</span><span class="p">,</span> <span class="n">bf_start_std</span><span class="p">,</span> <span class="n">bf_dt_std</span><span class="p">,</span> <span class="n">lunch_start_std</span><span class="p">,</span> <span class="n">lunch_dt_std</span><span class="p">,</span> \
+              <span class="n">dinner_start_std</span><span class="p">,</span> <span class="n">dinner_dt_std</span><span class="p">,</span> <span class="n">work_start_std</span><span class="p">,</span> <span class="n">work_end_std</span><span class="p">,</span> <span class="n">commute_to_work_dt_std</span><span class="p">,</span> \
+              <span class="n">commute_from_work_dt_std</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># --------------------------------------------</span>
+<span class="c1"># Default parameters</span>
+<span class="c1"># --------------------------------------------</span>
+<span class="c1"># the default number of days in the simulation</span></div>
+<span class="n">NUM_DAYS</span>    <span class="o">=</span> <span class="mi">7</span>
+
+<span class="c1"># the default number of additional hours in the simulation</span>
+<span class="n">NUM_HOURS</span>   <span class="o">=</span> <span class="mi">8</span>
+
+<span class="c1"># the default number of additional minutes in the simulation</span>
+<span class="n">NUM_MIN</span>     <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># the default start time [minutes] is Day 0 at 16:00</span>
+<span class="n">T_START</span>     <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SUNDAY</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span> <span class="o">+</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+
+<span class="c1"># job identifier</span>
+<span class="n">JOB_ID</span>      <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">STANDARD_JOB</span>
+
+<span class="c1"># the number of people in the simulation. In this version of ABMHAP, only one agent</span>
+<span class="c1"># is allowed per simulation</span>
+<span class="n">NUM_PEOPLE</span>  <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1">#</span>
+<span class="c1"># parametrize the agent. Values are in minutes</span>
+<span class="c1">#</span>
+
+<span class="c1"># the default mean and standard deviation for the sleep start time, respectively</span>
+<span class="n">SLEEP_START_MEAN</span>    <span class="o">=</span> <span class="mi">22</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">SLEEP_START_STD</span>     <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># the default mean and standard deviation for the sleep end time, respectively</span>
+<span class="n">SLEEP_END_MEAN</span>      <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">SLEEP_END_STD</span>       <span class="o">=</span> <span class="mi">15</span>
+
+<span class="c1"># the default mean and standard deviation of the eat breakfast start time, respectively</span>
+<span class="n">BF_START_MEAN</span>       <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">BF_START_STD</span>        <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># the default mean and standard deviation of the eat breakfast duration, respectively</span>
+<span class="n">BF_DT_MEAN</span>          <span class="o">=</span> <span class="mi">15</span>
+<span class="n">BF_DT_STD</span>           <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># the default mean and standard deviation of the eat lunch start time, respectively</span>
+<span class="n">LUNCH_START_MEAN</span>    <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">LUNCH_START_STD</span>     <span class="o">=</span> <span class="mi">15</span>
+
+<span class="c1"># the default mean and standard deviation of the eat breakfast duration, respectively</span>
+<span class="n">LUNCH_DT_MEAN</span>       <span class="o">=</span> <span class="mi">30</span>
+<span class="n">LUNCH_DT_STD</span>        <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># the default mean and standard deviation of the eat dinner start time, respectively</span>
+<span class="n">DINNER_START_MEAN</span>   <span class="o">=</span> <span class="mi">19</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">DINNER_START_STD</span>    <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># the default mean and standard deviation of the eat dinner duration, respectively</span>
+<span class="n">DINNER_DT_MEAN</span>      <span class="o">=</span> <span class="mi">45</span>
+<span class="n">DINNER_DT_STD</span>       <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># the default mean and standard deviation for the work start time, respectively</span>
+<span class="n">WORK_START_MEAN</span>     <span class="o">=</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">WORK_START_STD</span>      <span class="o">=</span> <span class="mi">15</span>
+
+<span class="c1"># the default mean and standard deviation for the work end time, respectively</span>
+<span class="n">WORK_END_MEAN</span>       <span class="o">=</span> <span class="mi">17</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
+<span class="n">WORK_END_STD</span>        <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># the default mean and standard deviation of the commute to work duration, respectively</span>
+<span class="n">COMMUTE_TO_WORK_DT_MEAN</span>     <span class="o">=</span> <span class="mi">30</span>
+<span class="n">COMMUTE_TO_WORK_DT_STD</span>      <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># the default mean and standard deviation of the commute from work duration, respectively</span>
+<span class="n">COMMUTE_FROM_WORK_DT_MEAN</span>   <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_MEAN</span>
+<span class="n">COMMUTE_FROM_WORK_DT_STD</span>    <span class="o">=</span> <span class="n">COMMUTE_TO_WORK_DT_STD</span>
+
+<span class="c1"># the default number of standard deviations to truncate in the normal distribution in the activity-parameters</span>
+<span class="n">TRUNC</span>   <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># the default file name to save the data</span>
+<span class="n">FNAME</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_MY_DATA</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">example_output.csv&#39;</span>
+
+<span class="c1"># ============================================</span>
+<span class="c1"># user-defined parameters</span>
+<span class="c1"># ============================================</span>
+
+<span class="c1">#</span>
+<span class="c1"># simulation parameters</span>
+<span class="c1">#</span>
+
+<span class="c1"># should the simulation print messages to the screen</span>
+<span class="n">do_print</span>    <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c1"># should the simulation plot results at the end of the run</span>
+<span class="n">do_plot</span>     <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c1"># should the simulation save the results of the simulation</span>
+<span class="n">do_save</span>     <span class="o">=</span> <span class="bp">True</span>
+
+<span class="c1"># the file name to save the data</span>
+<span class="n">fname</span>       <span class="o">=</span> <span class="n">FNAME</span>
+
+<span class="c1"># -------------------------------------------</span>
+<span class="c1"># time information</span>
+<span class="c1"># -------------------------------------------</span>
+
+<span class="c1"># the number of days</span>
+<span class="n">num_days</span>    <span class="o">=</span> <span class="n">NUM_DAYS</span>
+
+<span class="c1"># the number of additional hours</span>
+<span class="n">num_hours</span>   <span class="o">=</span> <span class="n">NUM_HOURS</span>
+
+<span class="c1"># the number of additional minutes</span>
+<span class="n">num_min</span>     <span class="o">=</span> <span class="n">NUM_MIN</span>
+
+<span class="c1"># the start time [in minutes]</span>
+<span class="n">t_start</span>     <span class="o">=</span> <span class="n">T_START</span>
+
+<span class="c1"># -------------------------------------------</span>
+<span class="c1"># set the agent&#39;s activity-parameters</span>
+<span class="c1"># -------------------------------------------</span>
+
+<span class="c1"># number of people</span>
+<span class="n">num_people</span> <span class="o">=</span> <span class="n">NUM_PEOPLE</span>
+
+<span class="c1"># job identifier</span>
+<span class="n">job_id</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">JOB_ID</span><span class="p">]</span> <span class="p">)</span>
+
+<span class="c1"># a flag to indicate whether the standard deviation on the activities should be set to 0 (if True) or not (if False)</span>
+<span class="n">no_variation</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c1">#</span>
+<span class="c1"># the activity parameters</span>
+<span class="c1">#</span>
+
+<span class="c1"># the mean and standard deviation for the sleep start time, respectively</span>
+<span class="n">sleep_start_mean</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">SLEEP_START_MEAN</span><span class="p">])</span>
+<span class="n">sleep_start_std</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">SLEEP_START_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation for the sleep end time, respectively</span>
+<span class="n">sleep_end_mean</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">SLEEP_END_MEAN</span><span class="p">])</span>
+<span class="n">sleep_end_std</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">SLEEP_END_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat breakfast start time, respectively</span>
+<span class="n">bf_start_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">BF_START_MEAN</span><span class="p">])</span>
+<span class="n">bf_start_std</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">BF_START_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat breakfast duration, respectively</span>
+<span class="n">bf_dt_mean</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">BF_DT_MEAN</span><span class="p">])</span>
+<span class="n">bf_dt_std</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">BF_DT_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat lunch start time, respectively</span>
+<span class="n">lunch_start_mean</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">LUNCH_START_MEAN</span><span class="p">])</span>
+<span class="n">lunch_start_std</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">LUNCH_START_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat lunch duration, respectively</span>
+<span class="n">lunch_dt_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">LUNCH_DT_MEAN</span><span class="p">])</span>
+<span class="n">lunch_dt_std</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">LUNCH_DT_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat dinner start time, respectively</span>
+<span class="n">dinner_start_mean</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">DINNER_START_MEAN</span><span class="p">])</span>
+<span class="n">dinner_start_std</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">DINNER_START_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the eat dinner duration, respectively</span>
+<span class="n">dinner_dt_mean</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">DINNER_DT_MEAN</span><span class="p">])</span>
+<span class="n">dinner_dt_std</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">DINNER_DT_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the commute to work duration, respectively</span>
+<span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">COMMUTE_TO_WORK_DT_MEAN</span><span class="p">])</span>
+<span class="n">commute_to_work_dt_std</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">COMMUTE_TO_WORK_DT_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation of the commute from work duration, respectively</span>
+<span class="n">commute_from_work_dt_mean</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">COMMUTE_FROM_WORK_DT_MEAN</span><span class="p">])</span>
+<span class="n">commute_from_work_dt_std</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">COMMUTE_FROM_WORK_DT_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation for the work start time, respectively</span>
+<span class="n">work_start_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">WORK_START_MEAN</span><span class="p">])</span>
+<span class="n">work_start_std</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">WORK_START_STD</span><span class="p">])</span>
+
+<span class="c1"># the mean and standard deviation for the work end time, respectively</span>
+<span class="n">work_end_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">WORK_END_MEAN</span><span class="p">])</span>
+<span class="n">work_end_std</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">WORK_END_STD</span><span class="p">])</span>
+
+<span class="c1"># the number of standard deviations to truncate in the normal distribution in the</span>
+<span class="c1"># activity-parameters</span>
+<span class="n">trunc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">TRUNC</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="n">no_variation</span><span class="p">:</span>
+
+    <span class="c1"># set the variation to zero</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">set_no_variation</span><span class="p">(</span><span class="n">num_people</span><span class="p">)</span>
+
+    <span class="c1"># store the results in the appropriate variables</span>
+    <span class="n">sleep_start_std</span><span class="p">,</span> <span class="n">sleep_end_std</span><span class="p">,</span> <span class="n">bf_start_std</span><span class="p">,</span> <span class="n">bf_dt_std</span><span class="p">,</span> <span class="n">lunch_start_std</span><span class="p">,</span> <span class="n">lunch_dt_std</span><span class="p">,</span> \
+    <span class="n">dinner_start_std</span><span class="p">,</span> <span class="n">dinner_dt_std</span><span class="p">,</span> <span class="n">work_start_std</span><span class="p">,</span> <span class="n">work_end_std</span><span class="p">,</span> <span class="n">commute_to_work_dt_std</span><span class="p">,</span> \
+    <span class="n">commute_from_work_dt_std</span> <span class="o">=</span> <span class="n">result</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># the household parameters</span>
+<span class="c1"># ===========================================</span>
+<span class="n">hhld_param</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">Params</span><span class="p">(</span><span class="n">t_start</span><span class="o">=</span><span class="n">t_start</span><span class="p">,</span> <span class="n">num_days</span><span class="o">=</span><span class="n">num_days</span><span class="p">,</span> <span class="n">num_hours</span><span class="o">=</span><span class="n">num_hours</span><span class="p">,</span> <span class="n">num_min</span><span class="o">=</span><span class="n">num_min</span><span class="p">,</span> \
+                               <span class="n">sleep_start_mean</span><span class="o">=</span><span class="n">sleep_start_mean</span><span class="p">,</span> <span class="n">sleep_start_std</span><span class="o">=</span><span class="n">sleep_start_std</span><span class="p">,</span> \
+                               <span class="n">sleep_end_mean</span><span class="o">=</span><span class="n">sleep_end_mean</span><span class="p">,</span> <span class="n">sleep_end_std</span><span class="o">=</span><span class="n">sleep_end_std</span><span class="p">,</span> \
+                               <span class="n">bf_start_mean</span><span class="o">=</span><span class="n">bf_start_mean</span><span class="p">,</span> <span class="n">bf_start_std</span><span class="o">=</span><span class="n">bf_start_std</span><span class="p">,</span> <span class="n">bf_start_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">bf_dt_mean</span><span class="o">=</span><span class="n">bf_dt_mean</span><span class="p">,</span> <span class="n">bf_dt_std</span><span class="o">=</span><span class="n">bf_dt_std</span><span class="p">,</span> <span class="n">bf_dt_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">lunch_start_mean</span><span class="o">=</span><span class="n">lunch_start_mean</span><span class="p">,</span> <span class="n">lunch_start_std</span><span class="o">=</span><span class="n">lunch_start_std</span><span class="p">,</span> \
+                               <span class="n">lunch_start_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">lunch_dt_mean</span><span class="o">=</span><span class="n">lunch_dt_mean</span><span class="p">,</span> <span class="n">lunch_dt_std</span><span class="o">=</span><span class="n">lunch_dt_std</span><span class="p">,</span> <span class="n">lunch_dt_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">dinner_start_mean</span><span class="o">=</span><span class="n">dinner_start_mean</span><span class="p">,</span> <span class="n">dinner_start_std</span><span class="o">=</span><span class="n">dinner_start_std</span><span class="p">,</span> \
+                               <span class="n">dinner_start_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">dinner_dt_mean</span><span class="o">=</span><span class="n">dinner_dt_mean</span><span class="p">,</span> <span class="n">dinner_dt_std</span><span class="o">=</span><span class="n">dinner_dt_std</span><span class="p">,</span> <span class="n">dinner_dt_trunc</span><span class="o">=</span><span class="n">trunc</span><span class="p">,</span> \
+                               <span class="n">work_start_mean</span><span class="o">=</span><span class="n">work_start_mean</span><span class="p">,</span> <span class="n">work_start_std</span><span class="o">=</span><span class="n">work_start_std</span><span class="p">,</span> \
+                               <span class="n">work_end_mean</span><span class="o">=</span><span class="n">work_end_mean</span><span class="p">,</span> <span class="n">work_end_std</span><span class="o">=</span><span class="n">work_end_std</span><span class="p">,</span> \
+                               <span class="n">commute_to_work_dt_mean</span><span class="o">=</span><span class="n">commute_to_work_dt_mean</span><span class="p">,</span> \
+                               <span class="n">commute_to_work_dt_std</span><span class="o">=</span><span class="n">commute_to_work_dt_std</span><span class="p">,</span> \
+                               <span class="n">commute_from_work_dt_mean</span><span class="o">=</span><span class="n">commute_from_work_dt_mean</span><span class="p">,</span> \
+                               <span class="n">commute_from_work_dt_std</span><span class="o">=</span><span class="n">commute_from_work_dt_std</span><span class="p">,</span>\
+                               <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

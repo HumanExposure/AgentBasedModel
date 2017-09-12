@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>work &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for work</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that governs the :class:`activity.Activity` that gives a Person the ability \</span>
+<span class="sd">to go to work/ school.</span>
+
+<span class="sd">This file contains :class:`work.Work`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1">#----------------------------------------------------------</span>
+
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span>
+
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Work"><a class="viewcode-back" href="../work.html#work.Work">[docs]</a><span class="k">class</span> <span class="nc">Work</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows a Person to work / go to school in order to satisfy the need \</span>
+<span class="sd">    :class:`income.Income`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">WORK</span>
+        
+        <span class="k">return</span>
+     
+    <span class="c1">#------------------------------------------------------</span>
+    <span class="c1">#  Functions</span>
+    <span class="c1">#------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Work.advertise"><a class="viewcode-back" href="../work.html#work.Work.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of the advertised work activity to a Person</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return score:</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># this is the lowest score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># create a clock for the Need perception due the Activity when it&#39;s finished</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="n">future_clock</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># the current need level and the resulting need level if an Activity is done</span>
+        <span class="n">n_now</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">magnitude</span>
+
+        <span class="c1"># if the Income need is under a threshold, send a score</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">under_threshold</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="p">):</span>
+
+            <span class="n">n_later</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">perceive</span><span class="p">(</span><span class="n">future_clock</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="p">)</span>
+            <span class="n">score</span>   <span class="o">=</span> <span class="n">score</span> <span class="o">+</span> <span class="p">(</span> <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_later</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Work.end"><a class="viewcode-back" href="../work.html#work.Work.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the end of an Activity</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_work</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Work</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Work.end_work"><a class="viewcode-back" href="../work.html#work.Work.end_work">[docs]</a>    <span class="k">def</span> <span class="nf">end_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the variables pertaining to coming back from work by doing the following:</span>
+
+<span class="sd">        #. free the asset from use</span>
+<span class="sd">        #. set the asset&#39;s state to :const:`state.IDLE`</span>
+<span class="sd">        #. set the Income satiation to 1</span>
+<span class="sd">        #. decay the need Travel</span>
+<span class="sd">        #. sample the new work start time</span>
+<span class="sd">        #. sample the new work end time</span>
+<span class="sd">        #. update the scheduler to take into account the next work event</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this function frees the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1"># reset the state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># update the Person&#39;s Income Need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># decay the travel need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">decay</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># update the work parameters</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">update_work_start</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">update_work_end</span><span class="p">()</span>
+
+        <span class="c1"># calculate the next work event</span>
+        <span class="c1"># does not necessarily have to be the next day</span>
+        <span class="c1"># get the next start time</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">duration_to_work_event</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="p">)</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INCOME</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+</div>
+<div class="viewcode-block" id="Work.halt"><a class="viewcode-back" href="../work.html#work.Work.halt">[docs]</a>    <span class="k">def</span> <span class="nf">halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles an interruption of an Activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">halt_work</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Work</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">halt</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Work.halt_work"><a class="viewcode-back" href="../work.html#work.Work.halt_work">[docs]</a>    <span class="k">def</span> <span class="nf">halt_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function interrupts the work behavior by doing the following:</span>
+
+<span class="sd">        #. frees the current asset</span>
+<span class="sd">        #. the asset&#39;s state is set to :const:`state.IDLE`</span>
+<span class="sd">        #. the Interruption satiation is set to 1.0</span>
+<span class="sd">        #. the Interruption&#39;s activity start/ stop</span>
+
+<span class="sd">        :Note: No benefits of working are given while being interrupted</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># free the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1"># reset the the state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># set up the satiation for Interruption to 1.0</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">magnitude</span>        <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># set the Interrpution start and stop activity no activity</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_start</span>   <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">NO_ACTIVITY</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_stop</span>    <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">NO_ACTIVITY</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Work.set_end_time"><a class="viewcode-back" href="../work.html#work.Work.set_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the end time of work.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return t_end: the end time [minutes, universal time]</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the current time (universal time)</span>
+        <span class="n">t_now</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># if (we do shift work)</span>
+        <span class="c1">#     work to the end of the shift no matter, if the work activity</span>
+        <span class="c1">#     starts early or late</span>
+        <span class="c1">#</span>
+        <span class="c1"># else if (work for a fixed duration fo time)</span>
+        <span class="c1">#     always work for a fixed duration of time</span>
+        <span class="c1">#     &quot;work until the job gets done&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">occupation</span><span class="o">.</span><span class="n">FIXED_SHIFT</span><span class="p">):</span>
+
+            <span class="c1"># the beginning of the day (universal time)</span>
+            <span class="n">t_day</span> <span class="o">=</span> <span class="n">t_now</span> <span class="o">-</span> <span class="p">(</span><span class="n">t_now</span> <span class="o">%</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">)</span>
+
+            <span class="c1"># the time the job is supposed to start (universal time)</span>
+            <span class="n">t_start</span> <span class="o">=</span> <span class="n">t_day</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+
+            <span class="c1"># the time the job is supposed to end (universal time)</span>
+            <span class="n">t_end</span> <span class="o">=</span> <span class="n">t_start</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">occupation</span><span class="o">.</span><span class="n">FIXED_DURATION</span><span class="p">):</span>
+
+            <span class="c1"># work for a fixed duration of time starting now</span>
+            <span class="n">t_end</span> <span class="o">=</span> <span class="n">t_now</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">t_end</span>
+</div>
+<div class="viewcode-block" id="Work.start"><a class="viewcode-back" href="../work.html#work.Work.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles the start of an Activity</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_work</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Work.start_work"><a class="viewcode-back" href="../work.html#work.Work.start_work">[docs]</a>    <span class="k">def</span> <span class="nf">start_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function starts the work activity</span>
+
+<span class="sd">        * updates that asset&#39;s status and number of users</span>
+<span class="sd">        * changes the location of the Person</span>
+<span class="sd">        * updates that person&#39;s status</span>
+<span class="sd">        * calculates the end time of the work activity</span>
+<span class="sd">        * update the scheduler for the Income satiation</span>
+<span class="sd">        * update the scheduler for the Travel satiation</span>
+<span class="sd">        * set the day for the work period</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the location of the Person to be at work</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span>
+
+        <span class="c1"># update the person&#39;s state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">WORK</span>
+
+        <span class="c1"># set the start time of the current state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># calculate the end time of working</span>
+        <span class="n">dt</span>              <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="c1"># update the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># update the scheduler</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INCOME</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># update the interruption schedule</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INTERRUPTION</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># set the day for current work period</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">day_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Work.test_func"><a class="viewcode-back" href="../work.html#work.Work.test_func">[docs]</a>    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is **NOT** used.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1">#msg = &#39;---------------------------------\n&#39;</span>
+
+        <span class="n">f</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span>
+        <span class="c1">#msg = msg + &#39;%s\t\t %d\n&#39; % (f(self.clock.time_of_day), self.clock.time_of_day)</span>
+
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">state</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="p">(</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">need</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &#39;</span> <span class="o">%</span> <span class="n">y</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

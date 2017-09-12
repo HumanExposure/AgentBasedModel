@@ -1,0 +1,725 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>eat &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for eat</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information about the activities associated with eating. This class is an \</span>
+<span class="sd">:class:`activity.Activity` that gives a :class:`person.Person` the ability to eat and satisfy the need \</span>
+<span class="sd">:class:`hunger.Hunger`.</span>
+
+<span class="sd">This module contains the following classes:</span>
+
+<span class="sd">#. :class:`eat.Eat` (general eating capabilities)</span>
+<span class="sd">#. :class:`eat.Eat_Breakfast` (eating breakfast)</span>
+<span class="sd">#. :class:`eat.Eat_Lunch` (eating lunch)</span>
+<span class="sd">#. :class:`eat.Eat_Dinner` (eating dinner)</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># ABM modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ================================================================================</span>
+<span class="c1"># CLASS Eat</span>
+<span class="c1">#</span>
+<span class="c1"># This class is derived from CLASS Activity</span>
+<span class="c1">#</span>
+<span class="c1"># Attributes:</span>
+<span class="c1">#    id:       int. The activity code identifier</span>
+<span class="c1">#</span>
+<span class="c1"># Method:</span>
+<span class="c1">#    advertise():                    This function calculates the value from advertising the eating activity.</span>
+<span class="c1">#    advertise_interruption():       This function calculates the score from advertising an interruption by eating.</span>
+<span class="c1">#    end():                          This function ends the eating activity scenario.</span>
+<span class="c1">#    end_meal():                     This function ends eating a meal.</span>
+<span class="c1">#    set_end_time:                   This function calculates the end time of the activity.</span>
+<span class="c1">#    start():                        This function starts the eat activity scenario.</span>
+<span class="c1">#    start_meal():                   This function starts the eat activity.</span>
+<span class="c1"># ================================================================================</span>
+
+
+<div class="viewcode-block" id="Eat"><a class="viewcode-back" href="../eat.html#eat.Eat">[docs]</a><span class="k">class</span> <span class="nc">Eat</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class has general capabilities that allow the person to eat in order to satisfy :class:`hunger.Hunger`. \</span>
+<span class="sd">    This class acts as a parent class and is expected to inherited.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Eat.advertise"><a class="viewcode-back" href="../eat.html#eat.Eat.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles advertising the score to an agent. This function returns 0.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function should be overloaded when inherited.</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p:  the person of interest</span>
+<span class="sd">        :return: the score (0)</span>
+<span class="sd">        :rtype: float        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+
+</div>
+<div class="viewcode-block" id="Eat.advertise_help"><a class="viewcode-back" href="../eat.html#eat.Eat.advertise_help">[docs]</a>    <span class="k">def</span> <span class="nf">advertise_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function does some of the logistics needed for :func:`advertise`. </span>
+<span class="sd">        </span>
+<span class="sd">        This function does the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. sets the suggested recharge rate for hunger</span>
+<span class="sd">        #. calculates the score        </span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person who is being advertised to </span>
+<span class="sd">        :param float dt: the duration of the activity</span>
+<span class="sd">         </span>
+<span class="sd">        :return: the score</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is needed in order to do hunger.perceive()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">set_suggested_recharge_rate</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># get the score</span>
+        <span class="n">score</span>   <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Eat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Eat.advertise_interruption"><a class="viewcode-back" href="../eat.html#eat.Eat.advertise_interruption">[docs]</a>    <span class="k">def</span> <span class="nf">advertise_interruption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activity advertisement when a person is going to interrupt an \</span>
+<span class="sd">        ongoing activity in order to do an eating activity.    </span>
+
+<span class="sd">        This function does the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. temporarily sets the satiation of hunger  :math:`n_{hunger}(t) = \\eta_{interruption}`</span>
+<span class="sd">        #. calculate the score advertised for the potential eating activity that will interrupt a current activity</span>
+<span class="sd">        #. restores the the satiation for hunger to the original value</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return score: the value of the advertisement</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># store the old magnitude</span>
+        <span class="n">mag_temp</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span>
+        
+        <span class="c1"># set the hunger magnitude temporarily to a low number</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="n">need</span><span class="o">.</span><span class="n">MAG_INTERRUPTION</span>
+        
+        <span class="c1"># store the score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        
+        <span class="c1"># restore the proper hunger magnitude</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="n">mag_temp</span>            
+ 
+        <span class="k">return</span> <span class="n">score</span>        
+</div>
+<div class="viewcode-block" id="Eat.end"><a class="viewcode-back" href="../eat.html#eat.Eat.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function ends the eat activity.</span>
+
+<span class="sd">        :param person.Person p: the person whose activity is ending</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># end the eating activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># do logistics for ending an activity</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat.end_meal"><a class="viewcode-back" href="../eat.html#eat.Eat.end_meal">[docs]</a>    <span class="k">def</span> <span class="nf">end_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function ends the eat activity by doing the following.</span>
+<span class="sd">        </span>
+<span class="sd">        #. frees the person&#39;s use of the asset</span>
+<span class="sd">        #. sets the state to idle (:const:`state.IDLE`)</span>
+<span class="sd">        #. sets the satiation of hunger </span>
+<span class="sd">        #. set the current meal for the next day</span>
+<span class="sd">        #. set any skipped meals to be on the next day</span>
+<span class="sd">        #. find the the next meal</span>
+<span class="sd">        #. sets the decay rate of hunger</span>
+<span class="sd">        #. update the scheduler so that hunger will trigger the schedule to stop at the next meal</span>
+<span class="sd">        #. set the next meal to the current meal</span>
+
+<span class="sd">        :param person.Person p: The person whose meal is ending.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># frees up the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1"># change the status of the person</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># the amount of time spent eating</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="c1"># the gain in need magnitude</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">recharge_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># update the person&#39;s Hunger Need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">)</span>
+
+        <span class="c1"># set the current meal for the next day</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># this handles skipped meals, all durations to the meal are positive</span>
+        <span class="c1"># set any skipped meals to start on the next day</span>
+        <span class="c1">#</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span><span class="p">):</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># need to find the next meal so that the following is avoided</span>
+        <span class="c1"># an early lunch ends before a late breakfast</span>
+        <span class="c1">#</span>
+
+        <span class="n">dt</span><span class="p">,</span> <span class="n">the_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">duration_to_next_meal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span><span class="p">)</span>
+
+        <span class="c1"># set the hunger decay rate</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">set_decay_rate_new</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># update the schedule</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># set the new current meal</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span> <span class="o">=</span> <span class="n">the_meal</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat.set_end_time"><a class="viewcode-back" href="../eat.html#eat.Eat.set_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the end time of eating (universal time).</span>
+
+<span class="sd">        :param person.Person p: the person of interest.</span>
+
+<span class="sd">        :return t_end: the end time of eating [minutes, universal time]</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is the meal being used. This is useful when the current meal begins in 1 meal space and</span>
+        <span class="c1"># ends in another meal space. Do not use p.socio.get_current_meal(p.clock.time_of_day)</span>
+        <span class="n">the_meal</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span>
+
+        <span class="c1"># set hunger suggested recharge rate</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">set_suggested_recharge_rate</span><span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># the amount of time it takes to eat a meal until fully satisfied</span>
+        <span class="c1"># (make sure it is an integer)</span>
+        <span class="c1">#if (p.state.is_init):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">initial_step</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">recharge_rate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">suggested_recharge_rate</span>
+
+        <span class="c1"># round the time to the nearest minute</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># the time to end the meal</span>
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">dt</span>
+
+
+        <span class="k">return</span> <span class="n">t_end</span>
+</div>
+<div class="viewcode-block" id="Eat.start"><a class="viewcode-back" href="../eat.html#eat.Eat.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function starts the eating activity.</span>
+
+<span class="sd">        :param person.Person p: The person whose activity is starting.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># start the meal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat.start_meal"><a class="viewcode-back" href="../eat.html#eat.Eat.start_meal">[docs]</a>    <span class="k">def</span> <span class="nf">start_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function starts the eat activity by doing the following.</span>
+
+<span class="sd">        #. sets the person&#39;s state to busy (:const:`state.BUSY`)</span>
+<span class="sd">        #. set the decay rate of hunger to 0</span>
+<span class="sd">        #. store the start time to the state</span>
+<span class="sd">        #. sets the end time</span>
+<span class="sd">        #. sets the hunger recharge rate</span>
+<span class="sd">        #. updates the asset&#39;s state and number of users        </span>
+<span class="sd">        #. update the schedule for the hunger need to trigger when the eat activity is scheduled to end         </span>
+
+<span class="sd">        :param person.Person p: the person who is starting the meal</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the state of of the person to </span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">BUSY</span>        
+        
+        <span class="c1"># hunger does not decay while eating</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># set the start time of the current state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># calculate the end time of sleep</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_end_time</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># calculate the duration</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c1"># set the recharge rate for the hunger need association</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">set_recharge_rate</span><span class="p">(</span><span class="n">dt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># update the asset</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># update the scheduler</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat.test_func"><a class="viewcode-back" href="../eat.html#eat.Eat.test_func">[docs]</a>    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="k">print</span><span class="p">([(</span><span class="n">m</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;current meal: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">meal</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+
+        <span class="k">return</span>
+</div></div>
+<div class="viewcode-block" id="Eat_Breakfast"><a class="viewcode-back" href="../eat.html#eat.Eat_Breakfast">[docs]</a><span class="k">class</span> <span class="nc">Eat_Breakfast</span><span class="p">(</span><span class="n">Eat</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to handle the logistics for eating breakfast.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">Eat</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">EAT_BREAKFAST</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Eat_Breakfast.advertise"><a class="viewcode-back" href="../eat.html#eat.Eat_Breakfast.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activities advertisement to a person.</span>
+
+<span class="sd">        Advertise to the agent if the following conditions are met</span>
+<span class="sd">        </span>
+<span class="sd">        #. the current meal is breakfast</span>
+<span class="sd">        #. the agent&#39;s location is at home (:const:`location.HOME`)</span>
+<span class="sd">        #. calculate the score</span>
+<span class="sd">                                        </span>
+<span class="sd">        .. math::     </span>
+<span class="sd">            S = \\begin{cases}</span>
+<span class="sd">            0  &amp; n_{hunger}(t) &gt; \\lambda \\\\</span>
+<span class="sd">            W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) &amp; n_{hunger}(t) \\le \\lambda</span>
+<span class="sd">            \\end{cases}</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return score: the advertised score of doing the eat breakfast activity</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># get the next meal</span>
+        <span class="n">the_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_current_meal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="c1"># only eat breakfast at home</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">the_meal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">):</span>
+
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise_help</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Eat_Breakfast.end_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Breakfast.end_meal">[docs]</a>    <span class="k">def</span> <span class="nf">end_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the logistics for ending the eat activity by doing the following.</span>
+<span class="sd">         </span>
+<span class="sd">         #. call :func:`eat.end_meal`</span>
+<span class="sd">         #. If planning to skip lunch, update the lunch event to be the next day</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person who&#39;s meal is ending </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># call the constructor of the parent class</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Breakfast</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># if planning to skip lunch</span>
+        <span class="c1"># say, it&#39;s day 1 and breakfast ends and for whatever reason dinner is the nearest meal</span>
+        <span class="c1"># Then, lunch must be planned to be eaten on day 2</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat_Breakfast.start_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Breakfast.start_meal">[docs]</a>    <span class="k">def</span> <span class="nf">start_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the logistics for starting the eat activity by doing the following</span>
+<span class="sd">        </span>
+<span class="sd">        #. set the current meal to breakfast</span>
+<span class="sd">        #. call :func:`eat.start_meal`</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person who is starting the eat activity </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">]</span><span class="o">.</span><span class="n">day</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span>                <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_meal</span><span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Breakfast</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div></div>
+<div class="viewcode-block" id="Eat_Lunch"><a class="viewcode-back" href="../eat.html#eat.Eat_Lunch">[docs]</a><span class="k">class</span> <span class="nc">Eat_Lunch</span><span class="p">(</span><span class="n">Eat</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to handle the logistics for eating lunch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">Eat</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">EAT_LUNCH</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Eat_Lunch.advertise"><a class="viewcode-back" href="../eat.html#eat.Eat_Lunch.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        This function calculates the score of an activities advertisement to a person.</span>
+
+<span class="sd">        Advertise to the agent if the following conditions are met</span>
+<span class="sd">        </span>
+<span class="sd">        #. the current meal is lunch</span>
+<span class="sd">        #. the agent&#39;s location is at home (:const:`location.HOME`) or the agent&#39;s location is at the \</span>
+<span class="sd">        workplace (:const:`location.OFF_SITE`)</span>
+<span class="sd">        #. calculate the score</span>
+<span class="sd">                                        </span>
+<span class="sd">        .. math::     </span>
+<span class="sd">            S = \\begin{cases}</span>
+<span class="sd">            0  &amp; n_{hunger}(t) &gt; \\lambda \\\\</span>
+<span class="sd">            W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) &amp; n_{hunger}(t) \\le \\lambda</span>
+<span class="sd">            \\end{cases}</span>
+<span class="sd">            </span>
+<span class="sd">        If the threshold is not met, score is 0. The advertisements assume that the duration \</span>
+<span class="sd">        of the activity is the mean duration.</span>
+
+<span class="sd">        :param person.Person p: The person of interest</span>
+
+<span class="sd">        :return score: the advertised score of doing the Eat activity</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># adjust the range of start times</span>
+        <span class="n">score</span>   <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># find the meal that is advertised.</span>
+        <span class="n">the_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_current_meal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="c1"># need to add something for limiting advertisements at work during non-lunch time</span>
+
+        <span class="c1"># if  breakfast is skipped, need to make sure lunch is advertised at the correct time. If a meal is advertised,</span>
+        <span class="c1"># n &lt; lambda.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">the_meal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">):</span>
+
+            <span class="c1"># set flags for if it&#39;s time to work</span>
+            <span class="n">is_work_time</span>    <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">is_work_time</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="p">)</span>
+
+            <span class="c1"># set flag to see if the time is before lunch starts</span>
+            <span class="n">is_before_lunch</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">&lt;</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">t_start</span>
+
+            <span class="c1"># if agent is at work and before lunch time, do NOT eat lunch</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">is_work_time</span> <span class="ow">and</span> <span class="n">is_before_lunch</span><span class="p">):</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise_help</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Eat_Lunch.end_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Lunch.end_meal">[docs]</a>    <span class="k">def</span> <span class="nf">end_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function ends the eat activity by doing the following:</span>
+
+<span class="sd">        #. calls :func:`eat.end_meal`</span>
+<span class="sd">        #. if dinner is to be skipped, update the dinner event by doing the following:</span>
+<span class="sd">            * if the lunch is an interrupting activity</span>
+<span class="sd">                * set the time until the next lunch activity</span>
+<span class="sd">                * update the schedule for the interruption to the next lunch activity</span>
+<span class="sd">                * set the interruption state to False        </span>
+
+<span class="sd">        :param person.Person p: The person whose meal is ending.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># update interruption at end of work NOT end of meal</span>
+        <span class="c1"># also set hunger decay rate</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Lunch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># if planning to skip dinner</span>
+        <span class="c1"># say it&#39;s day 1 and we plan to skip dinner</span>
+        <span class="c1"># must update dinner to be on day 2</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># update the scheduler if lunch was started due to an interruption</span>
+        <span class="c1"># Note: I added the if clause later</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_interruption</span><span class="p">:</span>
+            <span class="n">dt</span>  <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">get_time_to_next_work_lunch</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INTERRUPTION</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_interruption</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat_Lunch.start_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Lunch.start_meal">[docs]</a>    <span class="k">def</span> <span class="nf">start_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles the logistics for starting the eat activity by doing the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. sets the current meal to lunch</span>
+<span class="sd">        #. call :func:`eat.start_meal`</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person starting the eat lunch event </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">]</span><span class="o">.</span><span class="n">day</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span>            <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_meal</span><span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Lunch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div></div>
+<div class="viewcode-block" id="Eat_Dinner"><a class="viewcode-back" href="../eat.html#eat.Eat_Dinner">[docs]</a><span class="k">class</span> <span class="nc">Eat_Dinner</span><span class="p">(</span><span class="n">Eat</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to handle the logistics for eating dinner.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+
+        <span class="n">Eat</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">EAT_DINNER</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Eat_Dinner.advertise"><a class="viewcode-back" href="../eat.html#eat.Eat_Dinner.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activities advertisement to a Person.</span>
+
+<span class="sd">        Advertise to the agent if the following conditions are met</span>
+<span class="sd">        </span>
+<span class="sd">        #. the current meal is lunch</span>
+<span class="sd">        #. the agent&#39;s location is at home (:const:`location.HOME`)</span>
+<span class="sd">        #. calculate the score</span>
+<span class="sd">                                        </span>
+<span class="sd">        .. math::     </span>
+<span class="sd">            S = \\begin{cases}</span>
+<span class="sd">            0  &amp; n_{hunger}(t) &gt; \\lambda \\\\</span>
+<span class="sd">            W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) &amp; n_{hunger}(t) \\le \\lambda</span>
+<span class="sd">            \\end{cases}</span>
+<span class="sd">            </span>
+<span class="sd">        If the threshold is not met, score is 0. The advertisements assume that the duration \</span>
+<span class="sd">        of the activity is the mean duration.</span>
+
+<span class="sd">        :param person.Person p: The person of interest</span>
+
+<span class="sd">        :return score: the advertised score of doing the Eat activity</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># find the meal that is advertised. The meal that is to be eaten next. Depends on the time</span>
+        <span class="n">the_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_current_meal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">the_meal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">==</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span><span class="p">):</span>
+           <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise_help</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Eat_Dinner.end_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Dinner.end_meal">[docs]</a>    <span class="k">def</span> <span class="nf">end_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function goes through the logistics of ending the dinner meal by doing the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. calls :func:`end.end_meal`</span>
+<span class="sd">        #. If breakfast will be skipped, update the lunch event to be 2 days from the current day </span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person who is finishing the eating dinner event </span>
+<span class="sd">        :return:  None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Dinner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># if a NEW meal will be skipped</span>
+        <span class="c1"># say it&#39;s day 1 and the agent has finished dinner</span>
+        <span class="c1"># the agent plans on skipping breakfast (on day 2) for whatever reason and eating lunch instead (day 2)</span>
+        <span class="c1"># That means the next breakfast event needs to be on day 3</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Eat_Dinner.start_meal"><a class="viewcode-back" href="../eat.html#eat.Eat_Dinner.start_meal">[docs]</a>    <span class="k">def</span> <span class="nf">start_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function goes through the logistics of starting the dinner meal by doing the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. set the current meal to dinner</span>
+<span class="sd">        #. call :func:`eat.start_meal`</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: the person who is starting the eat dinner event</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">]</span><span class="o">.</span><span class="n">day</span>  <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span>            <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">get_meal</span><span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Dinner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start_meal</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

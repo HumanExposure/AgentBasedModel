@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>temporal module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="transport module" href="transport.html" />
+    <link rel="prev" title="state module" href="state.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-temporal">
+<span id="temporal-module"></span><h1>temporal module<a class="headerlink" href="#module-temporal" title="Permalink to this headline">¶</a></h1>
+<p>This file contains code that handles the time related aspects of this code.</p>
+<p>This file contains code for class <a class="reference internal" href="#temporal.Temporal" title="temporal.Temporal"><code class="xref py py-class docutils literal"><span class="pre">temporal.Temporal</span></code></a>. This file also includes other functions that are accessed outside of the Temporal class.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="temporal.Temporal">
+<em class="property">class </em><code class="descclassname">temporal.</code><code class="descname">Temporal</code><span class="sig-paren">(</span><em>t_univ=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class handles all the time keeping responsibilities.</p>
+<p>Universal time is the total amount of time in minutes elapsed from the start of the
+calendar year.</p>
+<p>Day 0 at 0:00 corresponds to a universal time of 0</p>
+<p>Day 1 at 0:00 corresponds to a universal time of 1 * 24 * 60</p>
+<p>Day 359 at 0:00 corresponds to a universal time of 359 * 24 * 60</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>t_univ</strong> (<em>int</em>) &#8211; the time in universal time [minutes]</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>day</strong> (<em>int</em>) &#8211; the day number in the simulation</li>
+<li><strong>day_of_week</strong> (<em>int</em>) &#8211; a number 0, 1, 2, ... 6 corresponding to days of the week where 0 is Sunday, 1 is     Monday,  ... 6 is Saturday</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the step size in the simulation [minutes] (<strong>antiquated</strong>)</li>
+<li><strong>hour_of_day</strong> (<em>int</em>) &#8211; the hour of the day [0, 23]</li>
+<li><strong>is_weekday</strong> (<em>bool</em>) &#8211; a flag indicating if it&#8217;s a weekday (Monday-Friday) if True. False, otherwise.</li>
+<li><strong>is_night</strong> (<em>bool</em>) &#8211; a flag indicating if the time of day is after DUSK and before DAWN if True.     False, otherwise.</li>
+<li><strong>min_of_day</strong> (<em>int</em>) &#8211; the minute of the day [0, 60 - 1]</li>
+<li><strong>t_univ</strong> (<em>int</em>) &#8211; the universal time [minutes]</li>
+<li><strong>time_of_day</strong> (<em>int</em>) &#8211; the time of the day [minutes], [0, 1, ... 24 * 60 -1]</li>
+<li><strong>season</strong> (<em>int</em>) &#8211; the season</li>
+<li><strong>tic</strong> (<em>int</em>) &#8211; indicates that current tick (each tick corresponds to a step of size dt)</li>
+<li><strong>step</strong> (<em>int</em>) &#8211; indicates the current step in the simulation [0, ... num_steps-1]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="temporal.Temporal.print_day_night">
+<code class="descname">print_day_night</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.print_day_night"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.print_day_night" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents whether it&#8217;s day or night as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">daytime / nighttime status (or an error message, if there is an error)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.print_day_of_week">
+<code class="descname">print_day_of_week</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.print_day_of_week"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.print_day_of_week" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the day of the week as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">the day of the week (or an error message, if there is an error)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.print_season">
+<code class="descname">print_season</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.print_season"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.print_season" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the seasons as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the season (or an error message, if there is an error)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.print_time_of_day_to_military">
+<code class="descname">print_time_of_day_to_military</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.print_time_of_day_to_military"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.print_time_of_day_to_military" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the time of day as military time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the time of day in military time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>t_univ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the temporal object to the initial state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t_univ</strong> (<em>int</em>) &#8211; The time [seconds, universal time] that the time should be reset to</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.set_day_of_week">
+<code class="descname">set_day_of_week</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.set_day_of_week"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.set_day_of_week" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the day of the week.</p>
+<p>In addition, this function sets the day count, the day of the week, and a flag indicating whether it         is a weekday or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.set_season">
+<code class="descname">set_season</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.set_season"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.set_season" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the season.</p>
+<p>Day 0 is the beginning of winter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.set_time">
+<code class="descname">set_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets all the time variable due to the universal time.</p>
+<p>This function sets</p>
+<ol class="arabic simple">
+<li>the time of day</li>
+<li>the day of the week</li>
+<li>the season</li>
+<li>the tic.</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.set_time_of_day">
+<code class="descname">set_time_of_day</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.set_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.set_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the universal time, this function sets the time of day in minutes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function represents the Temporal object as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">the representation of the temporal object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="temporal.Temporal.update_time">
+<code class="descname">update_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#Temporal.update_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.Temporal.update_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increments the time by 1 time step.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is outdated!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="temporal.convert_cyclical_to_decimal">
+<code class="descclassname">temporal.</code><code class="descname">convert_cyclical_to_decimal</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#convert_cyclical_to_decimal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.convert_cyclical_to_decimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts cyclical time to decimal time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>int</em>) &#8211; the time of day [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return out:</th><td class="field-body">the time of day in [hours]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="temporal.convert_cylical_to_universal">
+<code class="descclassname">temporal.</code><code class="descname">convert_cylical_to_universal</code><span class="sig-paren">(</span><em>day</em>, <em>time_of_day</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#convert_cylical_to_universal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.convert_cylical_to_universal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts a cyclical time to the universal time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>day</strong> (<em>int</em>) &#8211; the day of the year</li>
+<li><strong>time_of_day</strong> (<em>int</em>) &#8211; the time of day [minutes]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return t:</th><td class="field-body"><p class="first">the time in universal time</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="temporal.convert_decimal_to_min">
+<code class="descclassname">temporal.</code><code class="descname">convert_decimal_to_min</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#convert_decimal_to_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.convert_decimal_to_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in the time of day as a decimal and outputs the time in minutes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>float</em>) &#8211; the time of day [0, 24) [hours]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return out:</th><td class="field-body">the time of day [minutes]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="temporal.convert_universal_to_decimal">
+<code class="descclassname">temporal.</code><code class="descname">convert_universal_to_decimal</code><span class="sig-paren">(</span><em>t_univ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#convert_universal_to_decimal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.convert_universal_to_decimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in the universal time and converts it to the time of day in decimal format [0, 24)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t_univ</strong> (<em>int</em>) &#8211; the universal time [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return out:</th><td class="field-body">the universal time [hours]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="temporal.print_military_time">
+<code class="descclassname">temporal.</code><code class="descname">print_military_time</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/temporal.html#print_military_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#temporal.print_military_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the time of day in military time  assume that time is in minutes format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>int</em>) &#8211; the time of day [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return msg:</th><td class="field-body">the time of day in military time 00:00</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="state.html" title="previous chapter">state module</a></li>
+      <li>Next: <a href="transport.html" title="next chapter">transport module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/temporal.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/temporal.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

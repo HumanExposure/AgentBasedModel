@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sleep &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for sleep</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information about the activity dealing with sleeping. This class is :class:`activity.Activity` \</span>
+<span class="sd">that gives a :class:`person.Person` the ability to eat and satisfy the need :class:`rest.Rest`.</span>
+
+<span class="sd">This file contains class :class:`sleep.Sleep`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># -------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># -------------------------</span>
+
+<span class="c1"># general math functions</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+
+<div class="viewcode-block" id="Sleep"><a class="viewcode-back" href="../sleep.html#sleep.Sleep">[docs]</a><span class="k">class</span> <span class="nc">Sleep</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is responsible for the act of sleeping, which satisfies the need :class:`rest.Rest`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># constructor</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">activity</span><span class="o">.</span><span class="n">Activity</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span>
+
+        <span class="k">return</span>
+     
+    <span class="c1">#--------------------------------</span>
+    <span class="c1">#  Functions</span>
+    <span class="c1">#---------------------------------</span>
+
+<div class="viewcode-block" id="Sleep.advertise"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the score of an activity advertisement to a Person</span>
+
+<span class="sd">        :param person.Person p: the person being advertised to</span>
+<span class="sd">        </span>
+<span class="sd">        :return: the value of the advertisement</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the estimated duration of the sleep event</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_start</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># calculate the score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Sleep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Sleep.end"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles the end of the sleep activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_sleep</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sleep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Sleep.end_sleep"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.end_sleep">[docs]</a>    <span class="k">def</span> <span class="nf">end_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function addresses logistics with a person waking up from sleep</span>
+
+<span class="sd">        #. free the asset from use</span>
+<span class="sd">        #. set the state of the person to idle (:const:`state.IDLE`)</span>
+<span class="sd">        #. update the satiation</span>
+<span class="sd">        #. update the start time and end time</span>
+<span class="sd">        #. set the decay rate</span>
+<span class="sd">        #. update the schedule for the rest need</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># free the asset</span>
+        <span class="c1">#</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># update the person</span>
+        <span class="c1">#</span>
+        <span class="c1"># change the status of the Person</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="c1"># the amount of time spent sleeping (including rounding)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># the amount of gain of need during sleeping</span>
+        <span class="c1"># a linear gain in sleep</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">recharge_rate</span> <span class="o">*</span> <span class="n">dt</span>
+        
+        <span class="c1"># update the Person&#39;s Rest Need</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="c1"># update the sleep parameters</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">update_sleep_start</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">update_sleep_end</span><span class="p">()</span>
+        
+        <span class="c1"># update the rates</span>
+
+        <span class="c1"># the amount of time expected to be awake</span>
+        <span class="n">dt_awake</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">calc_awake_duration</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span>
+
+        <span class="c1"># set the recharge rate</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_suggested_recharge_rate</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_dt</span><span class="p">)</span>
+
+        <span class="c1"># set the decay rate</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_decay_rate</span><span class="p">(</span><span class="n">dt_awake</span><span class="p">)</span>
+        <span class="c1"># update the scheduler</span>
+        <span class="c1"># the amount of time until tired again</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">REST</span><span class="p">,</span> <span class="n">dt_awake</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Sleep.is_workday"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.is_workday">[docs]</a>    <span class="k">def</span> <span class="nf">is_workday</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function indicates whether or not the sleep event resembles that from a person sleeping for \</span>
+<span class="sd">        a workday.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: True, if the sleep event resembles a workday. False, otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># constants</span>
+        <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># default assumes that sleeping duration reflects a workday</span>
+        <span class="n">is_non_workday_sleep</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">is_employed</span><span class="p">:</span>
+
+            <span class="c1"># write the time centered around midnight [-12 * HOUR_2_MIN, 12 * HOUR_2_MIN)</span>
+            <span class="n">time_of_day</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">time_of_day</span> <span class="o">+</span> <span class="p">(</span><span class="n">time_of_day</span> <span class="o">&gt;=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span>
+
+            <span class="c1"># store the day fo the week for today and tomorrow</span>
+            <span class="n">today</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span>
+            <span class="n">tomorrow</span> <span class="o">=</span> <span class="p">(</span><span class="n">today</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">%</span> <span class="mi">7</span>
+
+            <span class="c1"># the time to sleep is before midnight</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">is_non_workday_sleep</span> <span class="o">=</span> <span class="n">tomorrow</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">work_days</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># the time to sleep is after midnight</span>
+                <span class="n">is_non_workday_sleep</span> <span class="o">=</span> <span class="n">today</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">work_days</span>
+
+        <span class="c1"># store if the sleep behavior resembles a workday</span>
+        <span class="n">workday_sleep</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_non_workday_sleep</span>
+
+        <span class="k">return</span> <span class="n">workday_sleep</span>
+</div>
+<div class="viewcode-block" id="Sleep.set_end_time"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.set_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the end time of sleeping</span>
+
+<span class="sd">        The end time :math:`t_{end}` is set as follows</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            :nowrap:</span>
+
+<span class="sd">            \\[</span>
+<span class="sd">            \\begin{cases}</span>
+<span class="sd">                \\Delta{t} &amp;= \\frac{ 1 - n(t) }{ m_{suggested} } \\\\</span>
+<span class="sd">                t_{end} &amp;= t + \\Delta{t}</span>
+<span class="sd">            \\end{cases}</span>
+<span class="sd">            \\]</span>
+
+<span class="sd">        where</span>
+<span class="sd">            * :math:`\\Delta{t}` is the duration of sleep</span>
+<span class="sd">            * :math:`m_{suggested}` is the suggested recharge rate</span>
+<span class="sd">            * :math:`n(t)` is the magnitude of sleep at time t</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return t_end: the end time of the sleep event [minutes, universal time]</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># the natural sleep end time</span>
+
+        <span class="c1"># suggested recharge rate assumes current magnitude is at threshold</span>
+
+        <span class="c1"># the default length of sleep; make sure it is an integer</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">initial_step</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">recharge_rate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">suggested_recharge_rate</span>
+
+        <span class="c1"># round the time to the nearest minute</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># the default time to wake up, if uninterrupted</span>
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">t_end</span>
+</div>
+<div class="viewcode-block" id="Sleep.start"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles the start of the sleep activity.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_sleep</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># store a list of the arguments for the end() procedure</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Sleep.start_sleep"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.start_sleep">[docs]</a>    <span class="k">def</span> <span class="nf">start_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This handles what happens when a Person goes to sleep.</span>
+
+<span class="sd">        #. The asset&#39;s status is updated.</span>
+<span class="sd">        #. The Person&#39;s state is set to the sleep state (:const:`state.SLEEP`)</span>
+<span class="sd">        #. The end time is calculated</span>
+<span class="sd">        #. The recharge rate is set (according to whether or not it is a workday / non-workday)</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+        <span class="c1">#</span>
+        <span class="c1"># update the asset</span>
+        <span class="c1">#</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># update the person</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># set the state of the Person to SLEEP</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">SLEEP</span>
+
+        <span class="c1"># changing the rates</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">initial_step</span><span class="p">:</span>
+            <span class="c1"># changing the suggested rate makes sure the agent sleeps in</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+                
+            <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_suggested_recharge_rate</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># set the start time of the current state</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># calculate the end time of sleep</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_end_time</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># the duration of the sleep event</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># set the recharge rate</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">set_recharge_rate</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># set the scheduler to the wake up time for rest</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">REST</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Sleep.toString"><a class="viewcode-back" href="../sleep.html#sleep.Sleep.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the Sleep object as a string</span>
+
+<span class="sd">        :return msg: the representation of the Sleep object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Activity Type: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_id</span><span class="p">()</span><span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">msg</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

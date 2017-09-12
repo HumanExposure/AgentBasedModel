@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hunger module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="income module" href="income.html" />
+    <link rel="prev" title="home module" href="home.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-hunger">
+<span id="hunger-module"></span><h1>hunger module<a class="headerlink" href="#module-hunger" title="Permalink to this headline">¶</a></h1>
+<p>This module contains information about governing the need Hunger.</p>
+<p>This module contains the class hunger (<a class="reference internal" href="#hunger.Hunger" title="hunger.Hunger"><code class="xref py py-class docutils literal"><span class="pre">hunger.Hunger</span></code></a>).</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="hunger.Hunger">
+<em class="property">class </em><code class="descclassname">hunger.</code><code class="descname">Hunger</code><span class="sig-paren">(</span><em>clock</em>, <em>num_sample_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="need.html#need.Need" title="need.Need"><code class="xref py py-class docutils literal"><span class="pre">need.Need</span></code></a></p>
+<p>This class governs the behavior of the need Hunger need. When Hunger is unstatisfied,
+the agent feels compelled to eat a meal in order to satisfy the need. Mathematically     speaking, Hunger is modeled as linearly-behaving need.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
+<li><strong>num_sample_points</strong> (<em>int</em>) &#8211; the number of temporal nodes in the simulation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>category</strong> (<em>int</em>) &#8211; the category of the need</li>
+<li><strong>decay_rate</strong> (<em>float</em>) &#8211; the decay rate of the Hunger need [need/minute]</li>
+<li><strong>recharge_rate</strong> (<em>float</em>) &#8211; the recharge rate of the Hunger need [need/min]</li>
+<li><strong>suggested_recharge_rate</strong> (<em>float</em>) &#8211; an approximate recharge rate used to calculate the end time of an     event before rounding</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="hunger.Hunger.decay">
+<code class="descname">decay</code><span class="sig-paren">(</span><em>status</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.decay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.decay" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function decreases the satiation in Hunger by doing the following:</p>
+<div class="math">
+<p><img src="_images/math/ce138f99ef88e0a2d215be5c6d40da17aaf497a6.png" alt="n(t + 1) = n(t) + m_{decay}"/></p>
+</div><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function may be antiquated and <strong>not used</strong></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>status</strong> (<em>int</em>) &#8211; indicates the current status of the person&#8217;s state (not-used)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.decay_new">
+<code class="descname">decay_new</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.decay_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.decay_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the default decrease in the Hunger need.</p>
+<div class="math">
+<p><img src="_images/math/1ca3ce5d3a27758c20731f92fd73d77aed441f5a.png" alt="n(t + \Delta{t}) = n(t) + m_{decay}\,\Delta{t}"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the duration of time [minutes] used to decay the need</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes the the hunger need at the first step of the simulation. The function         checks to see whether or not the current time implies that there should be an eating event. The         hunger object is set to the respective state.</p>
+<p>This function does the following exactly</p>
+<ol class="arabic simple">
+<li>initialize all of the meals</li>
+<li>check to see if a meal should be occurring at the current time</li>
+<li><dl class="first docutils">
+<dt>if no meals should be occurring</dt>
+<dd><ul class="first last">
+<li>figure out the next meal <img class="math" src="_images/math/c4bb40dd65eae6c11b325989b14e0b8d35e4e3ef.png" alt="m"/></li>
+<li>calculate the decay rate for hunger until the next meal</li>
+<li>calculate the amount of time until the next meal <img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/></li>
+<li>set the current meal <img class="math" src="_images/math/c4bb40dd65eae6c11b325989b14e0b8d35e4e3ef.png" alt="m"/></li>
+<li>update the schedule for the hunger need to be the time the next meal starts</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>if a meal should be occurring</dt>
+<dd><ul class="first last">
+<li>get the index of the meal that should be occurring <img class="math" src="_images/math/c4bb40dd65eae6c11b325989b14e0b8d35e4e3ef.png" alt="m"/></li>
+<li>set the current meal <img class="math" src="_images/math/c4bb40dd65eae6c11b325989b14e0b8d35e4e3ef.png" alt="m"/></li>
+<li>calculate the final time of the meal</li>
+<li>calculate the duration until the end of the next meal <img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/></li>
+<li>set the recharge rate</li>
+<li>update the scheduler for the hunger need to be the time the current meal should end</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>initialize the start time for each meal</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person whose hunger need is being initialized</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.is_meal_time">
+<code class="descname">is_meal_time</code><span class="sig-paren">(</span><em>t</em>, <em>the_meal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.is_meal_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.is_meal_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>This checks whether or not it is time for a meal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>int</em>) &#8211; time of day [minutes]</li>
+<li><strong>the_meal</strong> (<a class="reference internal" href="meal.html#meal.Meal" title="meal.Meal"><em>meal.Meal</em></a>) &#8211; the respective meal to see whether the current time implies                             that an eating event should happen</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the current time is within the time to eat. False, otherwise</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.is_meal_time_all">
+<code class="descname">is_meal_time_all</code><span class="sig-paren">(</span><em>t</em>, <em>meals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.is_meal_time_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.is_meal_time_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function checks every meal and sees whether or not the current time         implies that there should be an eventing event for a respective meal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>int</em>) &#8211; The current time of day [minutes]</li>
+<li><strong>meals</strong> (<em>list</em>) &#8211; A list of Meals</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of boolean flags indicating True or False, indicating whether or not an         eating event should occur for the respective meal</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.perceive">
+<code class="descname">perceive</code><span class="sig-paren">(</span><em>future_clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.perceive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.perceive" title="Permalink to this definition">¶</a></dt>
+<dd><p>This gives the result if eat is done now until a later time corresponding to clock.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>future_clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; a clock at a future time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return out:</th><td class="field-body">the perceived hunger need association level</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function resets the values in order for the need to be used in the next simulation
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.set_decay_rate">
+<code class="descname">set_decay_rate</code><span class="sig-paren">(</span><em>t_start</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.set_decay_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.set_decay_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the decay rate of hunger to the next meal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dt</strong> (<em>int</em>) &#8211; the amount of time to the next meal [minutes]</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time [in minutes] of the next meal</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.set_decay_rate_new">
+<code class="descname">set_decay_rate_new</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.set_decay_rate_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.set_decay_rate_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the decay rate of hunger to the next meal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the amount of time to the next meal [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.set_recharge_rate">
+<code class="descname">set_recharge_rate</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.set_recharge_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.set_recharge_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the recharge rate of hunger due to eating the current meal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the amount of time it takes to finish a meal [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.set_suggested_recharge_rate">
+<code class="descname">set_suggested_recharge_rate</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.set_suggested_recharge_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.set_suggested_recharge_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the suggested recharge rate assuming a <strong>linear function</strong> behavior</p>
+<p>The suggested recharge rate is based on the duration of the sleeping event         and the threshold. The sleep duration is based on the biological data (no rounding).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; The duration of time of the eating event [minutes]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="hunger.Hunger.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hunger.html#Hunger.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hunger.Hunger.toString" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Represents the Hunger object as a string.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">the string representation of the huger object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="home.html" title="previous chapter">home module</a></li>
+      <li>Next: <a href="income.html" title="next chapter">income module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/hunger.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/hunger.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

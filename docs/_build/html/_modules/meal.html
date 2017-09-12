@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>meal &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for meal</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains contains information about various meals that an agent \</span>
+<span class="sd"> would eat in.</span>
+
+<span class="sd">This module contains code for class :class:`meal.Meal`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import </span>
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">temporal</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># constants</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># meals</span>
+<span class="c1"># they must be in incremental order</span>
+<span class="n">BREAKFAST</span>   <span class="o">=</span> <span class="mi">0</span>
+<span class="n">LUNCH</span>       <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DINNER</span>      <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># values are in minutes</span>
+<span class="n">BREAKFAST_DT_MEAN</span>       <span class="o">=</span> <span class="mi">15</span>
+<span class="n">BREAKFAST_DT_STD</span>        <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">BREAKFAST_START_MEAN</span>    <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span> <span class="o">+</span> <span class="mi">30</span>
+<span class="n">BREAKFAST_START_STD</span>     <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># number of standard deviation</span>
+<span class="n">BREAKFAST_START_TRUNC</span>   <span class="o">=</span> <span class="mi">1</span>
+<span class="n">BREAKFAST_DT_TRUNC</span>      <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># values are in minutes</span>
+<span class="n">LUNCH_DT_MEAN</span>           <span class="o">=</span> <span class="mi">30</span>
+<span class="n">LUNCH_DT_STD</span>            <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">LUNCH_START_MEAN</span>        <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">LUNCH_START_STD</span>         <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># number of standard deviation</span>
+<span class="n">LUNCH_START_TRUNC</span>       <span class="o">=</span> <span class="mi">1</span>
+<span class="n">LUNCH_DT_TRUNC</span>          <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># values are in minutes</span>
+<span class="n">DINNER_DT_MEAN</span>          <span class="o">=</span> <span class="mi">45</span>
+<span class="n">DINNER_DT_STD</span>           <span class="o">=</span> <span class="mi">15</span>
+
+<span class="n">DINNER_START_MEAN</span>       <span class="o">=</span> <span class="mi">19</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+<span class="n">DINNER_START_STD</span>        <span class="o">=</span> <span class="mi">60</span>
+
+<span class="c1"># number of standard deviation</span>
+<span class="n">DINNER_START_TRUNC</span>      <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DINNER_DT_TRUNC</span>         <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># the minimum amount of time to eat a meal</span>
+<span class="n">DT_MIN</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># this takes an INTEGER representation for a meal and represents it as </span>
+<span class="c1"># a STRING</span>
+<span class="n">INT_2_STR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">BREAKFAST</span><span class="p">:</span> <span class="s1">&#39;Breakfast&#39;</span><span class="p">,</span>
+    <span class="n">LUNCH</span><span class="p">:</span> <span class="s1">&#39;Lunch&#39;</span><span class="p">,</span>
+    <span class="n">DINNER</span><span class="p">:</span> <span class="s1">&#39;Dinner&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># this takes a STRING representation for a meal and represents it as </span>
+<span class="c1"># an INTEGER</span>
+<span class="n">STR_2_INT</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Meal"><a class="viewcode-back" href="../meal.html#meal.Meal">[docs]</a><span class="k">class</span> <span class="nc">Meal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is class contains information about meals (breakfast, dinner, and lunch)</span>
+
+<span class="sd">    :ivar int id: the meal type (breakfast, lunch, or dinner)</span>
+<span class="sd">    :ivar int dt: the duration of a meal [minutes]</span>
+<span class="sd">    :ivar int dt_mean: the mean duration of a meal [minutes]</span>
+<span class="sd">    :ivar int dt_std: the standard deviation of meal duration [minutes]</span>
+<span class="sd">    :ivar int dt_trunc: the number of standard deviation in the duration distribution</span>
+<span class="sd">    :ivar int t_start: the start time of a meal [minutes, time of day]</span>
+<span class="sd">    :ivar int t_start_univ: the start time of a meals [minutes, universal time]</span>
+<span class="sd">    :ivar int start_mean: the mean start time of a meal [minutes, time of day]</span>
+<span class="sd">    :ivar int start_std: the standard deviation of start time of a meal [minutes]</span>
+<span class="sd">    :ivar int start_trunc: the number of standard deviation of in the start time distribution</span>
+<span class="sd">    </span>
+<span class="sd">    :ivar f_start: the start time distribution function</span>
+<span class="sd">    :ivar f_dt: the duration distribution function </span>
+<span class="sd">    :ivar int day: the day the meal should occur </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">BREAKFAST</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">BREAKFAST_START_MEAN</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">BREAKFAST_START_STD</span><span class="p">,</span> \
+                 <span class="n">start_trunc</span><span class="o">=</span><span class="n">BREAKFAST_START_TRUNC</span><span class="p">,</span> <span class="n">dt_mean</span><span class="o">=</span><span class="n">BREAKFAST_DT_MEAN</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">BREAKFAST_DT_STD</span><span class="p">,</span> \
+                 <span class="n">dt_trunc</span><span class="o">=</span><span class="n">BREAKFAST_DT_TRUNC</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span>     <span class="o">=</span> <span class="n">start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_std</span>      <span class="o">=</span> <span class="n">start_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span>    <span class="o">=</span> <span class="n">start_trunc</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span>    <span class="o">=</span> <span class="n">dt_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_std</span>     <span class="o">=</span> <span class="n">dt_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span>   <span class="o">=</span> <span class="n">dt_trunc</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_start</span>    <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_std</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_dt</span>       <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_std</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_univ</span>   <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day</span>            <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Meal.initialize"><a class="viewcode-back" href="../meal.html#meal.Meal.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        At the beginning of the simulation, make sure that the meals are initialized to the proper times \</span>
+<span class="sd">        (:mod:`t_start_univ`) so that they relate to the simulation time (t_univ)</span>
+<span class="sd">        </span>
+<span class="sd">        :param int t_univ: the simulation time [minutes, universal time]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of minutes in 1 day</span>
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the current day</span>
+        <span class="n">day</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">t_univ</span> <span class="o">/</span> <span class="n">DAY_2_MIN</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># the day counter</span>
+        <span class="n">i</span>       <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># maximum number of iterations</span>
+        <span class="n">N_MAX</span>   <span class="o">=</span> <span class="mi">500</span>
+
+        <span class="c1"># update the day the meal is supposed to happen so that it starts after the current time (t_start</span>
+        <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="o">&lt;</span> <span class="n">t_univ</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">N_MAX</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">day</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Meal.print_id"><a class="viewcode-back" href="../meal.html#meal.Meal.print_id">[docs]</a>    <span class="k">def</span> <span class="nf">print_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns a string representation of the meal id</span>
+
+<span class="sd">        :return: a string representation of the meal id</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the error message, if the id is invalid</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an Invalid choice of STATE.status!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># If the id is valid, represent the id as a string. If not, write the error message</span>
+        <span class="k">return</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Meal.set_meal"><a class="viewcode-back" href="../meal.html#meal.Meal.set_meal">[docs]</a>    <span class="k">def</span> <span class="nf">set_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">start_trunc</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">,</span> <span class="n">dt_trunc</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the values associated with the Meal object.</span>
+
+<span class="sd">        :param int id: the meal type (breakfast, lunch, or dinner)</span>
+<span class="sd">        :param int start_mean: the mean start time of the meal [minutes, time of day] </span>
+<span class="sd">        :param int start_std: the standard deviation of start time [minutes]</span>
+<span class="sd">        :param int start_turnc: the number of standard deviations in the start time distribution        </span>
+<span class="sd">        :param int dt_mean: the mean duration of a meal [minutes]</span>
+<span class="sd">        :param int dt_std: the standard deviation of meal duration [minutes]</span>
+<span class="sd">        :param int dt_trunc: the number of standard deviations in the duration distribution</span>
+<span class="sd">                </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span>     <span class="o">=</span> <span class="n">start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_std</span>      <span class="o">=</span> <span class="n">start_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span>    <span class="o">=</span> <span class="n">start_trunc</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span>        <span class="o">=</span> <span class="n">dt_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_std</span>         <span class="o">=</span> <span class="n">dt_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span>       <span class="o">=</span> <span class="n">dt_trunc</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_start</span>            <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> \
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">start_std</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_std</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">set_distribution_dt</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_trunc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_std</span><span class="p">,</span> \
+                                                         <span class="n">x_min</span><span class="o">=</span><span class="n">DT_MIN</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># this returns a string representation of the Meal object</span>
+    <span class="c1">#</span></div>
+<div class="viewcode-block" id="Meal.toString"><a class="viewcode-back" href="../meal.html#meal.Meal.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns a string representation of the Meal object.</span>
+
+<span class="sd">        :return msg: a string representation of the Meal object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># the id</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Name:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_id</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the start time as military time</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Start Time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># the mean meal duration</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Expected Duration:</span><span class="se">\t</span><span class="si">%d</span><span class="s1">[min]</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mean</span>
+
+        <span class="c1"># the actual duration of the meal</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Duration:</span><span class="se">\t</span><span class="si">%d</span><span class="s1">[min]</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Meal.update"><a class="viewcode-back" href="../meal.html#meal.Meal.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the day for the meal, update the meal. The following does the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. Update the start time for the meal</span>
+<span class="sd">        #. Update the duration for the meal</span>
+<span class="sd">        #. Update the universal start time for the meal</span>
+<span class="sd">        </span>
+<span class="sd">        :param int day: the day for the meal to occur</span>
+<span class="sd">         </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dt</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_start_univ</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Meal.update_day"><a class="viewcode-back" href="../meal.html#meal.Meal.update_day">[docs]</a>    <span class="k">def</span> <span class="nf">update_day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the day for the next meal, given the universal start time for the meal (:mod:`t_start_univ`).</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="o">/</span> <span class="n">DAY_2_MIN</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Meal.update_dt"><a class="viewcode-back" href="../meal.html#meal.Meal.update_dt">[docs]</a>    <span class="k">def</span> <span class="nf">update_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample the duration distribution to get a duration.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dt</span>      <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">f_dt</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Meal.update_start"><a class="viewcode-back" href="../meal.html#meal.Meal.update_start">[docs]</a>    <span class="k">def</span> <span class="nf">update_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample the start time distribution to get a start time.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="n">t</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_start</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Meal.update_start_univ"><a class="viewcode-back" href="../meal.html#meal.Meal.update_start_univ">[docs]</a>    <span class="k">def</span> <span class="nf">update_start_univ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the day for the next meal, update the universal start time for the meal.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int day: the day for the meal  </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>           <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start_univ</span>   <span class="o">=</span> <span class="n">day</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day</span>            <span class="o">=</span> <span class="n">day</span>
+
+        <span class="k">return</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

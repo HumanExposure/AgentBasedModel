@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>diary module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="eat module" href="eat.html" />
+    <link rel="prev" title="commute module" href="commute.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-diary">
+<span id="diary-module"></span><h1>diary module<a class="headerlink" href="#module-diary" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code that governs the activity-diaries. Each activity diary contains
+dataframes that store the activity-diaries for each person. The activity-diaries are the
+output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.</p>
+<p>This module contains class <a class="reference internal" href="#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal"><span class="pre">diary.Diary</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="diary.Diary">
+<em class="property">class </em><code class="descclassname">diary.</code><code class="descname">Diary</code><span class="sig-paren">(</span><em>t</em>, <em>act</em>, <em>local</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class represents the activity-diaries for a person.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the start times for each activity [universal time, minutes]</li>
+<li><strong>act</strong> (<em>numpy.ndarray</em>) &#8211; the activity code done at each time step [integer] (flattened array)</li>
+<li><strong>local</strong> (<em>numpy.ndarray</em>) &#8211; the history of location codes done by a person</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colnames</strong> (<em>list</em>) &#8211; the column names for the activity diary in order</li>
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="diary.Diary.create_activity_diary">
+<code class="descname">create_activity_diary</code><span class="sig-paren">(</span><em>t</em>, <em>act</em>, <em>local</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.create_activity_diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.create_activity_diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates the activity diary for a given agent in the simulation.</p>
+<p>The activity diary contains:</p>
+<ol class="arabic simple">
+<li>The start-time and end-time for each activity</li>
+<li>The activity code</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the simulation times [universal time, minutes]</li>
+<li><strong>act</strong> (<em>numpy.ndarray</em>) &#8211; the activity code done at each time step [integer] (flattened array)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple containing the following: the array indices for each activity grouping, the activity diaries         in a numerical format, the activity diary in a string format, and the column names for each data type</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Each diary is a tuple that contains the following:</p>
+<ol class="arabic simple">
+<li>the day number of the start of the activity</li>
+<li>the (start-time, end-time) for the activity event</li>
+<li>the activity code for the activity event</li>
+<li>the location of the event</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.get_day_end">
+<code class="descname">get_day_end</code><span class="sig-paren">(</span><em>day_start</em>, <em>start</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.get_day_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.get_day_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the day that an activity ends.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>day_start</strong> (<em>numpy.ndarray</em>) &#8211; the day an activity starts</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity starts [hours]</li>
+<li><strong>dt</strong> (<em>numpy.ndarray</em>) &#8211; the duration for an activity [hours]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the day an activity ends</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.get_weekday_data">
+<code class="descname">get_weekday_data</code><span class="sig-paren">(</span><em>df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.get_weekday_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.get_weekday_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function pulls out data that only corresponds to the weekday data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the activity-diary of data that occur on weekdays</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.get_weekday_idx">
+<code class="descname">get_weekday_idx</code><span class="sig-paren">(</span><em>df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.get_weekday_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.get_weekday_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the indices of the data that occurs on weekdays. An activity is considered to be on the weekday if         the activity <strong>ends</strong> on Monday - Friday.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean indices of which activities end during the weekend</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.get_weekend_data">
+<code class="descname">get_weekend_data</code><span class="sig-paren">(</span><em>df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.get_weekend_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.get_weekend_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function pulls out data that only corresponds to the weekend data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, the use  the dataframe         associated with the current diary object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">an activity-diary of data that occurs on weekends</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.get_weekend_idx">
+<code class="descname">get_weekend_idx</code><span class="sig-paren">(</span><em>df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.get_weekend_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.get_weekend_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the indices of the data that occurs on weekend. An activity is considered to be on the weekend if         the activity <strong>ends</strong> on Saturday or Sunday.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean indices of which activities end during the weekend</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.group_activity">
+<code class="descname">group_activity</code><span class="sig-paren">(</span><em>t</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.group_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.group_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function groups activities in chronological order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the start time for activities</li>
+<li><strong>y</strong> (<em>numpy.ndarray</em>) &#8211; the activity code that corresponds with the respective time</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of each unique group-lists. Each group-list contains a tuple         for (time step, activity code)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.group_activity_indices">
+<code class="descname">group_activity_indices</code><span class="sig-paren">(</span><em>groups</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.group_activity_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.group_activity_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the indices for each continuous activity in chronological order.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The output is the time step number <strong>not</strong> the value of time</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<em>list</em>) &#8211; a list of tuples of (time step, activity code)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.group_activity_key">
+<code class="descname">group_activity_key</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.group_activity_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.group_activity_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the key function used in groupby in order to group consecutive time-step-activity pairs. This is         necessary for creating an activity diary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>tuple</em>) &#8211; the data in the form of ( index, (time step, activity code) )</td>
+</tr>
+</tbody>
+</table>
+<p>:return the key for sorting ( , activity code)
+:rtype: tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.is_weekend">
+<code class="descname">is_weekend</code><span class="sig-paren">(</span><em>day</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.is_weekend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.is_weekend" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns true if a day is in the weekend and false if it&#8217;s in a weekday.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>numpy.ndarray</em>) &#8211; the day of the weekend</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean index of whether or not a day is in the weekend (True) or not (False)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.same_day">
+<code class="descname">same_day</code><span class="sig-paren">(</span><em>start</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.same_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.same_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns true if the activity starts and ends on the same day.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity starts [hours]</li>
+<li><strong>dt</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity ends [hours]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a boolean index of whether or not an activity started and ended on the same day</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="diary.Diary.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This expresses the diary as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">an expression of the diary as a string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="commute.html" title="previous chapter">commute module</a></li>
+      <li>Next: <a href="eat.html" title="next chapter">eat module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/diary.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/diary.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scenario &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scenario</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains information to run the Agent-Based Model of Human Activity Patterns (ABMHAP) in \</span>
+<span class="sd">in different simulation scenarios in which the agent has a user-defined parametrization.</span>
+
+<span class="sd">The following classes are in this module</span>
+
+<span class="sd">#. :class:`scenario.Scenario`</span>
+<span class="sd">#. :class:`scenario.Solo`</span>
+<span class="sd">#. :class:`scenario.Duo`</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># general math functionality</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">diary</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">params</span><span class="o">,</span> <span class="nn">singleton</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">universe</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># constants</span>
+<span class="c1"># ===========================================</span>
+
+<span class="c1"># codes for different scenarios / simulations</span>
+<span class="n">NO_SIMULATION</span>   <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="c1"># a scenario with 1 person in the simulation</span>
+<span class="n">SOLO</span>            <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># a scenario with 2 people in the simulation</span>
+<span class="n">DUO</span>             <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+<div class="viewcode-block" id="Scenario"><a class="viewcode-back" href="../scenario.html#scenario.Scenario">[docs]</a><span class="k">class</span> <span class="nc">Scenario</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class governs what a simulation scenario consists of.</span>
+
+<span class="sd">    :param params.Params hhld_params: the parameters for the household that contain relevant information \</span>
+<span class="sd">    for the simulation</span>
+
+<span class="sd">    :var int id: the scenario identifier number</span>
+<span class="sd">    :var universe.Universe u: the universe object for the simulation</span>
+<span class="sd">    :var params.Params &#39;params&#39;: the parameters needed that control the simulation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hhld_params</span><span class="p">):</span>
+
+        <span class="c1"># the scenario identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span>     <span class="o">=</span> <span class="n">NO_SIMULATION</span>
+
+        <span class="c1"># kew word arguments</span>
+        <span class="c1"># probably will need to access various features of kwarg in the future when the model</span>
+        <span class="c1"># becomes more complex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">hhld_params</span>
+
+        <span class="c1"># create the universe object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span>      <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">t_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> \
+                                        <span class="n">num_people</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="c1"># set the clock to the desired time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">set_time</span><span class="p">()</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Scenario.activity_diary"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.activity_diary">[docs]</a>    <span class="k">def</span> <span class="nf">activity_diary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the activity diary for each person</span>
+
+<span class="sd">        Each person will attain the following tuple</span>
+
+<span class="sd">        #. grouping of the index for each activity</span>
+<span class="sd">        #. the day, (start-time, end-time), activity code, and location for each activity-event, in a numeric format</span>
+<span class="sd">        #. the same as above in a string format</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the time of each step in the simulation [universal time, minutes]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">hist_time</span>
+
+        <span class="c1"># the (index, numerical diary, string diary) for each</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span> <span class="n">diary</span><span class="o">.</span><span class="n">Diary</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">hist_local</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="Scenario.default_location"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.default_location">[docs]</a>    <span class="k">def</span> <span class="nf">default_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the default location for all Person&#39;s to be be at the home.</span>
+
+<span class="sd">        This location may be overridden later in the initialization of Persons.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="c1"># set the location to be at home</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Scenario.initialize"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function initializes the scenario before the simulation scenario is run</span>
+
+<span class="sd">        More specifically, the function does the following:</span>
+
+<span class="sd">        #. Sets the state and location for each person</span>
+<span class="sd">        #. Sets the home</span>
+<span class="sd">        #. Initialize the initial need-association states for the Person(s) and Home</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the default location of Persons(to be overridden)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_location</span><span class="p">()</span>
+
+        <span class="c1"># set the state and location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">()</span>
+
+        <span class="c1"># set the home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_home</span><span class="p">()</span>
+
+        <span class="c1"># initialize the needs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">initialize_needs</span><span class="p">()</span>
+
+        <span class="c1"># initialize the home assets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Scenario.run"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function initializes the scenario and then runs the ABMHAP simulation.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialize the Agents in the scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+        <span class="c1"># run the simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Scenario.set_home"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.set_home">[docs]</a>    <span class="k">def</span> <span class="nf">set_home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets aspects of the home in order to run the simulation scenario.</span>
+
+<span class="sd">        More specifically, the function does the following</span>
+
+<span class="sd">        #. set the home revenue</span>
+<span class="sd">        #. set the home population</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the home revenue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">set_revenue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="c1"># set the home population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">set_population</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Scenario.set_state"><a class="viewcode-back" href="../scenario.html#scenario.Scenario.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function initializes the scenario in order to run the simulation.</span>
+
+<span class="sd">        More specifically, this function does the following:</span>
+
+<span class="sd">        #. For each Person, the following is set:</span>
+<span class="sd">            #. identification number</span>
+<span class="sd">            #. the state</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># set the state and location of each Person</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># a personal identification number</span>
+        <span class="n">pin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+
+            <span class="c1"># put the people in the initialization phase for</span>
+            <span class="c1"># the first step of the simulation</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">is_init</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c1"># set the Person to be idle</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">stats</span>   <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+            <span class="c1"># Set the Person&#39;s state</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span>
+
+            <span class="c1"># set the Person ID</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">id</span>    <span class="o">=</span> <span class="n">pin</span>
+
+            <span class="c1"># update the ID number for the next Person</span>
+            <span class="n">pin</span>     <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span></div></div>
+<div class="viewcode-block" id="Solo"><a class="viewcode-back" href="../scenario.html#scenario.Solo">[docs]</a><span class="k">class</span> <span class="nc">Solo</span><span class="p">(</span><span class="n">Scenario</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class parametrizes / runs a simulation scenario for the Singleton (:class:`singleton.Singleton`) person.</span>
+
+<span class="sd">    :param params.Params hhld_params: the parameters for the household that contain relevant information \</span>
+<span class="sd">    for the simulation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hhld_params</span><span class="p">):</span>
+
+        <span class="c1"># Scenario constructor</span>
+        <span class="n">Scenario</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hhld_params</span><span class="p">)</span>
+
+        <span class="c1"># scenario identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">SOLO</span>
+
+        <span class="c1"># create a single person</span>
+        <span class="n">sam</span> <span class="o">=</span> <span class="n">singleton</span><span class="o">.</span><span class="n">Singleton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">schedule</span><span class="p">)</span>
+        <span class="n">sam</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># add Single Sam to the universe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sam</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span></div>
+<div class="viewcode-block" id="Duo"><a class="viewcode-back" href="../scenario.html#scenario.Duo">[docs]</a><span class="k">class</span> <span class="nc">Duo</span><span class="p">(</span><span class="n">Scenario</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class parametrizes / runs a simulation scenario for the cases where two Singleton \</span>
+<span class="sd">    (:class:`singleton.Singleton`) persons live in the same residence.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This scenario is used in order to check for activity conflicts among 2 agents living in \</span>
+<span class="sd">        the same household. Currently it is used primarily as a debugging tool.</span>
+
+<span class="sd">    :param params.Params hhld_params: the parameters for the household that contain relevant information \</span>
+<span class="sd">    for the simulation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hhld_params</span><span class="p">):</span>
+
+        <span class="n">Scenario</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hhld_params</span><span class="p">)</span>
+
+        <span class="c1"># scenario identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">DUO</span>
+
+        <span class="c1"># create Single Sam(s) and add them to the universe</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">num_people</span><span class="p">):</span>
+            <span class="n">sam</span> <span class="o">=</span> <span class="n">singleton</span><span class="o">.</span><span class="n">Singleton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">num_sample_points</span><span class="p">)</span>
+            <span class="n">sam</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sam</span><span class="p">)</span>
+
+        <span class="c1"># testing: changing the max occupancy of the bed</span>
+        <span class="c1"># this should cause an activity conflict when it comes to sleeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">assets</span><span class="p">[</span><span class="s1">&#39;bed&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max_users</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

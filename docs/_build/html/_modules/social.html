@@ -1,0 +1,573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>social &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for social</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that governs the social behavior/ characteristics relevant to a Person.</span>
+
+<span class="sd">This module contains class :class:`social.Social`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import </span>
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">temporal</span>
+
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># constants</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># school age</span>
+<span class="n">SCHOOL_AGE</span>  <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># the minimum age for an adult</span>
+<span class="n">ADULT_AGE</span>   <span class="o">=</span> <span class="mi">18</span>
+
+<span class="c1"># no one has lived this long</span>
+<span class="n">MAX_AGE</span>     <span class="o">=</span> <span class="mi">130</span>
+
+<span class="c1"># not using infants</span>
+<span class="n">MIN_AGE</span>     <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Social"><a class="viewcode-back" href="../social.html#social.Social">[docs]</a><span class="k">class</span> <span class="nc">Social</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains all of the relevant information governing the Person&#39;s \</span>
+<span class="sd">    social behavior.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The current version of the ABM does not have any &quot;alarm&quot; functionality / capability. The remnants of any \</span>
+<span class="sd">        code that governs the use of an alarm  will be removed in future updates.</span>
+<span class="sd">        </span>
+<span class="sd">    :param int age: the age of the Person [years]</span>
+<span class="sd">    :param int num_meals: the number of meals per day</span>
+
+<span class="sd">    :var bool is_child: this flag is True if the Person is a child, False otherwise</span>
+<span class="sd">    :var occupation.Occupation job: the information pertaining the the job</span>
+<span class="sd">    :var int num_meals: the number of meals per day a person will eat</span>
+<span class="sd">    :var list meals: a list of the meals that a person eats (:class:`meal.Meal`)</span>
+<span class="sd">    :var meal.Meal current_meal: the meal that is currently being eaten **or** if the Person is not eating a meal, \</span>
+<span class="sd">    it is the upcoming meal</span>
+<span class="sd">    :var meal.Meal next_meal: the meal that is after the meal indicated by :mod:`current_meal`</span>
+<span class="sd">    :var bool uses_alarm: indicates whether or not a person uses an alarm to wake up</span>
+<span class="sd">    :var bool is_alarm_set: indicates whether or not an alarm is set for the current day</span>
+<span class="sd">    :var int t_alarm: the time an alarm is supposed to go off [minutes, time of day]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">num_meals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        
+        <span class="c1"># child / adult</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_child</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_child_flag</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+
+        <span class="c1"># job info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span> <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">Occupation</span><span class="p">()</span>
+        
+        <span class="c1"># meals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_meals</span>  <span class="o">=</span> <span class="n">num_meals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meals</span>      <span class="o">=</span> <span class="p">[</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_meals</span><span class="p">)</span> <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_meal</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_meal</span>      <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1"># does the Person ever set an alarm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uses_alarm</span> <span class="o">=</span> <span class="bp">False</span>
+        
+        <span class="c1"># this depends on whether a Person uses an alarm and </span>
+        <span class="c1"># whether the day is a work day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_alarm_set</span>   <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_alarm</span>        <span class="o">=</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="k">return</span>
+
+    <span class="c1"># -----------------------------------------------------</span>
+    <span class="c1"># function</span>
+    <span class="c1"># -----------------------------------------------------</span>
+<div class="viewcode-block" id="Social.duration_to_next_commute_event"><a class="viewcode-back" href="../social.html#social.Social.duration_to_next_commute_event">[docs]</a>    <span class="k">def</span> <span class="nf">duration_to_next_commute_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is called in in order to calculate the amount of time until the next commute event by \</span>
+<span class="sd">        doing the following.</span>
+
+<span class="sd">        #. If the agent is unemployed, return infinity </span>
+<span class="sd">        #. If the time indicates that the agent should be currently working, set the duration to be the \</span>
+<span class="sd">        length of time remaining at work</span>
+<span class="sd">        #. If the time indicates that the agent should be currently commuting to work, set the duration to be \</span>
+<span class="sd">        the duration until the commute to work should start</span>
+<span class="sd">        #. If the time indicates that the agent should be currently commuting from work, set the duration to be \</span>
+<span class="sd">        the amount of time until the commute from work should end</span>
+<span class="sd">        #. Else, calculate the amount of time until the next commute to work event</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            The only reason this code is place here is because the work activity and the commute activity use it.</span>
+
+<span class="sd">        :param temporal.Temporal clock: the current time</span>
+<span class="sd">        :return: the duration in time [minutes] until the next commute event</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># if the person is unemployed, set the duration to infinity</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">is_employed</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># should the agent be working</span>
+            <span class="n">work_time</span>               <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">is_work_time</span><span class="p">(</span><span class="n">clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">,</span> <span class="n">is_commute_to_work</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+            <span class="c1"># is it time for the person to be commuting to work</span>
+            <span class="n">commute_to_work_time</span>    <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">is_work_time</span><span class="p">(</span><span class="n">clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">,</span> <span class="n">is_commute_to_work</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="c1"># is it time to commute from work</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span> <span class="p">)</span>
+            <span class="n">temp_clock</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">()</span>
+            <span class="n">temp_clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">temp_clock</span><span class="o">.</span><span class="n">set_time</span><span class="p">()</span>
+            <span class="n">commute_from_work_time</span> <span class="o">=</span> <span class="n">occupation</span><span class="o">.</span><span class="n">is_work_time</span><span class="p">(</span><span class="n">temp_clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">,</span> <span class="n">is_commute_to_work</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+            <span class="c1"># if the agent is currently working, set the duration to be the length of time remaining at work</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">work_time</span><span class="p">):</span>
+                <span class="n">t_end</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span>
+                <span class="n">dt</span>      <span class="o">=</span> <span class="p">(</span> <span class="n">t_end</span> <span class="o">-</span> <span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># if the person should be commuting to work, set the duration to be the length of time remaining until</span>
+            <span class="c1"># the commute starts</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">commute_to_work_time</span><span class="p">):</span>
+                <span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_start</span>
+                <span class="n">dt</span>      <span class="o">=</span> <span class="p">(</span> <span class="n">t_start</span> <span class="o">-</span> <span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span>  <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># if the person should be commuting from work, set the time to be the time when the commute should end</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">commute_from_work_time</span><span class="p">):</span>
+                <span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_end</span>
+                <span class="n">dt</span>      <span class="o">=</span> <span class="p">(</span><span class="n">t_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_from_work_dt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span> <span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># else, calculate the amount of time until the next commute event</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># time until the next work event</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration_to_work_event</span><span class="p">(</span><span class="n">clock</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">commute_to_work_dt</span>
+
+        <span class="k">return</span> <span class="n">dt</span>
+</div>
+<div class="viewcode-block" id="Social.duration_to_next_meal"><a class="viewcode-back" href="../social.html#social.Social.duration_to_next_meal">[docs]</a>    <span class="k">def</span> <span class="nf">duration_to_next_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the amount of time until the next meal.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int t_univ: the current time [minutes, universal time]</span>
+<span class="sd">        </span>
+<span class="sd">        :return: the duration to the next meal [minutes]</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :return: the scheduled next meal</span>
+<span class="sd">        :rtype: meal.Meal                </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># find the next meal</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># get the start time (universal time) for all meals</span>
+        <span class="n">t_start_all</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">m</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># get the duration in time from the start time of each meal from the current time</span>
+        <span class="n">dt_all</span>          <span class="o">=</span> <span class="n">t_start_all</span> <span class="o">-</span> <span class="n">t_univ</span>
+        <span class="n">dt</span>              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dt_all</span><span class="p">)</span> <span class="c1"># all dt&#39;s should be positive</span>
+
+        <span class="c1"># index of the next meal</span>
+        <span class="n">idx</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dt_all</span> <span class="o">==</span> <span class="n">dt</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">next_meal</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">next_meal</span>
+</div>
+<div class="viewcode-block" id="Social.duration_to_work_event"><a class="viewcode-back" href="../social.html#social.Social.duration_to_work_event">[docs]</a>    <span class="k">def</span> <span class="nf">duration_to_work_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is called in in order to calculate the amount of time until the next work event.</span>
+
+<span class="sd">        #. If the person is employed, the duration to the next meal is set to infinity</span>
+<span class="sd">        #. If the current time is a workday before the time work starts,</span>
+<span class="sd">            * set the duration to the amount of time until the start of work</span>
+<span class="sd">        #. Else,</span>
+<span class="sd">            * set the duration until the next work event </span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            The only reason this code is place here is because the work activity and the commute activity use it.</span>
+
+<span class="sd">        :param temporal.Temporal clock: the current time</span>
+<span class="sd">        </span>
+<span class="sd">        :return: the duration [minutes] until the next minutes</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">WEEK_2_DAY</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span><span class="p">,</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEEK_2_DAY</span>
+
+        <span class="c1"># the time [minutes, time of day] that a job starts</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="c1"># if the person is unemployed, set the duration to infinity</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">is_employed</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if sampling on a workday before the work event starts</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">work_days</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">&lt;=</span> <span class="n">t_start</span><span class="p">):</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_start</span> <span class="o">-</span> <span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="c1"># future days (1 being tomorrow, 2 being the day after tomorrow)</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">WEEK_2_DAY</span><span class="p">)</span>
+
+                <span class="n">idx</span> <span class="o">=</span> <span class="p">[(</span><span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">%</span> <span class="n">WEEK_2_DAY</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">work_days</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+                <span class="c1"># the number of days until the next workday</span>
+                <span class="n">dt_day</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span>
+
+                <span class="c1"># time until the next work event</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">dt_day</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span> <span class="o">-</span> <span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">t_start</span>
+
+        <span class="k">return</span> <span class="n">dt</span>
+</div>
+<div class="viewcode-block" id="Social.get_current_meal"><a class="viewcode-back" href="../social.html#social.Social.get_current_meal">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function gets the closest meal to the time of day.</span>
+
+<span class="sd">        :param int time_of_day: the time of day</span>
+<span class="sd">        :return: return the meal</span>
+<span class="sd">        :rtype: meal.Meal        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the number of meals</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_meals</span>
+
+        <span class="c1"># an array where the True values shows the index of the current meal</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="c1"># loop through each meal</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+
+            <span class="c1"># get the index for the next meal</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">q</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span>
+
+            <span class="c1"># store the time of day , current meal, next meal, and meal after next the start time</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">tj</span><span class="p">,</span> <span class="n">tk</span> <span class="o">=</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span>
+
+            <span class="c1"># meal time is from the start time until the midpoint between the two meals</span>
+            <span class="c1"># ex: t_max(bf) = t_start(bf) + ( t_start(lunch) - t_start(bf) ) / 2</span>
+            <span class="c1"># t_min(bf) = t_start(dinner) + ( t_start(bf) - t_start(dinner) ) /2</span>
+
+            <span class="c1"># doing math around zero.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">tj</span> <span class="o">&lt;</span> <span class="n">ti</span><span class="p">):</span>
+                <span class="c1"># change time to periodic time [-DAY_2_MIN / 2, DAY_2_MIN)</span>
+                <span class="n">tj</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">tj</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">ti</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+                <span class="c1"># take the average</span>
+                <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">ti</span> <span class="o">+</span> <span class="n">tj</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="c1"># convert to normal time [0, DAY_2_MIN)</span>
+                <span class="n">top</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">from_periodic</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">ti</span> <span class="o">+</span> <span class="n">tj</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="c1"># do math around zero</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">tk</span> <span class="o">&gt;</span> <span class="n">ti</span><span class="p">):</span>
+                <span class="c1"># change time to periodic time [-DAY_2_MIN / 2, DAY_2_MIN)</span>
+                <span class="n">ti</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">tk</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">tk</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+                <span class="c1"># take the average</span>
+                <span class="n">bot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">tk</span> <span class="o">+</span> <span class="n">ti</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="c1"># convert to normal time [0, DAY_2_MIN)</span>
+                <span class="n">bot</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">from_periodic</span><span class="p">(</span><span class="n">bot</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">tk</span> <span class="o">+</span> <span class="n">ti</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="n">dt_max</span>  <span class="o">=</span> <span class="p">(</span><span class="n">top</span> <span class="o">-</span> <span class="n">bot</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+            <span class="n">dt0</span>     <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">bot</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+            <span class="n">dt1</span>     <span class="o">=</span> <span class="p">(</span><span class="n">top</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt0</span> <span class="o">&lt;=</span> <span class="n">dt_max</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt1</span> <span class="o">&lt;</span> <span class="n">dt_max</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt1</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># the current index</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">the_meal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">the_meal</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="n">the_meal</span>
+</div>
+<div class="viewcode-block" id="Social.get_meal"><a class="viewcode-back" href="../social.html#social.Social.get_meal">[docs]</a>    <span class="k">def</span> <span class="nf">get_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_meal</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the specific meal given by a meal identifier.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int id_meal: the meal identifier</span>
+<span class="sd">        :return: the meal given by the id</span>
+<span class="sd">        :rtype: meal.Meal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">id_meal</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">m</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="Social.get_next_meal"><a class="viewcode-back" href="../social.html#social.Social.get_next_meal">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_meal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function gets the next meal. The meal must occur after the current time.</span>
+
+<span class="sd">        :param temporal.Temporal clock: the current time</span>
+
+<span class="sd">        :return the_meal: the next meal</span>
+<span class="sd">        :rtype: meal.Meal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="c1"># this makes sure that the current meal is not the next meal</span>
+        <span class="c1"># however, it is still not completely correct because the current meal only depends on time. It&#39;s the</span>
+        <span class="c1"># meal closest to the current time forwards and backwards</span>
+
+        <span class="c1"># the expected amount of time (minutes) to the next meal from</span>
+        <span class="c1"># the current time</span>
+
+        <span class="c1"># calculate the amount of time until each meal, respectively</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">t_start_univ</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">])</span>
+        <span class="n">dt</span>      <span class="o">=</span> <span class="n">t_start</span> <span class="o">-</span> <span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># the index of the nearest meal is Social.meals</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">dt</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># the next meal</span>
+        <span class="n">the_meal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">the_meal</span>
+</div>
+<div class="viewcode-block" id="Social.print_child_status"><a class="viewcode-back" href="../social.html#social.Social.print_child_status">[docs]</a>    <span class="k">def</span> <span class="nf">print_child_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the child status as a string.</span>
+
+<span class="sd">        :return msg: the child/ adult status</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_child</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Child&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Adult&#39;</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Social.set_child_flag"><a class="viewcode-back" href="../social.html#social.Social.set_child_flag">[docs]</a>    <span class="k">def</span> <span class="nf">set_child_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the flag indicating whether a person is a child.</span>
+
+<span class="sd">        :param int age: the age of the person [years]</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">age</span> <span class="o">&lt;</span> <span class="n">ADULT_AGE</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_child</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_child</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Social.set_job"><a class="viewcode-back" href="../social.html#social.Social.set_job">[docs]</a>    <span class="k">def</span> <span class="nf">set_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the job and the alarm time (if used) that corresponds to the job. The alarm  is set, \</span>
+<span class="sd">        if a person is using the alarm.</span>
+<span class="sd">        </span>
+<span class="sd">        :param int job_id: job identifier</span>
+<span class="sd">        :param int dt: the amount of time before the job start.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">job_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">set_job</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_work_alarm</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Social.set_work_alarm"><a class="viewcode-back" href="../social.html#social.Social.set_work_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">set_work_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This sets the alarm time due to work</span>
+
+<span class="sd">        If a person uses an alarm, the alarm is set to be &quot;dt&quot; minutes before work time</span>
+
+<span class="sd">        :param int dt: the amount of time to wake up before the work event [minutes]</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_alarm</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">t_start</span> <span class="o">-</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_alarm</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Social.test_func"><a class="viewcode-back" href="../social.html#social.Social.test_func">[docs]</a>    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">the_meal</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function has no real purpose and will be deleted in future versions.</span>
+<span class="sd">            </span>
+<span class="sd">        :param int time_of_day: the time of day in minutes </span>
+<span class="sd">        :param meal.Meal the_meal: a meal object </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;time of day: </span><span class="si">%.2f</span><span class="se">\t</span><span class="s1">meal: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time_of_day</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> <span class="n">meal</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">the_meal</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;bf: </span><span class="si">%.2f</span><span class="se">\t</span><span class="s1">lunch: </span><span class="si">%.2f</span><span class="se">\t</span><span class="s1">dinner: </span><span class="si">%.2f</span><span class="s1">&#39;</span> \
+              <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">BREAKFAST</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">/</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> \
+                 <span class="bp">self</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">meal</span><span class="o">.</span><span class="n">DINNER</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span><span class="o">/</span><span class="mi">60</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Social.toString"><a class="viewcode-back" href="../social.html#social.Social.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents the Social object as a string.</span>
+
+<span class="sd">        :return: the representation of the Social object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_child_status</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

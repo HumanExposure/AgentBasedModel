@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>transport &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for transport</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information about the :class:`asset.Asset` that allows a :class:`person.Person` to do \</span>
+<span class="sd">the following:</span>
+
+<span class="sd">#. :class:`commute.Commute_To_Work`</span>
+<span class="sd">#. :class:`commute.Commute_From_Work`</span>
+
+<span class="sd">activities. This module contains code for :class:`transport.Transport`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">asset</span><span class="o">,</span> <span class="nn">commute</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">occupation</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Transport"><a class="viewcode-back" href="../transport.html#transport.Transport">[docs]</a><span class="k">class</span> <span class="nc">Transport</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">Asset</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is an asset that allows for commuting.</span>
+
+<span class="sd">    Activities in this asset:</span>
+
+<span class="sd">    #. :class:`commute.Commute_To_Work`</span>
+<span class="sd">    #. :class:`commute.Commute_From_Work`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="n">asset</span><span class="o">.</span><span class="n">Asset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span>   <span class="o">=</span> <span class="n">asset</span><span class="o">.</span><span class="n">TRANSPORT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_users</span>  <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># add the activities to the activity list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activities</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;commute to work&#39;</span><span class="p">:</span> <span class="n">commute</span><span class="o">.</span><span class="n">Commute_To_Work</span><span class="p">(),</span>
+                           <span class="s1">&#39;commute from work&#39;</span><span class="p">:</span> <span class="n">commute</span><span class="o">.</span><span class="n">Commute_From_Work</span><span class="p">()</span> <span class="p">}</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Transport.initialize"><a class="viewcode-back" href="../transport.html#transport.Transport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">people</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the transport location according to whether or not the Person is commuting to or \</span>
+<span class="sd">        from work.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function just sets the transport object to be at the home</span>
+
+<span class="sd">        :param list people: a list of people in the simulation</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">HOME</span>
+
+        <span class="c1"># find out if it&#39;s work time for each person</span>
+        <span class="c1"># is_work_time = [occupation.is_work_time(p.clock, p.socio.job) for p in people ]</span>
+
+        <span class="c1"># find out if it&#39;s commute time for each person</span>
+        <span class="c1"># is_commute_time = [occupation.is_work_time(p.clock, p.socio.job, is_commute_to_work=True) for p in people ]</span>
+
+        <span class="c1"># if a person is commuting / working, set the location to that Person&#39;s location</span>
+        <span class="c1"># if (True in is_work_time):</span>
+        <span class="c1">#    self.location.local = people[is_work_time.index(True)].socio.job.location.local</span>
+        <span class="c1"># elif (True in is_commute_time):</span>
+        <span class="c1">#    self.location.local = people[is_commute_time.index(True)].socio.job.location.local</span>
+
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

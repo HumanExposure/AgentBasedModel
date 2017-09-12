@@ -1,0 +1,918 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>universe &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for universe</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that is responsible for running the simulation. This file contains \</span>
+<span class="sd">:class:`universe.Universe`. The Universe contains all agents and objects. The Universe is responsible for \</span>
+<span class="sd">running the simulation itself.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+
+<span class="c1"># general mathematical capabilities</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based module modules</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">home</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">scheduler</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Universe"><a class="viewcode-back" href="../universe.html#universe.Universe">[docs]</a><span class="k">class</span> <span class="nc">Universe</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Universe is the governing engine of the simulation.</span>
+
+<span class="sd">    :param int num_steps: the number of time steps in the simulation</span>
+<span class="sd">    :param int dt:  the step size in the simulation [minutes]</span>
+<span class="sd">    :param int t_start: the start time for the simulation [minutes, universal time]</span>
+<span class="sd">    :param int num_people: the number of people in the household</span>
+
+<span class="sd">    :var temporal.Temporal clock: does the timekeeping in the simulation</span>
+<span class="sd">    :var home.Home &quot;home&quot;: the home the Persons live in</span>
+<span class="sd">    :var list people: a list of all Person objects created in the Universe object</span>
+<span class="sd">    :var int t_start: the start time for the simulation [minutes, universal time]</span>
+<span class="sd">    :var int t_end: the last time for the simulation [minutes, universal time]</span>
+<span class="sd">    :var scheduler.Scheduler schedule: the schedule governing each agent&#39;s needs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Constructor</span>
+    <span class="c1"># </span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">num_people</span><span class="p">):</span>
+
+        <span class="c1"># create a clock.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span>          <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">dt</span>       <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>   <span class="o">=</span> <span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">set_time</span><span class="p">()</span>
+
+        <span class="c1"># store the initial time [minutes] in universal time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">t_start</span>
+
+        <span class="c1"># the final time of the simulation in universal time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">num_steps</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># create a home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">Home</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="p">)</span>
+
+        <span class="c1"># list of persons</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">people</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># the schedule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">Scheduler</span><span class="p">(</span><span class="n">clock</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="p">,</span> <span class="n">num_people</span><span class="o">=</span><span class="n">num_people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+
+    <span class="c1"># ------------------------------------------------------</span>
+    <span class="c1"># functions</span>
+    <span class="c1"># ------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Universe.address_needs"><a class="viewcode-back" href="../universe.html#universe.Universe.address_needs">[docs]</a>    <span class="k">def</span> <span class="nf">address_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_interruption</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function checks the needs of the agents</span>
+
+<span class="sd">        The function uses a recursion loop to choose activities.</span>
+
+<span class="sd">        The Recursion:</span>
+
+<span class="sd">        #. Gather all of the advertisements (object-person pairings)</span>
+<span class="sd">        #. Assigns 1 activity to the Person with the highest score.</span>
+<span class="sd">        #. That Person starts the activity, thereby updating the state of available activities in the home.</span>
+<span class="sd">        #. The recursion starts again, where the Home advertises to all remaining Person(s).</span>
+
+<span class="sd">        :Note: If no activity will be done this time step to a Person, a Person is set to \</span>
+<span class="sd">            the temporary status :const:`state.IDLE_TEMP`, so that the Home knows not to advertise to that Person.</span>
+
+<span class="sd">        :param bool do_interruption: this flag indicates whether or not advertisements should be made \</span>
+<span class="sd">            for activities that will interrupt the current activity (if True). If False, the advertisements \</span>
+<span class="sd">            are made for non-interrupting activities.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is the list of adds per Person AND the Person object</span>
+        <span class="c1"># this will be Empty if NO ONE is able to do something.</span>
+        <span class="c1"># Recall, a Person needs to be IDLE</span>
+        <span class="c1">#</span>
+        <span class="n">ads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">do_interruption</span> <span class="o">=</span> <span class="n">do_interruption</span><span class="p">)</span>
+
+        <span class="c1"># select the activity for each person by recursion</span>
+        <span class="c1"># after each recursion, a Person does an activity; thereby,</span>
+        <span class="c1"># updating the rest of potential activities in the Home</span>
+        <span class="c1"># BEGIN the recursion</span>
+
+        <span class="c1"># flatten the ads to figure out the TOTAL amount of advertisements in the Home</span>
+        <span class="n">total_ads</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">z</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># total amount of ads (not including empty lists)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">total_ads</span><span class="p">(</span><span class="n">ads</span><span class="p">)</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">do_stop</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">while</span><span class="p">(</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">do_stop</span><span class="p">):</span>
+
+            <span class="c1"># given all of the possible activities, select the activity for the</span>
+            <span class="c1"># person with the highest score</span>
+            <span class="n">ad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_activity</span><span class="p">(</span><span class="n">ads</span><span class="p">)</span>
+
+            <span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">do_asset</span><span class="p">,</span> <span class="n">do_activity</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ad</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">],</span> <span class="n">ad</span><span class="p">[</span><span class="s1">&#39;asset&#39;</span><span class="p">],</span> <span class="n">ad</span><span class="p">[</span><span class="s1">&#39;activity&#39;</span><span class="p">],</span> <span class="n">ad</span><span class="p">[</span><span class="s1">&#39;person&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="c1"># if the activity is useful (score &gt; 0), do the activity</span>
+            <span class="k">if</span> <span class="p">(</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="p">):</span>
+
+                <span class="c1"># if necessary, interrupt the current activity before starting</span>
+                <span class="c1"># the newly selected activity</span>
+
+                <span class="c1"># make sure that the interruption activity can be DONE, depending on the availability of</span>
+                <span class="c1"># of the required asset!</span>
+                <span class="k">if</span> <span class="p">(</span> <span class="n">do_activity</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_start</span> <span class="p">):</span>
+
+                    <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">halt_activity</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+                <span class="c1"># Store required activity data</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">asset</span>       <span class="o">=</span> <span class="n">do_asset</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">activity</span>    <span class="o">=</span> <span class="n">do_activity</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arg_start</span>   <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+                <span class="c1"># the interruption should be the need with the highest score</span>
+                <span class="c1"># start the activity</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">start_activity</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># do not do an activity</span>
+                <span class="c1"># BUT, remember to not re-look for advertisements (state.IDLE_TEMP)</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE_TEMP</span>
+
+            <span class="c1"># update the new choices, given the fact that a  is already chosen</span>
+            <span class="n">ads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">do_interruption</span> <span class="o">=</span> <span class="n">do_interruption</span><span class="p">)</span>
+
+            <span class="c1"># update the total amount of ads</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">total_ads</span><span class="p">(</span><span class="n">ads</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># OUTSIDE of recursion:</span>
+        <span class="c1"># reset the state.IDLE_TEMP to state.IDLE</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE_TEMP</span><span class="p">):</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.advertise"><a class="viewcode-back" href="../universe.html#universe.Universe.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_interruption</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function obtains a list of all of the possible activities each person could potentially start in \</span>
+<span class="sd">        this time step.</span>
+
+
+<span class="sd">        :param bool do_interruption: this flag indicates whether to make advertisements due to an \</span>
+<span class="sd">        interrupting activity (if True) or not (if False).</span>
+
+<span class="sd">        :return ads: ads is a list of dictionaries for advertisements:</span>
+
+<span class="sd">                    Dictionary  (score, asset, activity, person) containing the various data for</span>
+<span class="sd">                    each advertisement: (score, asset, activity, person) coupling</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># handle the interruptions</span>
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># optimized way to get all of the advertisements</span>
+        <span class="c1"># there is a list of ads for each person</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_interruption</span><span class="p">):</span>
+
+            <span class="c1"># advertise if the Interruption satiation is under the threshold value **and** the agent has not already \</span>
+            <span class="c1"># been advertised to, indicated by p.state.status != state.IDLE_TEMP</span>
+            <span class="c1"># state.IDLE_TEMP indicates that there was no activity for the agent to undergo at the current moment</span>
+            <span class="n">ads</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">do_interruption</span> <span class="o">=</span> <span class="n">do_interruption</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span>
+                    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">under_threshold</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE_TEMP</span><span class="p">)</span> <span class="p">]</span>
+
+            <span class="c1"># the total amount of ads advertised across all people</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">z</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">ads</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span> <span class="p">]</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                    <span class="n">sam</span>                             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="c1">#sam.interruption.magnitude      = 1.0</span>
+                    <span class="n">sam</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_start</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="n">sam</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">activity_stop</span>  <span class="o">=</span> <span class="bp">None</span>
+                    <span class="n">ads</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if there are no advertisements from assets that address interruptions,</span>
+                <span class="c1"># set the interruption state to 0</span>
+                <span class="c1"># this can occur if there are no assets that address the respective interruption</span>
+                <span class="k">if</span> <span class="p">(</span> <span class="n">N</span><span class="p">(</span><span class="n">ads</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+                    <span class="c1"># original: worked in python 2.7</span>
+                    <span class="c1"># p.interruption.reset()</span>
+
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">reset_minor</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># advertise if the agent is idle</span>
+            <span class="n">ads</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">advertise</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">do_interruption</span> <span class="o">=</span> <span class="n">do_interruption</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span> <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">ads</span>
+</div>
+<div class="viewcode-block" id="Universe.check_expired_activities"><a class="viewcode-back" href="../universe.html#universe.Universe.check_expired_activities">[docs]</a>    <span class="k">def</span> <span class="nf">check_expired_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function checks for expired activities. If found, end the activities.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># naturally expiring activity routine</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+
+            <span class="c1"># check to see if an activity has ended</span>
+            <span class="c1"># An activity ends if a Person is idle AND the current time is at least the</span>
+            <span class="c1"># value of the suggested end time of the activity</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span><span class="p">):</span>
+
+                <span class="c1"># an action has expired</span>
+                <span class="c1"># this allows for the initialization of sleep to do nothing</span>
+                <span class="c1"># when the activity ends</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">end_activity</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.decay_needs"><a class="viewcode-back" href="../universe.html#universe.Universe.decay_needs">[docs]</a>    <span class="k">def</span> <span class="nf">decay_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function decays the needs according to the default behavior. That is, assume the needs are not \</span>
+<span class="sd">        addressed earlier.</span>
+
+<span class="sd">        :param int dt: the number of minutes to decay the needs by. The default behavior is to use the scheduler&#39;s \</span>
+<span class="sd">        time. If a number is specified, then it should be the number of minutes until the end of the simulation.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># decay the needs for each person</span>
+        <span class="c1">#</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+
+            <span class="c1"># decay the major needs first</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">decay_new</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">decay_new</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">decay</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="c1"># decay the minor needs last( because they may depend on the major needs)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">decay</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="c1"># MUST decay interruption need LAST</span>
+            <span class="c1">#p.interruption.decay(p)</span>
+
+            <span class="c1"># for debugging</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c1">#</span>
+        <span class="c1"># update the home</span>
+        <span class="c1">#</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.initial_step"><a class="viewcode-back" href="../universe.html#universe.Universe.initial_step">[docs]</a>    <span class="k">def</span> <span class="nf">initial_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is supposed to run the first time step of the run() loop</span>
+
+<span class="sd">        #. store the current time</span>
+<span class="sd">        #. address the needs assuming interruption</span>
+<span class="sd">        #. address the needs assuming NO interruption</span>
+<span class="sd">        #. update the history</span>
+<span class="sd">        #. update the clock</span>
+<span class="sd">        #. decay the needs</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            this function is **NOT** called on in the current implementation yet</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># store the current time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># address needs due to interruptions</span>
+        <span class="c1">#self.address_needs(do_interruption=True)</span>
+
+        <span class="c1"># address the needs NOT due to interruptions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address_needs</span><span class="p">(</span><span class="n">do_interruption</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">address_needs</span><span class="p">(</span><span class="n">do_interruption</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c1"># record the state/ activity history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_history</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># update the clock for the next time step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span>
+
+        <span class="c1"># decay needs according to the default behavior</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay_needs</span><span class="p">()</span>
+
+        <span class="c1">#self.clcok.initial_step = False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.initialize_needs"><a class="viewcode-back" href="../universe.html#universe.Universe.initialize_needs">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function initializes the need state of each Person at the beginning of simulation based on \</span>
+<span class="sd">        the current time.</span>
+
+<span class="sd">        The needs are initialized in this order (the order matters)</span>
+
+<span class="sd">        #. Rest</span>
+<span class="sd">        #. Hunger</span>
+<span class="sd">        #. Income</span>
+<span class="sd">        #. Travel</span>
+<span class="sd">        #. Interruption</span>
+
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># for testing work</span>
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">YEAR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">YEAR_2_MIN</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># initialize the needs of each person</span>
+        <span class="c1">#</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+
+            <span class="c1"># initialize the major needs (the order matters)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">hunger</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">income</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="c1"># initialize the minor needs (may/ may not depend on the major needs)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">travel</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="c1"># initialize interruption...</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+                <span class="n">keys</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">dt</span>      <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">YEAR_2_MIN</span>
+
+                <span class="k">if</span> <span class="s1">&#39;workplace&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INCOME</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INTERRUPTION</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;transport&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;bed&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">REST</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;food&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;cafeteria&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">):</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;cafeteria&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INTERRUPTION</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">return</span>
+
+</div>
+<div class="viewcode-block" id="Universe.print_activity_info"><a class="viewcode-back" href="../universe.html#universe.Universe.print_activity_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_activity_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function stores activity info used for testing / developing/ debugging as a string.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Person </span><span class="si">%d</span><span class="s1">:</span><span class="se">\t</span><span class="s1">Time has expired!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Day: &#39;</span> <span class="o">+</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_STR</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">time:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">print_time_of_day_to_military</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.reset"><a class="viewcode-back" href="../universe.html#universe.Universe.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This code resets the simulation by initializing the agents, home, and clock to the beginning status \</span>
+<span class="sd">        of the simulation.</span>
+
+<span class="sd">        This code does the following:</span>
+
+<span class="sd">        #. reset the clock</span>
+<span class="sd">        #. reset the home</span>
+<span class="sd">        #. reset each person</span>
+<span class="sd">        #. initialize each person</span>
+<span class="sd">        #. initialize the home</span>
+
+<span class="sd">        :param params.Params p: the parameters</span>
+<span class="sd">        :param int t_univ: the time of the beginning of the simulation [seconds]</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># reset</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># reset the time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">t_univ</span><span class="p">)</span>
+
+        <span class="c1"># parameters</span>
+
+        <span class="c1"># reset the home and assets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># reset the people</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># initialize</span>
+        <span class="c1">#</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">is_init</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># initialize the needs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_needs</span><span class="p">()</span>
+
+        <span class="c1"># initialize the home assets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="c1"># set the home economics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">set_revenue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">set_population</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.run"><a class="viewcode-back" href="../universe.html#universe.Universe.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is responsible for running the simulation. Instead of running the simulation minute-by-minute, \</span>
+<span class="sd">        in an effort to reduce run-time, the simulation skips time steps and addresses the agent at times that \</span>
+<span class="sd">        actions should occur. These times are dictated by the scheduler.</span>
+
+<span class="sd">        The function proceeds as following:</span>
+
+<span class="sd">        While the current time is less than the final time</span>
+
+<span class="sd">        #. check for expired activities for all agents. If activities should have expired, tell the agent to end them</span>
+<span class="sd">        #. start new activities by addressing the needs for all agents (assuming no interruption)</span>
+<span class="sd">        #. decay the satiation for Interruption for all agents</span>
+<span class="sd">        #. start new activities by addressing the needs for all agents (assuming interruptions only)</span>
+<span class="sd">        #. update the history of the status of each agent</span>
+<span class="sd">        #. find the next time to jump to in the simulation according to the scheduler</span>
+<span class="sd">        #. update the clock to the new time</span>
+<span class="sd">        #. decay the needs for all agents</span>
+<span class="sd">        #. Repeat</span>
+
+<span class="sd">        For the last time step</span>
+
+<span class="sd">        #. update the clock</span>
+<span class="sd">        #. decay the needs for each agent</span>
+<span class="sd">        #. update the history of the status of each agent</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            I must change N_MAX to N_MAX = DAY_2_MIN * 365</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the next scheduled time to stop the clock as the current time as the</span>
+        <span class="n">t_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># store a history of the time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># the iterating variables: the current iteration and the maximum iterations in the loop, respectively</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">N_MAX</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e4</span> <span class="c1"># 1e6</span>
+
+        <span class="c1"># print test function</span>
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c1"># while the current time is before the final time AND the iteration counter is under the maximum iteration</span>
+        <span class="c1"># allowed</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">t_next</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">N_MAX</span><span class="p">):</span>
+
+            <span class="c1"># if the current time is under the next scheduled time (in the scheduler) to stop the clock</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">&gt;=</span> <span class="n">t_next</span><span class="p">:</span>
+
+                <span class="c1"># check for expired activities</span>
+                <span class="c1"># if they are found, end the activity</span>
+                <span class="c1"># set the Person to state: IDLE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">check_expired_activities</span><span class="p">()</span>
+
+                <span class="c1"># address needs due to interruptions</span>
+                <span class="c1">#self.address_needs(do_interruption=True)</span>
+
+                <span class="c1"># address the needs NOT due to interruptions</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address_needs</span><span class="p">(</span><span class="n">do_interruption</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+                <span class="c1"># decay the interruption</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">interruption</span><span class="o">.</span><span class="n">decay</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">address_needs</span><span class="p">(</span><span class="n">do_interruption</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">test_func</span><span class="p">()</span>
+
+                <span class="c1"># update the history</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_history_new</span><span class="p">()</span>
+
+                <span class="c1"># get the next time</span>
+                <span class="c1"># need to add something about an interrupting event</span>
+                <span class="c1"># in the case that work and lunch start simultaneously</span>
+                <span class="n">t_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">get_next_event_time</span><span class="p">()</span>
+
+                <span class="c1"># update the clock and decay the needs for the next time</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">t_next</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">):</span>
+
+                    <span class="c1"># update the clock for the next time step</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_clock</span><span class="p">(</span><span class="n">t_next</span><span class="p">)</span>
+
+                    <span class="c1"># decay</span>
+                    <span class="c1">#dt = self.clock.t_univ - self.schedule.t_old + 1</span>
+                    <span class="c1">#self.decay_needs(dt)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">decay_needs</span><span class="p">()</span>
+
+                    <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="c1"># after the first time step, there are no initializing procedures</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">initial_step</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="c1"># update loop iteration counter</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># THE FINAL STEP this will occur because t_next will be &gt; clock.t_end</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">t_next</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">):</span>
+
+            <span class="c1"># update the clock for the next time step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_clock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">)</span>
+
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">t_old</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decay_needs</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># update the history</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_history_new</span><span class="p">()</span>
+
+        <span class="k">return</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># this runs the simulation</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># Each time step the simulation does the following for each person</span>
+    <span class="c1"># decay the needs</span>
+    <span class="c1"># check for expired activities</span>
+    <span class="c1"># set an alarm, for the respective people</span>
+    <span class="c1"># address needs by assigning activities</span>
+    <span class="c1"># update the history of events</span>
+    <span class="c1"># advance the clock</span>
+
+    <span class="c1"># Given a list of activity advertisements,</span>
+    <span class="c1"># this function selects the Person with the largest activity score and</span>
+    <span class="c1"># outputs the score, asset, activity, and person.</span>
+    <span class="c1">#</span>
+    <span class="c1"># input:</span>
+    <span class="c1">#     ads:          a list of advertisements: (score, asset, activity, person)</span>
+    <span class="c1">#                   tuples for a each person</span>
+    <span class="c1"># output:</span>
+    <span class="c1">#    chosen:        dictionary. The chosen advertisement</span>
+    <span class="c1">#                   keys: (&quot;score&quot;, &quot;asset&quot;, &quot;activity&quot;, &quot;person&quot;)</span>
+    <span class="c1">#</span></div>
+<div class="viewcode-block" id="Universe.select_activity"><a class="viewcode-back" href="../universe.html#universe.Universe.select_activity">[docs]</a>    <span class="k">def</span> <span class="nf">select_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ads</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of activity advertisements, this function selects the Person</span>
+<span class="sd">        with the largest activity score and outputs the score, asset, activity, and person.</span>
+
+<span class="sd">        :param list ads: a list of advertisements for this time step</span>
+
+<span class="sd">        :return chosen: the selected activity advertisement (score, asset, activity, person)</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">do_print</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c1"># to check for an empty list</span>
+        <span class="c1"># nn = len( [item for sublist in ads for item in sublist] )</span>
+
+        <span class="c1"># go through the ads / person</span>
+        <span class="c1"># this function goes through the list and finds the score</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+
+        <span class="c1"># for each person, sort the add in terms of decreasing score</span>
+        <span class="n">ads</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ads</span><span class="p">]</span>
+
+        <span class="c1"># for each person with (non-empty) advertisements, get the highest score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;score&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ads</span> <span class="k">if</span> <span class="n">a</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># check for activity conflicts!!</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># see if the max score is unique</span>
+        <span class="n">max_score</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="n">score</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)]</span>
+
+        <span class="c1"># a flag indicating if the maximum socre is unique</span>
+        <span class="n">is_unique</span> <span class="o">=</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_score</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># an array of indices of Person(s) with the max score</span>
+        <span class="n">p_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">score</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># if NO Person(s) have a max-score conflict, the Person with the</span>
+        <span class="c1"># highest score wins</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">is_unique</span><span class="p">):</span>
+            <span class="n">chosen</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="n">p_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># recall, the ads per Person are sorted</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 2 or more people have a max-score conflict, choose 1 randomly (uniform)</span>
+            <span class="c1"># by randomly assigning numbers, the winner has the highest value</span>
+            <span class="n">rando</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_idx</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">winner_idx</span> <span class="o">=</span> <span class="n">p_idx</span><span class="p">[</span><span class="n">rando</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">rando</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">chosen</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="n">winner_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># recall, the ads per Person are sorted</span>
+
+        <span class="k">return</span> <span class="n">chosen</span>
+
+    <span class="c1"># this sets the alarm for those Person(s) who use an alarm</span></div>
+<div class="viewcode-block" id="Universe.set_alarm"><a class="viewcode-back" href="../universe.html#universe.Universe.set_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">set_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the alarm for those Person(s) who use an alarm</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is **NOT** used. There is currently no alarm capability.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the alarm at the turn of the day</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">uses_alarm</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day_of_week</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">work_days</span><span class="p">):</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">is_alarm_set</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">is_alarm_set</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.test_func"><a class="viewcode-back" href="../universe.html#universe.Universe.test_func">[docs]</a>    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is just for debugging.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># msg = &#39;---------------------------------\n&#39;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">print_military_time</span>
+        <span class="c1"># msg = msg + &#39;%s\t\t %d\n&#39; % (f(self.clock.time_of_day), self.clock.time_of_day)</span>
+
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">state</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">need</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">magnitude</span><span class="p">))</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: &#39;</span> <span class="o">%</span> <span class="n">y</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.toString"><a class="viewcode-back" href="../universe.html#universe.Universe.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represent the Universe object as a string.</span>
+
+<span class="sd">        This function outputs the representation of:</span>
+
+<span class="sd">        #. the clock</span>
+<span class="sd">        #. the home</span>
+<span class="sd">        #. agent person residing in the home</span>
+
+<span class="sd">        :return msg: a representation of the Universe object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;-------Clock ------</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;--------- Home ------</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;---------- People ------</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="Universe.update_clock"><a class="viewcode-back" href="../universe.html#universe.Universe.update_clock">[docs]</a>    <span class="k">def</span> <span class="nf">update_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function updates the clock by</span>
+
+<span class="sd">        #. setting the clock to the given time</span>
+<span class="sd">        #. updating the step of the simulation</span>
+<span class="sd">        #. storing the history of the time nodes used in the simulation</span>
+
+<span class="sd">        :param int t: the time the clock should be set to</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">set_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># store the temporal history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.update_history"><a class="viewcode-back" href="../universe.html#universe.Universe.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the histories for each Person by storing the following:</span>
+
+<span class="sd">        #. the current state&#39;s status</span>
+<span class="sd">        #. the current activity</span>
+<span class="sd">        #. the current satiation value for each needs</span>
+<span class="sd">        #. the current location</span>
+
+<span class="sd">        :param int step: the time step</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># update history of Persons</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+
+            <span class="c1"># store state</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">hist_state</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span>
+
+            <span class="c1"># store activity</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span><span class="p">):</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">NO_ACTIVITY</span>
+
+            <span class="c1"># store needs</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">magnitude</span>
+
+            <span class="c1"># store location</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">hist_local</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Universe.update_history_new"><a class="viewcode-back" href="../universe.html#universe.Universe.update_history_new">[docs]</a>    <span class="k">def</span> <span class="nf">update_history_new</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the histories of each person.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># update history of Persons</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">update_history</span><span class="p">()</span>
+
+        <span class="k">return</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

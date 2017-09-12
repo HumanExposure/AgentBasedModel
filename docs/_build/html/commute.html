@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>commute module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="diary module" href="diary.html" />
+    <link rel="prev" title="bio module" href="bio.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-commute">
+<span id="commute-module"></span><h1>commute module<a class="headerlink" href="#module-commute" title="Permalink to this headline">¶</a></h1>
+<p>This module contains about activities associated with commuting to and from work. This class is an <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a> that gives a <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a> the ability to commute to/ from work/ school and satisfy the need Travel <a class="reference internal" href="travel.html#travel.Travel" title="travel.Travel"><code class="xref py py-class docutils literal"><span class="pre">travel.Travel</span></code></a>.</p>
+<p>This module contains the following classes:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#commute.Commute" title="commute.Commute"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute</span></code></a> (general commuting capability)</li>
+<li><a class="reference internal" href="#commute.Commute_To_Work" title="commute.Commute_To_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_To_Work</span></code></a> (commute to work/ school)</li>
+<li><a class="reference internal" href="#commute.Commute_From_Work" title="commute.Commute_From_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_From_Work</span></code></a> (commute from work/ school)</li>
+</ol>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="commute.Commute">
+<em class="property">class </em><code class="descclassname">commute.</code><code class="descname">Commute</code><a class="reference internal" href="_modules/commute.html#Commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a></p>
+<p>This class allows for commuting. This class is to be derived from.</p>
+<dl class="method">
+<dt id="commute.Commute.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>p</em>, <em>local</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the end of an Activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</li>
+<li><strong>local</strong> (<em>int</em>) &#8211; the local location (work or home)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute.end_commute">
+<code class="descname">end_commute</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute.end_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute.end_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ends the commuting activity.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is to be overridden</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This handles the start of the commute activity.</p>
+<ul class="simple">
+<li>If the current location of person is at home, the person is going to work, so set the         location to <code class="xref py py-const docutils literal"><span class="pre">location.OFF_SITE</span></code></li>
+<li>If the current location of the person is off site, the person is going back home, so         set the location to <code class="xref py py-const docutils literal"><span class="pre">location.HOME</span></code></li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute.start_commute">
+<code class="descname">start_commute</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute.start_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute.start_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the variables pertaining to starting the commute activity.</p>
+<ol class="arabic simple">
+<li>set the status of the person to <code class="xref py py-const docutils literal"><span class="pre">location.TRANSIT</span></code></li>
+<li>set the location of the asset to <code class="xref py py-const docutils literal"><span class="pre">location.TRANSIT</span></code></li>
+<li>set the person&#8217;s state start time of the commute</li>
+<li>set the person&#8217;s state end time for the commute</li>
+<li>update the asset</li>
+<li>update the scheduler for the travel need for the end of the commute</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="commute.Commute_From_Work">
+<em class="property">class </em><code class="descclassname">commute.</code><code class="descname">Commute_From_Work</code><a class="reference internal" href="_modules/commute.html#Commute_From_Work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#commute.Commute" title="commute.Commute"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute</span></code></a></p>
+<p>This class allows for the activity: commuting from work.</p>
+<dl class="method">
+<dt id="commute.Commute_From_Work.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_From_Work.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activities advertisement         advertise the score to commute.</p>
+<ol class="arabic">
+<li><p class="first">calculate advertisement only if the person is located at work (off-site)</p>
+</li>
+<li><p class="first">calculate the score</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/5bccc495b86484af3b988e54029d97ace12e6ece.png" alt="S = \begin{cases}
+0  &amp; n_{travel}(t) &gt; \lambda \\
+W( n_{travel}(t) ) - W( n_{travel}(t + \Delta{t} )) &amp; n_{travel}(t) \le \lambda
+\end{cases}"/></p>
+</div></div></blockquote>
+</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the advertised score</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_From_Work.calc_end_time">
+<code class="descname">calc_end_time</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_From_Work.calc_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work.calc_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li>calculate the end time (minutes, universal time) of the commute</li>
+<li>set the the end time in the person&#8217;s state</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_From_Work.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_From_Work.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the end of an Activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_From_Work.end_commute">
+<code class="descname">end_commute</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_From_Work.end_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work.end_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the variables pertaining to ending the commute activity.</p>
+<ol class="arabic simple">
+<li>Sets the person&#8217;s state to idle(<code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code>)</li>
+<li>Updates the asset&#8217;s state and number of users</li>
+<li>Sets the travel magnitude</li>
+<li>Sets the work magnitude to <code class="xref py py-const docutils literal"><span class="pre">need.MAG_WORK</span></code>, to allow for work         to be the next activity, even if commute ends begin the work-start time</li>
+<li>Sets the person&#8217;s state&#8217;s end time</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; person of interest</li>
+<li><strong>destination</strong> (<em>int</em>) &#8211; a local location where the commute ends (home or workplace)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_From_Work.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_From_Work.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_From_Work.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This handles the start of the commute activity.</p>
+<p>If the current location of person is at home, the person is going to work, so set the         location to <code class="xref py py-const docutils literal"><span class="pre">location.OFF_SITE</span></code></p>
+<p>If the current location of the person is off site, the person is going back home, so         set the location to <code class="xref py py-const docutils literal"><span class="pre">location.HOME</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="commute.Commute_To_Work">
+<em class="property">class </em><code class="descclassname">commute.</code><code class="descname">Commute_To_Work</code><a class="reference internal" href="_modules/commute.html#Commute_To_Work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#commute.Commute" title="commute.Commute"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute</span></code></a></p>
+<p>This class allows for the activity: commute to work</p>
+<dl class="method">
+<dt id="commute.Commute_To_Work.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of an activities advertisement         advertise the score to commute.</p>
+<ol class="arabic">
+<li><p class="first">calculate advertisement only if the person is located at work (off-site)</p>
+</li>
+<li><p class="first">calculate the score</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/5bccc495b86484af3b988e54029d97ace12e6ece.png" alt="S = \begin{cases}
+0  &amp; n_{travel}(t) &gt; \lambda \\
+W( n_{travel}(t) ) - W( n_{travel}(t + \Delta{t} )) &amp; n_{travel}(t) \le \lambda
+\end{cases}"/></p>
+</div></div></blockquote>
+</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body">the advertisement score</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_To_Work.calc_end_time">
+<code class="descname">calc_end_time</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.calc_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.calc_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the commute duration, store the end time.</p>
+<ol class="arabic simple">
+<li>calculate the end time [universal time] of the commute.</li>
+<li>store the end time in the person.state</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_To_Work.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the logistics of ending the commute to work activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_To_Work.end_commute">
+<code class="descname">end_commute</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.end_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.end_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the logistics concerning ending the commute.</p>
+<ol class="arabic simple">
+<li>the asset is freed up from use</li>
+<li>the magnitude of the travel need is set <img class="math" src="_images/math/494002d2a4835ea3dfe4d5e66764313e8560f578.png" alt="n_{travel}=1"/></li>
+<li>the person&#8217;s state is set to idle (<code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code>)</li>
+<li>the person&#8217;s location is set to the location of the job</li>
+<li>the asset&#8217;s location is set to the location of the job</li>
+<li>the person&#8217;s income need is set to <img class="math" src="_images/math/f155ab229825ed0c81b95870c18714537d33e2b3.png" alt="n_{income}=\eta_{work}"/></li>
+<li>update the commute to work duration</li>
+<li>calculate the time until the next leave work event</li>
+<li>update the schedule for the travel need</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_To_Work.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the start of the commute to work activity. If the current location of person is         at home, the person is going to work, so set the location to workplace location (<code class="xref py py-const docutils literal"><span class="pre">location.OFF_SITE</span></code>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="commute.Commute_To_Work.start_commute">
+<code class="descname">start_commute</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commute.html#Commute_To_Work.start_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commute.Commute_To_Work.start_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the variables pertaining to starting the commute to work activity.</p>
+<ol class="arabic simple">
+<li>set the person&#8217;s status to <code class="xref py py-const docutils literal"><span class="pre">state.TRANSIT</span></code></li>
+<li>set the asset&#8217;s location to <code class="xref py py-const docutils literal"><span class="pre">location.TRANSIT</span></code></li>
+<li>set the person&#8217;s state start time to the current time</li>
+<li>calculate the end time of commute to work</li>
+<li>update the asset&#8217;s update</li>
+<li>update the scheduler for the travel need to take into account the end of the commute</li>
+<li>update the scheduler for the income need to take into account the end of the commute</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="bio.html" title="previous chapter">bio module</a></li>
+      <li>Next: <a href="diary.html" title="next chapter">diary module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/commute.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/commute.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

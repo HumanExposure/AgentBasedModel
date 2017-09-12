@@ -1,0 +1,623 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>occupation module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="params module" href="params.html" />
+    <link rel="prev" title="need module" href="need.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-occupation">
+<span id="occupation-module"></span><h1>occupation module<a class="headerlink" href="#module-occupation" title="Permalink to this headline">¶</a></h1>
+<p>This module contains info needed for the occupation of a Person. In addition, this file also contains functions useful for the module itself.</p>
+<p>This module contains class <a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><code class="xref py py-class docutils literal"><span class="pre">occupation.Occupation</span></code></a>.</p>
+<p>This module contains constants relevant to the occupational information:</p>
+<ul class="simple">
+<li>job identifiers</li>
+<li>job categories</li>
+<li>default start time information</li>
+<li>default end time information</li>
+<li>default commuting to work information</li>
+<li>default commuting from work information</li>
+<li>default summer vacation (from school) information</li>
+</ul>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="occupation.Occupation">
+<em class="property">class </em><code class="descclassname">occupation.</code><code class="descname">Occupation</code><a class="reference internal" href="_modules/occupation.html#Occupation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class contains information relevant to an occupation of a Person.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>category</strong> (<em>int</em>) &#8211; the category of the job</li>
+<li><strong>id</strong> (<em>int</em>) &#8211; the identifier for the job</li>
+<li><strong>commute_to_work_dt_mean</strong> (<em>int</em>) &#8211; the mean duration to commute to work [minutes]</li>
+<li><strong>commute_to_work_dt_std</strong> (<em>int</em>) &#8211; the standard deviation to commute to work [minutes]</li>
+<li><strong>commute_to_work_dt</strong> (<em>int</em>) &#8211; the duration to commute to work [minutes]</li>
+<li><strong>commute_to_work_dt_trunc</strong> (<em>int</em>) &#8211; the number of standard deviation in the commute to work     duration distribution</li>
+<li><strong>commute_to_work_start</strong> (<em>int</em>) &#8211; the start time for the commute to work activity [minutes]</li>
+<li><strong>dt_commute</strong> (<em>int</em>) &#8211; the duration of the commute [minutes]</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the duration of the work activity [minutes]</li>
+<li><strong>commute_from_work_dt_mean</strong> (<em>int</em>) &#8211; the mean duration to commute from work [minutes]</li>
+<li><strong>commute_from_work_dt_std</strong> (<em>int</em>) &#8211; the standard deviation to commute from work [minutes]</li>
+<li><strong>commute_from_work_dt</strong> (<em>int</em>) &#8211; the duration to commute from work [minutes]</li>
+<li><strong>commute_from_work_dt_trunc</strong> (<em>int</em>) &#8211; the number of standard deviations in the commute from work     duration distribution</li>
+<li><strong>t_start_mean</strong> (<em>int</em>) &#8211; the mean start time for the job [minutes, time of day]</li>
+<li><strong>t_start_std</strong> (<em>int</em>) &#8211; the standard deviation of the start time for the job</li>
+<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time for the job [minutes, time of day]</li>
+<li><strong>t_start_univ</strong> (<em>int</em>) &#8211; the start time for the job [minutes, universal time]</li>
+<li><strong>work_start_trunc</strong> (<em>int</em>) &#8211; the number of standard deviations in the work start time distribution</li>
+<li><strong>day_start</strong> (<em>int</em>) &#8211; the day the work activity start [minutes]</li>
+<li><strong>t_end_mean</strong> (<em>int</em>) &#8211; the mean end time for the job [minutes, time of day]</li>
+<li><strong>t_end_std</strong> (<em>int</em>) &#8211; the standard deviation of the end time for the job</li>
+<li><strong>t_end</strong> (<em>int</em>) &#8211; the end time for the job [minutes, time of day]</li>
+<li><strong>t_end_univ</strong> (<em>int</em>) &#8211; the end time for the job [minutes, universal time]</li>
+<li><strong>work_end_trunc</strong> (<em>int</em>) &#8211; the number of standard deviations in the work end time distribution</li>
+<li><strong>is_employed</strong> (<em>bool</em>) &#8211; this is a flag saying whether this is a job or not</li>
+<li><strong>is_same_day</strong> (<em>bool</em>) &#8211; This is a flag to see whether the start time and end time of a job are                             on the same day. If so, True. Else, False. If a person has <code class="xref py py-const docutils literal"><span class="pre">NO_JOB</span></code>, the flag                             is set to True</li>
+<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) &#8211; the location of the Occupation</li>
+<li><strong>wage</strong> (<em>float</em>) &#8211; the yearly wage for that job [U.S. dollars]</li>
+<li><strong>work_days</strong> (<em>list</em>) &#8211; a list of ints, giving the days the job starts</li>
+<li><strong>f_commute_to_work_dt</strong> &#8211; the commute to work duration distribution</li>
+<li><strong>f_commute_from_work_dt</strong> &#8211; the commute from work duration distribution</li>
+<li><strong>f_work_start</strong> &#8211; the work start time distribution</li>
+<li><strong>f_work_end</strong> &#8211; the work end time distribution</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="occupation.Occupation.is_summer_vacation">
+<code class="descname">is_summer_vacation</code><span class="sig-paren">(</span><em>week_of_year</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.is_summer_vacation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.is_summer_vacation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns True if the agent should not go to school due to summer vacation. False, otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>week_of_year</strong> (<em>int</em>) &#8211; the week of the year</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.print_category">
+<code class="descname">print_category</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.print_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.print_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function represents the Occupation category as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the string representation of a Occupation category</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.print_id">
+<code class="descname">print_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.print_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.print_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function writes the Occupation id as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a string representation of the job ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_commute_distribution">
+<code class="descname">set_commute_distribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_commute_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_commute_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the following:</p>
+<ul class="simple">
+<li>commute to work duration distribution</li>
+<li>commute from work duration distribution.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_is_job">
+<code class="descname">set_is_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_is_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_is_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function checks to see if the current job is actually a job (eg. that it is not         <code class="xref py py-const docutils literal"><span class="pre">NO_JOB</span></code>).</p>
+<p>Sets self.is_job to True if the Occupation is <code class="xref py py-const docutils literal"><span class="pre">NO_JOB</span></code>, returns False otherwise</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_is_same_day">
+<code class="descname">set_is_same_day</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_is_same_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_is_same_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets a flag indicating whether or not a job starts and ends         on the same day. The function sets <code class="xref py py-mod docutils literal"><span class="pre">is_same_day</span></code> to True if the Occupation start time and end time         are within the same day. False, otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_job_params">
+<code class="descname">set_job_params</code><span class="sig-paren">(</span><em>id_job</em>, <em>start_mean</em>, <em>start_std</em>, <em>end_mean</em>, <em>end_std</em>, <em>commute_to_work_dt_mean</em>, <em>commute_to_work_dt_std</em>, <em>commute_from_work_dt_mean</em>, <em>commute_from_work_dt_std</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_job_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_job_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Occupation parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id_job</strong> (<em>int</em>) &#8211; the job identifier</li>
+<li><strong>start_mean</strong> (<em>int</em>) &#8211; the mean start time for the occupation</li>
+<li><strong>start_std</strong> (<em>int</em>) &#8211; the standard deviation of the start time for the occupation</li>
+<li><strong>end_mean</strong> (<em>int</em>) &#8211; the mean end time for the occupation</li>
+<li><strong>end_std</strong> (<em>int</em>) &#8211; the standard deviation for the end time</li>
+<li><strong>commute_to_work_dt_mean</strong> (<em>int</em>) &#8211; the mean commute to work duration</li>
+<li><strong>commute_to_work_dt_std</strong> (<em>int</em>) &#8211; the standard deviation of the commute to work duration</li>
+<li><strong>commute_from_work_dt_mean</strong> (<em>int</em>) &#8211; the mean commute from work duration</li>
+<li><strong>commute_from_work_dt_std</strong> (<em>int</em>) &#8211; the standard deviation to commute from work duration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_job_preset">
+<code class="descname">set_job_preset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_job_preset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_job_preset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets Occupation to one of the following preset jobs:</p>
+<ul class="simple">
+<li><code class="xref py py-const docutils literal"><span class="pre">NO_JOB</span></code></li>
+<li><code class="xref py py-const docutils literal"><span class="pre">STANDARD_JOB</span></code></li>
+<li><code class="xref py py-const docutils literal"><span class="pre">STUDENT</span></code></li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_no_job">
+<code class="descname">set_no_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_no_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_no_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the Occupation to having no job.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_standard_job">
+<code class="descname">set_standard_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_standard_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_standard_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Occupation to the standard job.</p>
+<ul class="simple">
+<li>has fixed shift of 9:00 - 17:00</li>
+<li>Monday through Friday</li>
+<li>wage of $40,000</li>
+<li>30 minute commute to work</li>
+<li>60 minute commute from work</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_student">
+<code class="descname">set_student</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_student"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_student" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Occupation to the standard job.</p>
+<ul class="simple">
+<li>Fixed shift of 8:00 - 15:00</li>
+<li>Monday through Friday</li>
+<li>wage of $0</li>
+<li>30 minute commute to school</li>
+<li>60 minute commute from school</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.set_work_distribution">
+<code class="descname">set_work_distribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.set_work_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.set_work_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the following distributions for work:</p>
+<ul class="simple">
+<li>work start time distribution</li>
+<li>work end time distribution</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the Occupation object as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return msg:</th><td class="field-body">The representation of the Occupation object as a string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_commute_from_work_dt">
+<code class="descname">update_commute_from_work_dt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_commute_from_work_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_commute_from_work_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull a commute from work duration from the respective distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_commute_to_work_dt">
+<code class="descname">update_commute_to_work_dt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_commute_to_work_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_commute_to_work_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull a commute to work duration from the respective distribution. Also, update the commute to work         start time place holder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_commute_to_work_start">
+<code class="descname">update_commute_to_work_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_commute_to_work_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_commute_to_work_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the commute to work start time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_work_dt">
+<code class="descname">update_work_dt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_work_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_work_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the work duration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_work_end">
+<code class="descname">update_work_end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_work_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_work_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the work end time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="occupation.Occupation.update_work_start">
+<code class="descname">update_work_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#Occupation.update_work_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.Occupation.update_work_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the work start time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.is_work_time">
+<code class="descclassname">occupation.</code><code class="descname">is_work_time</code><span class="sig-paren">(</span><em>clock</em>, <em>job</em>, <em>is_commute_to_work=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#is_work_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.is_work_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a clock and a job, this function says whether the clock&#8217;s time corresponds     to a time to be at work <strong>or</strong> a time to commute to work.</p>
+<p>If <img class="math" src="_images/math/7dca102a305a8be1d354b180b224f8a07fba888b.png" alt="\Delta{t} &gt; 0"/>, it indicates when it&#8217;s time to commute to work.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
+<li><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job to inquiry</li>
+<li><strong>is_commute_to_work</strong> (<em>bool</em>) &#8211; a flag indicating whether we are interested in calculating if it is                             time to commute to work</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a flag indicating if it is / is not work time (or commute time if is_commute_to_work is True)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.is_work_time_help">
+<code class="descclassname">occupation.</code><code class="descname">is_work_time_help</code><span class="sig-paren">(</span><em>clock</em>, <em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#is_work_time_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.is_work_time_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a clock and a job, this function says whether the clock&#8217;s time corresponds to
+a time at work.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
+<li><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job to inquiry</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">is_work_time: a flag indicating if the time (clock) corresponds to a work time</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.set_grave_shift">
+<code class="descclassname">occupation.</code><code class="descname">set_grave_shift</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#set_grave_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.set_grave_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Occupation to a grave shift.</p>
+<ul class="simple">
+<li>shift job from  22:00 to 6:00</li>
+<li>Monday through Friday</li>
+<li>30 minute commute to work</li>
+<li>60 minute commute from work</li>
+<li>wage of $40,0000.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.set_no_job">
+<code class="descclassname">occupation.</code><code class="descname">set_no_job</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#set_no_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.set_no_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the Occupation to having no job.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.set_standard_job">
+<code class="descclassname">occupation.</code><code class="descname">set_standard_job</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#set_standard_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.set_standard_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the Occupation to the standard job.</p>
+<ul class="simple">
+<li>fixed shift of 9:00 - 17:00</li>
+<li>Monday through Friday</li>
+<li>wage $40,000</li>
+<li>30 minute commute to work</li>
+<li>60 minute commute from work</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job of which to set the attributes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="occupation.set_student">
+<code class="descclassname">occupation.</code><code class="descname">set_student</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/occupation.html#set_student"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#occupation.set_student" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets a job to the preset values of student occupation.</p>
+<ul class="simple">
+<li>fixed shift of 08:00 - 15:00</li>
+<li>Monday through Friday</li>
+<li>wage of $0</li>
+<li>30 minute commute to school</li>
+<li>60 minute commute from school</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<a class="reference internal" href="#occupation.Occupation" title="occupation.Occupation"><em>occupation.Occupation</em></a>) &#8211; the job to set</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="need.html" title="previous chapter">need module</a></li>
+      <li>Next: <a href="params.html" title="next chapter">params module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/occupation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/occupation.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

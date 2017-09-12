@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>work module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="workplace module" href="workplace.html" />
+    <link rel="prev" title="universe module" href="universe.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-work">
+<span id="work-module"></span><h1>work module<a class="headerlink" href="#module-work" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code that governs the <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a> that gives a Person the ability to go to work/ school.</p>
+<p>This file contains <a class="reference internal" href="#work.Work" title="work.Work"><code class="xref py py-class docutils literal"><span class="pre">work.Work</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="work.Work">
+<em class="property">class </em><code class="descclassname">work.</code><code class="descname">Work</code><a class="reference internal" href="_modules/work.html#Work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a></p>
+<p>This class allows a Person to work / go to school in order to satisfy the need     <a class="reference internal" href="income.html#income.Income" title="income.Income"><code class="xref py py-class docutils literal"><span class="pre">income.Income</span></code></a>.</p>
+<dl class="method">
+<dt id="work.Work.advertise">
+<code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.advertise" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the score of the advertised work activity to a Person</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return score:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.end">
+<code class="descname">end</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the end of an Activity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.end_work">
+<code class="descname">end_work</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.end_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.end_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the variables pertaining to coming back from work by doing the following:</p>
+<ol class="arabic simple">
+<li>free the asset from use</li>
+<li>set the asset&#8217;s state to <code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code></li>
+<li>set the Income satiation to 1</li>
+<li>decay the need Travel</li>
+<li>sample the new work start time</li>
+<li>sample the new work end time</li>
+<li>update the scheduler to take into account the next work event</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.halt">
+<code class="descname">halt</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.halt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.halt" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles an interruption of an Activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.halt_work">
+<code class="descname">halt_work</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.halt_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.halt_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function interrupts the work behavior by doing the following:</p>
+<ol class="arabic simple">
+<li>frees the current asset</li>
+<li>the asset&#8217;s state is set to <code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code></li>
+<li>the Interruption satiation is set to 1.0</li>
+<li>the Interruption&#8217;s activity start/ stop</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">No benefits of working are given while being interrupted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.set_end_time">
+<code class="descname">set_end_time</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.set_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.set_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the end time of work.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return t_end:</th><td class="field-body">the end time [minutes, universal time]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This handles the start of an Activity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.start_work">
+<code class="descname">start_work</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.start_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.start_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function starts the work activity</p>
+<ul class="simple">
+<li>updates that asset&#8217;s status and number of users</li>
+<li>changes the location of the Person</li>
+<li>updates that person&#8217;s status</li>
+<li>calculates the end time of the work activity</li>
+<li>update the scheduler for the Income satiation</li>
+<li>update the scheduler for the Travel satiation</li>
+<li>set the day for the work period</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="work.Work.test_func">
+<code class="descname">test_func</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/work.html#Work.test_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#work.Work.test_func" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is <strong>NOT</strong> used.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="universe.html" title="previous chapter">universe module</a></li>
+      <li>Next: <a href="workplace.html" title="next chapter">workplace module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/work.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/work.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

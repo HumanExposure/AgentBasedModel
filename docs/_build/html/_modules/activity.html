@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>activity &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for activity</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that governs the activities that the agent performs</span>
+<span class="sd">in order to satisfy its needs.</span>
+
+<span class="sd">This module contains the following class: :class:`activity.Activity`.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="kn">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># constants</span>
+<span class="c1"># ===============================================</span>
+
+<span class="c1"># identifiers for each activity</span>
+<span class="n">NO_ACTIVITY</span>         <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_IDLE</span>
+<span class="n">INTERRUPT</span>           <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_INTERRUPT</span>
+<span class="n">WORK</span>                <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_WORK</span>
+<span class="n">SLEEP</span>               <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span>
+<span class="n">COMMUTE_TO_WORK</span>     <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_COMMUTE_TO_WORK</span>
+<span class="n">COMMUTE_FROM_WORK</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_COMMUTE_FROM_WORK</span>
+<span class="n">EAT_BREAKFAST</span>       <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_BREAKFAST</span>
+<span class="n">EAT_LUNCH</span>           <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span>
+<span class="n">EAT_DINNER</span>          <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_DINNER</span>
+<span class="n">EDUCATION</span>           <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EDUCATION</span>
+
+<span class="c1"># This dictionary takes the INTEGER representation of an Activity</span>
+<span class="c1"># category and returns a STRING representation</span>
+<span class="n">INT_2_STR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">NO_ACTIVITY</span><span class="p">:</span> <span class="s1">&#39;No Activity&#39;</span><span class="p">,</span>
+    <span class="n">WORK</span><span class="p">:</span> <span class="s1">&#39;Work&#39;</span><span class="p">,</span>
+    <span class="n">SLEEP</span><span class="p">:</span> <span class="s1">&#39;Sleep&#39;</span><span class="p">,</span>
+    <span class="n">COMMUTE_TO_WORK</span><span class="p">:</span> <span class="s1">&#39;Commute to Work&#39;</span><span class="p">,</span>
+    <span class="n">COMMUTE_FROM_WORK</span><span class="p">:</span> <span class="s1">&#39;Commute from Work&#39;</span><span class="p">,</span>
+    <span class="n">EAT_BREAKFAST</span><span class="p">:</span> <span class="s1">&#39;Eat Breakfast&#39;</span><span class="p">,</span>
+    <span class="n">EAT_LUNCH</span><span class="p">:</span> <span class="s1">&#39;Eat Lunch&#39;</span><span class="p">,</span>
+    <span class="n">EAT_DINNER</span><span class="p">:</span> <span class="s1">&#39;Eat Dinner&#39;</span><span class="p">,</span>
+    <span class="n">EDUCATION</span><span class="p">:</span> <span class="s1">&#39;Education&#39;</span><span class="p">,</span>
+    <span class="n">INTERRUPT</span><span class="p">:</span> <span class="s1">&#39;Interrupt&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># This dictionary takes the STRING representation of an activity</span>
+<span class="c1"># category and returns an INTEGER representation</span>
+<span class="n">STR_2_INT</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># This direcotry takes an interger representation for an activity and</span>
+<span class="c1"># assigns it a color used for plotting</span>
+<span class="n">INT_2_COLOR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">NO_ACTIVITY</span><span class="p">:</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+    <span class="n">WORK</span><span class="p">:</span> <span class="s1">&#39;brown&#39;</span><span class="p">,</span>
+    <span class="n">SLEEP</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+    <span class="n">COMMUTE_TO_WORK</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span>
+    <span class="n">COMMUTE_FROM_WORK</span><span class="p">:</span> <span class="s1">&#39;cyan&#39;</span><span class="p">,</span>
+    <span class="n">EAT_BREAKFAST</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="c1"># black</span>
+    <span class="n">EAT_LUNCH</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span><span class="p">,</span>
+    <span class="n">EAT_DINNER</span><span class="p">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+    <span class="n">EDUCATION</span><span class="p">:</span> <span class="s1">&#39;pink&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class Activity</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Activity"><a class="viewcode-back" href="../activity.html#activity.Activity">[docs]</a><span class="k">class</span> <span class="nc">Activity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An activity enables a :class:`person.Person` to address its satiation</span>
+<span class="sd">    :math:`n(t)`. This class&#39;s purpose is to encapsulate general</span>
+<span class="sd">    capabilities that specific instances of activity will derive from.</span>
+
+<span class="sd">    :ivar int category: an unique identifier naming the type of activity.</span>
+<span class="sd">    :ivar int t_end: the end time of the activity [universal time, seconds]</span>
+<span class="sd">    :ivar int t_start: the start time of the activity [universal time, seconds]</span>
+<span class="sd">    :ivar int dt: the duration of the activity [seconds]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># activity identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">NO_ACTIVITY</span>
+
+        <span class="c1"># start time (universal time, min)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># end time (universal time, min)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="c1"># the duration of an activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    
+        
+        <span class="k">return</span>
+
+    <span class="c1"># ------------------------------------------------------</span>
+    <span class="c1">#  functions</span>
+    <span class="c1"># ------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Activity.advertise"><a class="viewcode-back" href="../activity.html#activity.Activity.advertise">[docs]</a>    <span class="k">def</span> <span class="nf">advertise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">the_need</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the advertised score of doing an activity. Let</span>
+<span class="sd">        :math:`\\Omega` be the set of all needs addressed by the activity.</span>
+<span class="sd">        The score is calculated by doing the following</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::     </span>
+<span class="sd">            S = \\begin{cases}</span>
+<span class="sd">                0  &amp; n(t) &gt; \\lambda \\\\</span>
+<span class="sd">                \\sum_{j \in \Omega} W_j( n_j(t) ) - W_j( n_j(t + \\Delta{t} )) &amp; n(t) \\le \\lambda</span>
+<span class="sd">            \\end{cases}</span>
+<span class="sd">            </span>
+<span class="sd">        where :math:`W(n)` is the weight function for the particular need.</span>
+<span class="sd">        </span>
+<span class="sd">        :param need.Need the_need: the primary need associated with the respective activity</span>
+<span class="sd">        :param int dt: the duration :math:`\\Delta{t}` of doing the activity [seconds]</span>
+
+<span class="sd">        :returns score: the score of the advertisement</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this is the lowest score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># create a clock for the Need perception due the activity when it&#39;s finished</span>
+        <span class="n">future_clock</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">Temporal</span><span class="p">(</span><span class="n">the_need</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># the current need association level</span>
+        <span class="n">n_now</span> <span class="o">=</span> <span class="n">the_need</span><span class="o">.</span><span class="n">magnitude</span>
+
+        <span class="c1"># if the  need association is below a threshold, make the advertise the activity&#39;s value</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">the_need</span><span class="o">.</span><span class="n">under_threshold</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="p">):</span>
+
+            <span class="c1"># the resulting need association level when the activity is done</span>
+            <span class="n">n_later</span> <span class="o">=</span> <span class="n">the_need</span><span class="o">.</span><span class="n">perceive</span><span class="p">(</span><span class="n">future_clock</span><span class="p">)</span>
+
+            <span class="c1"># the score from the advertisement</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">score</span> <span class="o">+</span> <span class="p">(</span> <span class="n">the_need</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_now</span><span class="p">)</span> <span class="o">-</span> <span class="n">the_need</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">n_later</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># return the value of the score</span>
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Activity.advertise_interruption"><a class="viewcode-back" href="../activity.html#activity.Activity.advertise_interruption">[docs]</a>    <span class="k">def</span> <span class="nf">advertise_interruption</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advertise the score if this activity interrupts another activity.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note:: </span>
+<span class="sd">            This function should be overloaded in derived classes.</span>
+
+<span class="sd">        :returns score: the advertised score</span>
+<span class="sd">        :rtype: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set score to zero</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        <span class="k">return</span> <span class="n">score</span>
+</div>
+<div class="viewcode-block" id="Activity.end"><a class="viewcode-back" href="../activity.html#activity.Activity.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles some of the common logistics in ending a specific activity assuming \</span>
+<span class="sd">        the activity ends without interruption.</span>
+
+<span class="sd">        Currently the function does the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. Reset the :class:`state.State` variable&#39;s start time to the current time</span>
+<span class="sd">        #. Reset the :class:`state.State` variable&#39;s end time to the current time</span>
+<span class="sd">         </span>
+<span class="sd">        :param person.Person p: the person whose activity is ending.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># reset the state&#39;s time information to the current time</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Activity.halt"><a class="viewcode-back" href="../activity.html#activity.Activity.halt">[docs]</a>    <span class="k">def</span> <span class="nf">halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function handles some of the common logistics in ending a specific activity due to an \</span>
+<span class="sd">        interruption.</span>
+
+<span class="sd">        Currently the function does the following:</span>
+<span class="sd">        </span>
+<span class="sd">        #. Reset the :class:`state.State` variable&#39;s start time to the current time</span>
+<span class="sd">        #. Reset the :class:`state.State` variable&#39;s end time to the current time</span>
+<span class="sd">        </span>
+<span class="sd">        :param person.Person p: The person whose activity is being interrupted.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># do the logistics in ending an activity normally (without interruption)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_end</span>   <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Activity.start"><a class="viewcode-back" href="../activity.html#activity.Activity.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function starts a specific activity.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function is meant to be overloaded by derived activity classes.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Activity.print_id"><a class="viewcode-back" href="../activity.html#activity.Activity.print_id">[docs]</a>    <span class="k">def</span> <span class="nf">print_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the activity category as a string.</span>
+
+<span class="sd">        :return msg: The string representation of the category</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># write an error message if the category is not a valid choice</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is not a valid choice for activity.</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># If the category is a valid choice, return the string form of the category</span>
+        <span class="c1"># Else, return an error message</span>
+        <span class="k">return</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Activity.toString"><a class="viewcode-back" href="../activity.html#activity.Activity.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the activity object as a string.</span>
+
+<span class="sd">        :return msg: The string representation of the activity object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># write the identifier</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Activity Type: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_id</span><span class="p">()</span><span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        
+        <span class="k">return</span> <span class="n">msg</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

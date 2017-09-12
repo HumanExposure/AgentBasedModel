@@ -1,0 +1,486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hunger &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for hunger</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information about governing the need Hunger.</span>
+
+<span class="sd">This module contains the class hunger (:class:`hunger.Hunger`).</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># general math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="Hunger"><a class="viewcode-back" href="../hunger.html#hunger.Hunger">[docs]</a><span class="k">class</span> <span class="nc">Hunger</span><span class="p">(</span><span class="n">need</span><span class="o">.</span><span class="n">Need</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class governs the behavior of the need Hunger need. When Hunger is unstatisfied,</span>
+<span class="sd">    the agent feels compelled to eat a meal in order to satisfy the need. Mathematically \</span>
+<span class="sd">    speaking, Hunger is modeled as linearly-behaving need.</span>
+
+<span class="sd">    :param temporal.Temporal clock: the time</span>
+<span class="sd">    :param int num_sample_points: the number of temporal nodes in the simulation</span>
+
+<span class="sd">    :ivar int category: the category of the need</span>
+<span class="sd">    :ivar float decay_rate: the decay rate of the Hunger need [need/minute]</span>
+<span class="sd">    :ivar float recharge_rate: the recharge rate of the Hunger need [need/min]</span>
+<span class="sd">    :ivar float suggested_recharge_rate: an approximate recharge rate used to calculate the end time of an \</span>
+<span class="sd">    event before rounding</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="p">):</span>
+        
+        <span class="n">need</span><span class="o">.</span><span class="n">Need</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span>
+        
+        <span class="c1"># these values may change due to different influences, meals</span>
+
+        <span class="c1"># the decay rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># the true recharge rate once the end time is known</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recharge_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># an approximate recharge rate. It is used to calculate the end time of an event</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suggested_recharge_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Hunger.decay"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.decay">[docs]</a>    <span class="k">def</span> <span class="nf">decay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function decreases the satiation in Hunger by doing the following:</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">          n(t + 1) = n(t) + m_{decay}                        </span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            This function may be antiquated and **not used**</span>
+<span class="sd">            </span>
+<span class="sd">        :param int status: indicates the current status of the person&#39;s state (not-used)</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># linear decrease in hunger</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="c1"># set the magnitude of hunger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">MIN_DEFAULT</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.decay_new"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.decay_new">[docs]</a>    <span class="k">def</span> <span class="nf">decay_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the default decrease in the Hunger need.        </span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            n(t + \Delta{t}) = n(t) + m_{decay}\,\Delta{t}</span>
+<span class="sd">            </span>
+<span class="sd">        :param int dt: the duration of time [minutes] used to decay the need</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># linear decrease in hunger</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># set the magnitude of hunger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">MIN_DEFAULT</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.initialize"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function initializes the the hunger need at the first step of the simulation. The function \</span>
+<span class="sd">        checks to see whether or not the current time implies that there should be an eating event. The \</span>
+<span class="sd">        hunger object is set to the respective state.</span>
+
+<span class="sd">        This function does the following exactly</span>
+<span class="sd">        </span>
+<span class="sd">        #. initialize all of the meals</span>
+<span class="sd">        #. check to see if a meal should be occurring at the current time</span>
+<span class="sd">        #. if no meals should be occurring</span>
+<span class="sd">            * figure out the next meal :math:`m`</span>
+<span class="sd">            * calculate the decay rate for hunger until the next meal</span>
+<span class="sd">            * calculate the amount of time until the next meal :math:`\Delta{t}`</span>
+<span class="sd">            * set the current meal :math:`m`</span>
+<span class="sd">            * update the schedule for the hunger need to be the time the next meal starts</span>
+<span class="sd">        #. if a meal should be occurring</span>
+<span class="sd">            * get the index of the meal that should be occurring :math:`m`</span>
+<span class="sd">            * set the current meal :math:`m`</span>
+<span class="sd">            * calculate the final time of the meal</span>
+<span class="sd">            * calculate the duration until the end of the next meal :math:`\Delta{t}`</span>
+<span class="sd">            * set the recharge rate</span>
+<span class="sd">            * update the scheduler for the hunger need to be the time the current meal should end            </span>
+<span class="sd">        #. initialize the start time for each meal</span>
+<span class="sd">                    </span>
+<span class="sd">        :param person.Person p: the person whose hunger need is being initialized</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># duration to next meal</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># initialize the meals</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span><span class="p">)</span>
+
+        <span class="c1"># check to see if a meal should be occurring at the current time</span>
+        <span class="n">do_meals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_meal_time_all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span> <span class="bp">True</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">do_meals</span> <span class="p">):</span>
+            <span class="c1"># assuming that the current time is NOT for eating</span>
+
+            <span class="c1"># get the next meal</span>
+            <span class="n">dt</span><span class="p">,</span> <span class="n">the_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">duration_to_next_meal</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="c1"># set the decay rate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_suggested_recharge_rate</span><span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_decay_rate</span><span class="p">(</span><span class="n">the_meal</span><span class="o">.</span><span class="n">t_start</span><span class="p">)</span>
+
+            <span class="c1"># the amount of time until eating the next meal</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="c1"># set the current meal</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span> <span class="o">=</span> <span class="n">the_meal</span>
+
+            <span class="c1"># update the scheduler</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># index of the the current meal</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">do_meals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="c1"># set the current meal</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">current_meal</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+            <span class="c1"># the final time of the eating event</span>
+            <span class="n">t_end</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+
+            <span class="c1"># the time duration of the first eating event</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="c1"># set the magnitude</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+            <span class="c1"># set the recharge rate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recharge_rate</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="p">)</span><span class="o">/</span> <span class="n">dt</span>
+
+            <span class="c1"># update the scheduler</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># initialize t_start_univ for meals</span>
+        <span class="n">time_of_day</span>     <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span><span class="p">:</span>
+
+            <span class="c1"># the meal will happen later in the day</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">t_start</span> <span class="o">&gt;=</span> <span class="n">time_of_day</span><span class="p">):</span>
+                <span class="n">t_day</span>  <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># the meal will happen tomorrow</span>
+                <span class="n">t_day</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span>
+
+            <span class="n">m</span><span class="o">.</span><span class="n">t_start_univ</span>      <span class="o">=</span> <span class="n">t_day</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">t_start</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">day</span>               <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">day</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.is_meal_time"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.is_meal_time">[docs]</a>    <span class="k">def</span> <span class="nf">is_meal_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">the_meal</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This checks whether or not it is time for a meal.</span>
+
+<span class="sd">        :param int t: time of day [minutes]</span>
+<span class="sd">        :param meal.Meal the_meal: the respective meal to see whether the current time implies \</span>
+<span class="sd">                            that an eating event should happen</span>
+
+<span class="sd">        :return: True if the current time is within the time to eat. False, otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the start time</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="c1"># the end time</span>
+        <span class="n">t_end</span>   <span class="o">=</span> <span class="n">t_start</span> <span class="o">+</span> <span class="n">the_meal</span><span class="o">.</span><span class="n">dt</span>
+
+        <span class="c1"># the amount of time since the start of the meal</span>
+        <span class="n">u</span>       <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_start</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the duration of the meal</span>
+        <span class="n">u_end</span>   <span class="o">=</span> <span class="p">(</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">t_start</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># if u == u_end, the meal has ended</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">u</span> <span class="o">&lt;</span> <span class="n">u_end</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Hunger.is_meal_time_all"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.is_meal_time_all">[docs]</a>    <span class="k">def</span> <span class="nf">is_meal_time_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">meals</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function checks every meal and sees whether or not the current time \</span>
+<span class="sd">        implies that there should be an eventing event for a respective meal</span>
+
+
+<span class="sd">        :param int t: The current time of day [minutes]</span>
+<span class="sd">        :param list meals: A list of Meals</span>
+
+<span class="sd">        :return: A list of boolean flags indicating True or False, indicating whether or not an \</span>
+<span class="sd">        eating event should occur for the respective meal</span>
+
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_meal_time</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">meals</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Hunger.perceive"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.perceive">[docs]</a>    <span class="k">def</span> <span class="nf">perceive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">future_clock</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This gives the result if eat is done now until a later time corresponding to clock.</span>
+
+<span class="sd">        :param temporal.Temporal future_clock: a clock at a future time</span>
+
+<span class="sd">        :return out: the perceived hunger need association level</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the amount of time (in minutes) it takes to do a perceived</span>
+        <span class="c1"># activity</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">future_clock</span><span class="o">.</span><span class="n">t_univ</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">t_univ</span>
+
+        <span class="c1"># a linear gain in eating</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggested_recharge_rate</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># return the perceived hunger level</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+</div>
+<div class="viewcode-block" id="Hunger.reset"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function resets the values in order for the need to be used in the next simulation</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Hunger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># the decay rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span>     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recharge_rate</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suggested_recharge_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.set_decay_rate"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.set_decay_rate">[docs]</a>    <span class="k">def</span> <span class="nf">set_decay_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_start</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the decay rate of hunger to the next meal.</span>
+
+<span class="sd">        :param int dt: the amount of time to the next meal [minutes]</span>
+<span class="sd">        :param int t_start: the start time [in minutes] of the next meal</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">do_test</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c1"># the amount of minutes in a day</span>
+        <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># the time until the start of the next meal</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">time_of_day</span> <span class="o">+</span> <span class="n">DAY_2_MIN</span><span class="p">)</span> <span class="o">%</span> <span class="n">DAY_2_MIN</span>
+
+        <span class="c1"># set the decay rate. Avoid integer division</span>
+        <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.set_decay_rate_new"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.set_decay_rate_new">[docs]</a>    <span class="k">def</span> <span class="nf">set_decay_rate_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the decay rate of hunger to the next meal.</span>
+
+<span class="sd">        :param int dt: the amount of time to the next meal [minutes]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the decay rate. Avoid integer division</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.set_recharge_rate"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.set_recharge_rate">[docs]</a>    <span class="k">def</span> <span class="nf">set_recharge_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calculates the recharge rate of hunger due to eating the current meal.</span>
+
+<span class="sd">        :param int dt: the amount of time it takes to finish a meal [minutes]</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the recharge rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recharge_rate</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">/</span><span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.set_suggested_recharge_rate"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.set_suggested_recharge_rate">[docs]</a>    <span class="k">def</span> <span class="nf">set_suggested_recharge_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets the suggested recharge rate assuming a **linear function** behavior</span>
+
+<span class="sd">        The suggested recharge rate is based on the duration of the sleeping event \</span>
+<span class="sd">        and the threshold. The sleep duration is based on the biological data (no rounding).</span>
+
+<span class="sd">        :param int dt: The duration of time of the eating event [minutes]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">suggested_recharge_rate</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="Hunger.toString"><a class="viewcode-back" href="../hunger.html#hunger.Hunger.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Represents the Hunger object as a string.</span>
+
+<span class="sd">        :return msg:  the string representation of the huger object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># write the values from Hunger</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="nb">super</span><span class="p">(</span><span class="n">Hunger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="c1"># write the decay rate</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;decay rate:</span><span class="se">\t</span><span class="si">%f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_rate</span>
+
+        <span class="c1"># write the recharge rate</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;recharge rate:</span><span class="se">\t</span><span class="si">%f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">recharge_rate</span>
+         
+        <span class="k">return</span> <span class="n">msg</span>
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

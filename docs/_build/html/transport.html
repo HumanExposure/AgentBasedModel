@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>transport module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="travel module" href="travel.html" />
+    <link rel="prev" title="temporal module" href="temporal.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-transport">
+<span id="transport-module"></span><h1>transport module<a class="headerlink" href="#module-transport" title="Permalink to this headline">¶</a></h1>
+<p>This module contains information about the <a class="reference internal" href="asset.html#asset.Asset" title="asset.Asset"><code class="xref py py-class docutils literal"><span class="pre">asset.Asset</span></code></a> that allows a <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a> to do the following:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="commute.html#commute.Commute_To_Work" title="commute.Commute_To_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_To_Work</span></code></a></li>
+<li><a class="reference internal" href="commute.html#commute.Commute_From_Work" title="commute.Commute_From_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_From_Work</span></code></a></li>
+</ol>
+<p>activities. This module contains code for <a class="reference internal" href="#transport.Transport" title="transport.Transport"><code class="xref py py-class docutils literal"><span class="pre">transport.Transport</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="transport.Transport">
+<em class="property">class </em><code class="descclassname">transport.</code><code class="descname">Transport</code><a class="reference internal" href="_modules/transport.html#Transport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transport.Transport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="asset.html#asset.Asset" title="asset.Asset"><code class="xref py py-class docutils literal"><span class="pre">asset.Asset</span></code></a></p>
+<p>This class is an asset that allows for commuting.</p>
+<p>Activities in this asset:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="commute.html#commute.Commute_To_Work" title="commute.Commute_To_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_To_Work</span></code></a></li>
+<li><a class="reference internal" href="commute.html#commute.Commute_From_Work" title="commute.Commute_From_Work"><code class="xref py py-class docutils literal"><span class="pre">commute.Commute_From_Work</span></code></a></li>
+</ol>
+<dl class="method">
+<dt id="transport.Transport.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>people</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transport.html#Transport.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transport.Transport.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the transport location according to whether or not the Person is commuting to or         from work.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function just sets the transport object to be at the home</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) &#8211; a list of people in the simulation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="temporal.html" title="previous chapter">temporal module</a></li>
+      <li>Next: <a href="travel.html" title="next chapter">travel module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/transport.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/transport.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

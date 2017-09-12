@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scheduler module &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="next" title="sleep module" href="sleep.html" />
+    <link rel="prev" title="rest module" href="rest.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-scheduler">
+<span id="scheduler-module"></span><h1>scheduler module<a class="headerlink" href="#module-scheduler" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code that is is responsible for controlling the scheduler for the simulation. Note that the simulation does <strong>not</strong> run continuously in from one adjacent time step to the next. Instead the simulation jumps forward in time (i.e. move across multiple time steps in time), stopping only at time steps in which an action could occur. The ability to jump forward in time is controlled by the scheduler.</p>
+<p>The scheduler will trigger the simulation to stop skipping time steps for the following reasons:</p>
+<ol class="arabic simple">
+<li>an activity should start</li>
+<li>an activity should end</li>
+<li>a need is under threshold</li>
+</ol>
+<p>This module contains class <a class="reference internal" href="#scheduler.Scheduler" title="scheduler.Scheduler"><code class="xref py py-class docutils literal"><span class="pre">scheduler.Scheduler</span></code></a>.</p>
+<p><em>Module author: Dr. Namdi Brandon</em></p>
+<dl class="class">
+<dt id="scheduler.Scheduler">
+<em class="property">class </em><code class="descclassname">scheduler.</code><code class="descname">Scheduler</code><span class="sig-paren">(</span><em>clock</em>, <em>num_people</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scheduler.html#Scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scheduler.Scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class contains the code for the scheduler. The scheduler is in charge of jumping forward in time and     stopping at only potentially relevant time steps. The scheduler keeps track of the needs for every person in     in the household and stops at time steps where any person should have an action / need that needs to be     addressed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
+<li><strong>num_people</strong> (<em>int</em>) &#8211; the number of people in the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
+<li><strong>A</strong> (<em>numpy.ndarray</em>) &#8211; the schedule matrix of dimension (number of people x number of needs). This matrix     contains the times [minutes, universal time] that the simulation should not skip over</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the duration of time between events</li>
+<li><strong>t_old</strong> (<em>int</em>) &#8211; the time [minutes, universal time] of the prior event</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="scheduler.Scheduler.get_next_event_time">
+<code class="descname">get_next_event_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scheduler.html#Scheduler.get_next_event_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scheduler.Scheduler.get_next_event_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function searches the schedule matrix and finds the next time that that model should handle.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is only capable of handling <strong>single-occupancy</strong> households.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the next time [minutes, time of day] that the model should address</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scheduler.Scheduler.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scheduler.html#Scheduler.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scheduler.Scheduler.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function presents the Scheduler object as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a string representation of the object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scheduler.Scheduler.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>id_person</em>, <em>id_need</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scheduler.html#Scheduler.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scheduler.Scheduler.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function updates the schedule matrix for a given person and need with the duration for the next event, 
+for the respective person-need combination.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id_person</strong> (<em>int</em>) &#8211; the person identifier</li>
+<li><strong>id_need</strong> (<em>int</em>) &#8211; the need identifier</li>
+<li><strong>dt</strong> (<em>int</em>) &#8211; the duration to the next event</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="rest.html" title="previous chapter">rest module</a></li>
+      <li>Next: <a href="sleep.html" title="next chapter">sleep module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/scheduler.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/scheduler.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

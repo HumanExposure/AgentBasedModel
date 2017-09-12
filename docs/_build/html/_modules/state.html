@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>state &mdash; ABMHAP 2017.08 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2017.08',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for state</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># August 14, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code that governs information relevant to a Person&#39;s state.</span>
+
+<span class="sd">This module contains class :class:`state.State`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># import</span>
+<span class="c1"># ----------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1">#----------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1">#----------------------------------------------------------</span>
+<span class="n">IDLE_TEMP</span>   <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>        <span class="c1"># the Person is Idle this time step and has gone through</span>
+                        <span class="c1"># the advertisement stage and ending up without an activity</span>
+<span class="n">IDLE</span>        <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># the Person/ Asset is free to do any Action</span>
+<span class="n">SLEEP</span>       <span class="o">=</span> <span class="mi">1</span>         <span class="c1"># the Person is asleep</span>
+<span class="n">TRANSIT</span>     <span class="o">=</span> <span class="mi">2</span>         <span class="c1"># the Person is awake and in the process of traveling from the</span>
+                        <span class="c1"># home to another location and vice versa</span>
+<span class="n">WORK</span>        <span class="o">=</span> <span class="mi">3</span>         <span class="c1"># the Person is awake and at a location other than the home</span>
+<span class="n">BUSY</span>        <span class="o">=</span> <span class="mi">4</span>         <span class="c1"># the Person/ Asset performing an Activity that CANNOT be done</span>
+                        <span class="c1"># with another Activity simultaneously</span>
+<span class="n">BUSY_MULTI</span>  <span class="o">=</span> <span class="mi">5</span>         <span class="c1"># the Person / Asset  performing an Activity that CAN be</span>
+                        <span class="c1"># done with another Activity simultaneously</span>
+
+<span class="c1"># This dictionary takes the INTEGER representation of an state status and</span>
+<span class="c1"># returns the STRING representation</span>
+<span class="n">INT_2_STR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">IDLE_TEMP</span><span class="p">:</span> <span class="s1">&#39;Temporary Idle&#39;</span><span class="p">,</span>
+    <span class="n">IDLE</span><span class="p">:</span> <span class="s1">&#39;Idle&#39;</span><span class="p">,</span>
+    <span class="n">SLEEP</span><span class="p">:</span> <span class="s1">&#39;Sleep&#39;</span><span class="p">,</span>
+    <span class="n">WORK</span><span class="p">:</span> <span class="s1">&#39;Work&#39;</span><span class="p">,</span>
+    <span class="n">TRANSIT</span><span class="p">:</span> <span class="s1">&#39;Transit&#39;</span><span class="p">,</span>
+    <span class="n">BUSY</span><span class="p">:</span> <span class="s1">&#39;Busy&#39;</span><span class="p">,</span>
+    <span class="n">BUSY_MULTI</span><span class="p">:</span> <span class="s1">&#39;Busy_Multi&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># This dictionary takes the STRING representation of an state status and</span>
+<span class="c1"># returns the INTEGER representation</span>
+<span class="n">STR_2_INT</span> <span class="o">=</span> <span class="p">{</span> <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">}</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># class</span>
+<span class="c1"># ===============================================</span>
+
+<div class="viewcode-block" id="State"><a class="viewcode-back" href="../state.html#state.State">[docs]</a><span class="k">class</span> <span class="nc">State</span> <span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains information relevant to a Person state</span>
+
+<span class="sd">    :param int status: the status of the Person</span>
+
+<span class="sd">    :var activity.Activity &#39;activity&#39;: the particular Activity of the Asset</span>
+<span class="sd">    :var list arg_start: the list of arguments for the start() function</span>
+<span class="sd">    :var list arg_end: the list of arguments for the end() function</span>
+<span class="sd">    :var asset.Asset &#39;asset&#39;: the Asset that is being used</span>
+<span class="sd">    :var list asset_list:</span>
+<span class="sd">    :var bool is_init: this is a flag indicating whether or not the Agent is in the initialization state. \</span>
+<span class="sd">    This state only occurs during the first step of the simulation.</span>
+<span class="sd">    :var int status: the status of a Person</span>
+<span class="sd">    :var int t_end: the end time of a state [minutes, universal time]</span>
+<span class="sd">    :var int t_start: the start time of the current state [minutes, universal time]</span>
+<span class="sd">    :var int round_dt: the amount of minutes [-1, 0, 1] to round an activity duration</span>
+<span class="sd">    :var float dt_frac: the fraction of a minutes subtracted from rounding down from the true projected \</span>
+<span class="sd">    activity duration</span>
+<span class="sd">    :var bool do_interruption: a flag indicating whether the Person is interrupting an ongoing activity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># constructor</span>
+    <span class="c1">#</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">IDLE</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span>     <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset</span>      <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_list</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_end</span>    <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># this shows that if the Person is in the initialization state</span>
+        <span class="c1">#self.is_init = False</span>
+
+        <span class="c1"># the amount of minutes [-1, 0, 1] to round an activity duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># the fraction of a minute subtracted from rounding down from the true projected activity duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_frac</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_interruption</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span>   
+
+    <span class="c1"># ------------------------------------------------------</span>
+    <span class="c1"># Functions</span>
+    <span class="c1"># ------------------------------------------------------</span>
+
+<div class="viewcode-block" id="State.end_activity"><a class="viewcode-back" href="../state.html#state.State.end_activity">[docs]</a>    <span class="k">def</span> <span class="nf">end_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function ends an activity.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">IDLE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_activity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+
+        <span class="c1"># reset the end() and argument list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset</span>      <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_end</span>    <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.halt_activity"><a class="viewcode-back" href="../state.html#state.State.halt_activity">[docs]</a>    <span class="k">def</span> <span class="nf">halt_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function runs the halt activity. The function is used by interruptions \</span>
+<span class="sd">        to stop an activity **immediately** without giving benefits to the need that the \</span>
+<span class="sd">        halted activity addressed.</span>
+
+<span class="sd">        :param person.Person p: the person of interest</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+        <span class="c1"># if currently not doing an activity</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c1"># do nothing</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># run the new activity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_activity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">halt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset</span>      <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span>  <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_end</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_interruption</span>    <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.print_activity"><a class="viewcode-back" href="../state.html#state.State.print_activity">[docs]</a>    <span class="k">def</span> <span class="nf">print_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The string representation of the activity. This function handles the \</span>
+<span class="sd">        possibility of the activity being None.</span>
+
+<span class="sd">        :return: the representation of the activity</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="State.print_asset"><a class="viewcode-back" href="../state.html#state.State.print_asset">[docs]</a>    <span class="k">def</span> <span class="nf">print_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the asset as a string. This function handles \</span>
+<span class="sd">        the possibility of the asset being None.</span>
+
+<span class="sd">        :return: the representation of the asset</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asset</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">asset</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="State.print_status"><a class="viewcode-back" href="../state.html#state.State.print_status">[docs]</a>    <span class="k">def</span> <span class="nf">print_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the status as a string.</span>
+
+<span class="sd">        :return: the representation of the status</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the error message</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an Invalid choice of STATE.status!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
+
+        <span class="k">return</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="State.reset"><a class="viewcode-back" href="../state.html#state.State.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_univ</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the state object to the default behavior at the beginning of the simulation.</span>
+
+<span class="sd">        :param int t_univ: the time of the beginning of the simulation in universal time [seconds]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span>     <span class="o">=</span> <span class="n">IDLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="n">t_univ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>      <span class="o">=</span> <span class="n">t_univ</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_end</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># this shows that if the Person is in the initialization state</span>
+        <span class="c1">#self.is_init = False</span>
+
+        <span class="c1"># the amount of minutes [-1, 0, 1] to round an activity duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_dt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># the fraction of a minute subtracted from rounding down from the true projected activity duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_frac</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_interruption</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.reset_rounding_parameters"><a class="viewcode-back" href="../state.html#state.State.reset_rounding_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">reset_rounding_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function resets the rounding parameters to zero.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_dt</span>   <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_frac</span>    <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.reset_time_status"><a class="viewcode-back" href="../state.html#state.State.reset_time_status">[docs]</a>    <span class="k">def</span> <span class="nf">reset_time_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">IDLE</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function resets the time information to the current time and \</span>
+<span class="sd">        sets the status. This function is usually used at the end of an activity.</span>
+
+<span class="sd">        :param int t_start: the start time [minutes, universal time]</span>
+<span class="sd">        :param int status: the status of the person</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span>     <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>    <span class="o">=</span> <span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.run_activity"><a class="viewcode-back" href="../state.html#state.State.run_activity">[docs]</a>    <span class="k">def</span> <span class="nf">run_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function allows an activity to start, end, or halt</span>
+
+<span class="sd">        :param list arg:  arguments for the func() function</span>
+<span class="sd">        :param function func:  arguments for the func() function</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The +1 is due to the self argument</span>
+        <span class="n">narg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="c1"># an error message</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;ERROR! </span><span class="si">%d</span><span class="s1"> is an invalid number of arguments for the chosen function!</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">narg</span>
+
+        <span class="c1"># func -&gt; activity.end(p)</span>
+        <span class="c1"># choose the correct function</span>
+        <span class="c1"># offset is doe to func(self, arg)</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">narg</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">func</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="p">(</span> <span class="n">narg</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># this is the function that is usually selected</span>
+        <span class="k">elif</span> <span class="p">(</span> <span class="n">narg</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">narg</span> <span class="o">==</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">arg</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="State.start_activity"><a class="viewcode-back" href="../state.html#state.State.start_activity">[docs]</a>    <span class="k">def</span> <span class="nf">start_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function starts an activity</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_activity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        
+        <span class="c1"># reset arguments for activity.start()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_start</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">return</span>
+
+</div>
+<div class="viewcode-block" id="State.toString"><a class="viewcode-back" href="../state.html#state.State.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function represents the State object as a string.</span>
+
+<span class="sd">        :return: the representation of the State object</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;State:</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_status</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;t_start:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;t_end:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;current Asset being used:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_asset</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;current Activity being used:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_activity</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        
+        <span class="k">return</span> <span class="n">msg</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
