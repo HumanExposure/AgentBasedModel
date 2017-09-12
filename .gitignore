@@ -1,15 +1,13 @@
 # custom
 *ipynb_checkpoints
 .idea/*
-.DS_Store
-*hempums.csv
-*RData
 *Rhistory
-*Rproj
-
 *Thumbs.db
 *.idea
 run/*.ipynb
+docs/_build/latex/
+docs/_build/doctrees/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
