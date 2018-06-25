@@ -17,197 +17,93 @@ This is code is runs the simulation for the Agent-Based Model of Human Activity 
 
 In order to run the code, do the following:
 
-#. set the user-defined parameters of the simulation in main_params.py
+#. set the user-defined parameters of the simulation in :literal:`main_params.py`
 #. run the code via
-    \> python main.py
 
-.. note::
-    In order to run the debugger do the following in windows:
-
-    \> python -m pdb main.py
+    \> :literal:`python main.py`
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
+
+#
+# In order to run the debugger do the following in windows:
+# python -m pdb main.py
 
 # ===========================================
 # import
 # ===========================================
 
 # to access python files in the parent directory
-import os, sys, time
+import sys, time
 sys.path.append('..\\source')
+sys.path.append('..\\plotting')
 
 # for plotting
 import matplotlib.pylab as plt
 
 # agent-based model modules
 import my_globals as mg
-import activity, diary, main_params, occupation, params, scenario, temporal
+import main_params, plotter, scenario
 
-# ===============================================================================
-# RUN
-# ===============================================================================
+# ===============================================
+# functions
+# ===============================================
 
-def get_diary(u):
-
-    """
-    This function output the result of the simulation in terms of an activity diary.
-
-    :param universe.Universe u: the governing engine of the simulation
-    :return: the activity diary describing the behavior of the agent
-    :rtype: diary.Diary
-    """
-
-    # the agent
-    p = u.people[0]
-
-    # the indices of simulation data
-    idx = u.clock.hist_time != -1
-    idx = idx.flatten()
-
-    # the time
-    t           = u.clock.hist_time[idx].flatten()
-
-    # the array of the activities
-    hist_act    = p.hist_activity[idx]
-
-    # the array of the locations
-    hist_loc    = p.hist_local[idx]
-
-    # make the time continuous
-    t_all   = mg.fill_out_time(t)
-
-    # fill out the time in between events to get data that corresponds to contiguous time
-    act_all = mg.fill_out_data(t, hist_act)
-
-    # fill out the location data in between events that corresponds to contiguous time
-    loc_all = mg.fill_out_data(t, hist_loc)
-
-    # create the activity diary
-    d = diary.Diary(t=t_all, act=act_all, local=loc_all)
-
-    return d
-
-def plot_cdfs(d, keys):
+def plot(p, d=None):
 
     """
-    This function plots the cumulative distribution function of start time, end time, and duration for \
-    each activity in the the simulation.
+    This function plots figures related to the results of the simulation. Specifically, \
+    it does the following for the given agent:
 
-    :param diary.Diary d: the results of the simulation
-    :param list keys: list of activities to graph
+    #. plots the histograms about the activity data
+    #. plots cumulative distribution functions (CDFs) of the activity data
+    #. plots how the satiation changes over time for the all of the needs
+    #. plots how the weight function values change over time for all of the needs
+
+    .. note::
+        The satiation and weight function plots will **not** be correct unless the simulation \
+        was set to run minute by minute. That is, main_params.do_minute_by_minute is set to **True**.
+
+    :param person.Person p: the agent whose information is going to be plotted
+    :param diary.Diary d: the activity diary of the respected agent
+
     :return:
     """
 
-    for k in keys:
+    # print plotting message to screen
+    print('plotting...')
 
-        df = d.df[d.df.act == k]
+    # if the activity diary is not already created, create the activity diary
+    if d is None:
+        d = p.get_diary()
+    #
+    # plot activity data
+    #
 
-        fig, axes = plt.subplots(2, 2)
+    # all of the activities used in the simulation as well as idle time
+    act_all = d.df.act.unique()
 
-        # title
-        fig.suptitle(activity.INT_2_STR[k])
+    # the activities used in the simulation, not including the idle time
+    keys = act_all[act_all != mg.KEY_IDLE]
 
-        # plot the start time distribution
-        N = 1e3
-        ax = axes[0, 0]
-        if k == mg.KEY_SLEEP:
-            x, y = mg.get_ecdf( mg.to_periodic(df.start.values), N)
-        else:
-            x, y = mg.get_ecdf(df.start.values, N)
+    # plot the histograms
+    plotter.plot_activity_histograms(d, keys)
 
-        ax.plot(x, y, color='blue', label='start')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
+    # plot the cumulative distribution function
+    plotter.plot_activity_cdfs(d, keys)
 
-        # plot the end time distribution
-        ax = axes[0, 1]
-        x, y = mg.get_ecdf(df.end.values, N)
-        ax.plot(x, y, color='green', label='end')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
+    #
+    # plot how satiation and weights evolve over time
+    #
 
-        # plot the duration distribution
-        ax = axes[1, 0]
-        x, y = mg.get_ecdf(df.dt.values, N)
-        ax.plot(x, y, color='red', label='duration')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
+    # start day
+    start = d.df.day.iloc[0]
 
-    return
+    # end day
+    end = d.df.day.iloc[-1]
 
-
-def plot_histograms(d, keys):
-
-    """
-    This function plots the histograms of start time, end time, and duration for each activity in \
-    the the simulation.
-
-    :param diary.Diary d: the results of the simulation
-    :param list keys: list of activities to graph
-    :return:
-    """
-
-    for k in keys:
-
-        df = d.df[d.df.act == k]
-        num_bins = 24
-        fig, axes = plt.subplots(2, 2)
-
-        fig.suptitle(activity.INT_2_STR[k])
-        # title
-
-        # plot the start time distribution
-
-        ax = axes[0, 0]
-        if k == mg.KEY_SLEEP:
-            ax.hist(mg.to_periodic(df.start.values), bins=num_bins, color='blue', label='start')
-        else:
-            ax.hist(df.start.values, bins=num_bins, color='blue', label='start')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
-
-        # plot the end time distribution
-        ax = axes[0, 1]
-        ax.hist(df.end.values, bins=num_bins, color='green', label='end')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
-
-        # plot the duration distribution
-        ax = axes[1, 0]
-        ax.hist(df.dt.values, bins=num_bins, color='red', label='duration')
-        ax.set_xlabel('hours')
-        ax.legend(loc='best')
-
-    return
-
-def save_output(df, fname):
-
-    """
-    This function saves the output of the simulation.
-
-    :param pandas.core.frame.DataFrame df: the activity-diary output of the simulation
-    :param str fname: the file name of the saved file. It must end with ".csv"
-    """
-
-    # the conversion of 1 hour into minutes
-    HOUR_2_MIN  = temporal.HOUR_2_MIN
-
-    # copy the data frame to avoid changing the original data in df
-    data        = df.copy()
-
-    # convert the end time in minutes.
-    # Add the + 1 minute to the end time so that 16:00 - 16:59 becomes 16:00 - 17:00
-    end         = mg.hours_to_minutes( data.end ) + 1
-
-    # convert the end time into hours
-    data.end    = end / HOUR_2_MIN
-
-    # create the directory for the save file if it does not exist
-    os.makedirs(os.path.dirname(fname), exist_ok=True)
-
-    # save the data
-    data.to_csv(fname, index=False)
+    # plot how both satiation and weights change over time
+    plotter.plot_satiation_and_weight(p, start_day=start, end_day=end)
 
     return
 
@@ -261,32 +157,31 @@ if __name__ == '__main__':
     # print the elapsed simulation time
     print('elapsed time: %.2f[s]' % dt_elapsed)
 
+    # the person being simulated
+    agent = scene.u.people[0]
+
     # get the activity diary from the results of the simulation
-    d = get_diary(scene.u)
+    act_diary = agent.get_diary()
 
+    #
     # print the diary
+    #
     if do_print:
-        print( d.toString() )
+        print( act_diary.toString() )
 
+    #
     # save the output diary
+    #
     if do_save:
-        save_output(d.df, main_params.fname)
+        mg.save_diary_to_csv(act_diary.df, main_params.fname)
 
+    #
     # plot results of the simulation for each activity
+    #
     if do_plot:
-        print('plotting...')
 
-        # all of the activities used in the simulation as well as idle time
-        act_all = d.df.act.unique()
-
-        # the activities used in the simulation, not including the idle time
-        keys = act_all[ act_all != mg.KEY_IDLE ]
-
-        # plot the histograms
-        plot_histograms(d, keys)
-
-        # plot the cumulative distribution function
-        plot_cdfs(d, keys)
+        # plot the results
+        plot(agent, act_diary)
 
         # show the plot
         plt.show()

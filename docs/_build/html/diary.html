@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>diary module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>diary module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="eat module" href="eat.html" />
     <link rel="prev" title="commute module" href="commute.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -46,27 +36,26 @@
 <p>This module contains code that governs the activity-diaries. Each activity diary contains
 dataframes that store the activity-diaries for each person. The activity-diaries are the
 output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.</p>
-<p>This module contains class <a class="reference internal" href="#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal"><span class="pre">diary.Diary</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This module contains class <a class="reference internal" href="#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a>.</p>
 <dl class="class">
 <dt id="diary.Diary">
 <em class="property">class </em><code class="descclassname">diary.</code><code class="descname">Diary</code><span class="sig-paren">(</span><em>t</em>, <em>act</em>, <em>local</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class represents the activity-diaries for a person.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the start times for each activity [universal time, minutes]</li>
-<li><strong>act</strong> (<em>numpy.ndarray</em>) &#8211; the activity code done at each time step [integer] (flattened array)</li>
-<li><strong>local</strong> (<em>numpy.ndarray</em>) &#8211; the history of location codes done by a person</li>
+<li><strong>t</strong> (<em>numpy.ndarray</em>) – the start times for each activity [universal time, minutes]</li>
+<li><strong>act</strong> (<em>numpy.ndarray</em>) – the activity code done at each time step [integer] (flattened array)</li>
+<li><strong>local</strong> (<em>numpy.ndarray</em>) – the history of location codes done by a person</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colnames</strong> (<em>list</em>) &#8211; the column names for the activity diary in order</li>
-<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary</li>
+<li><strong>colnames</strong> (<em>list</em>) – the column names for the activity diary in order</li>
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity-diary</li>
 </ul>
 </td>
 </tr>
@@ -78,16 +67,16 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <dd><p>This function creates the activity diary for a given agent in the simulation.</p>
 <p>The activity diary contains:</p>
 <ol class="arabic simple">
-<li>The start-time and end-time for each activity</li>
-<li>The activity code</li>
+<li>the start-time and end-time for each activity</li>
+<li>the activity code</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the simulation times [universal time, minutes]</li>
-<li><strong>act</strong> (<em>numpy.ndarray</em>) &#8211; the activity code done at each time step [integer] (flattened array)</li>
+<li><strong>t</strong> (<em>numpy.ndarray</em>) – the simulation times [universal time, minutes]</li>
+<li><strong>act</strong> (<em>numpy.ndarray</em>) – the activity code done at each time step [integer] (flattened array)</li>
 </ul>
 </td>
 </tr>
@@ -114,9 +103,9 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>day_start</strong> (<em>numpy.ndarray</em>) &#8211; the day an activity starts</li>
-<li><strong>start</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity starts [hours]</li>
-<li><strong>dt</strong> (<em>numpy.ndarray</em>) &#8211; the duration for an activity [hours]</li>
+<li><strong>day_start</strong> (<em>numpy.ndarray</em>) – the day an activity starts</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the time an activity starts [hours]</li>
+<li><strong>dt</strong> (<em>numpy.ndarray</em>) – the duration for an activity [hours]</li>
 </ul>
 </td>
 </tr>
@@ -138,7 +127,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the activity-diary of data that occur on weekdays</td>
 </tr>
@@ -154,7 +143,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean indices of which activities end during the weekend</td>
 </tr>
@@ -172,7 +161,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, the use  the dataframe         associated with the current diary object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity-diary of interest. If df is None, the use  the dataframe         associated with the current diary object</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">an activity-diary of data that occurs on weekends</td>
 </tr>
@@ -188,7 +177,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity-diary of interest. If df is None, then use the dataframe         associated with the diary object</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean indices of which activities end during the weekend</td>
 </tr>
@@ -207,8 +196,8 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t</strong> (<em>numpy.ndarray</em>) &#8211; the start time for activities</li>
-<li><strong>y</strong> (<em>numpy.ndarray</em>) &#8211; the activity code that corresponds with the respective time</li>
+<li><strong>t</strong> (<em>numpy.ndarray</em>) – the start time for activities</li>
+<li><strong>y</strong> (<em>numpy.ndarray</em>) – the activity code that corresponds with the respective time</li>
 </ul>
 </td>
 </tr>
@@ -231,7 +220,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<em>list</em>) &#8211; a list of tuples of (time step, activity code)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>groups</strong> (<em>list</em>) – a list of tuples of (time step, activity code)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
@@ -247,23 +236,25 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>tuple</em>) &#8211; the data in the form of ( index, (time step, activity code) )</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>tuple</em>) – the data in the form of ( index, (time step, activity code) )</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the key for sorting ( , activity code)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
 </tr>
 </tbody>
 </table>
-<p>:return the key for sorting ( , activity code)
-:rtype: tuple</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="diary.Diary.is_weekend">
 <code class="descname">is_weekend</code><span class="sig-paren">(</span><em>day</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.is_weekend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.is_weekend" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns true if a day is in the weekend and false if it&#8217;s in a weekday.</p>
+<dd><p>This function returns true if a day is in the weekend and false if it’s in a weekday.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>numpy.ndarray</em>) &#8211; the day of the weekend</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>numpy.ndarray</em>) – the day of the weekd</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">boolean index of whether or not a day is in the weekend (True) or not (False)</td>
 </tr>
@@ -282,8 +273,8 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>start</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity starts [hours]</li>
-<li><strong>dt</strong> (<em>numpy.ndarray</em>) &#8211; the time an activity ends [hours]</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the time an activity starts [hours]</li>
+<li><strong>dt</strong> (<em>numpy.ndarray</em>) – the duration of an activity, <img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> [hours]</li>
 </ul>
 </td>
 </tr>
@@ -300,7 +291,7 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
 <dl class="method">
 <dt id="diary.Diary.toString">
 <code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/diary.html#Diary.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diary.Diary.toString" title="Permalink to this definition">¶</a></dt>
-<dd><p>This expresses the diary as a string</p>
+<dd><p>This function expresses the Diary object as a string</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -334,21 +325,20 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/diary.txt"
+      <li><a href="_sources/diary.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -356,14 +346,14 @@ output of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation.<
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/diary.txt"
+      <a href="_sources/diary.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

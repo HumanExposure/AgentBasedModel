@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>scenario module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>scenario module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="singleton module" href="singleton.html" />
     <link rel="prev" title="main_params module" href="main_params.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -46,16 +36,15 @@
 <p>This file contains information to run the Agent-Based Model of Human Activity Patterns (ABMHAP) in in different simulation scenarios in which the agent has a user-defined parametrization.</p>
 <p>The following classes are in this module</p>
 <ol class="arabic simple">
-<li><a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal"><span class="pre">scenario.Scenario</span></code></a></li>
-<li><a class="reference internal" href="#scenario.Solo" title="scenario.Solo"><code class="xref py py-class docutils literal"><span class="pre">scenario.Solo</span></code></a></li>
-<li><a class="reference internal" href="#scenario.Duo" title="scenario.Duo"><code class="xref py py-class docutils literal"><span class="pre">scenario.Duo</span></code></a></li>
+<li><a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">scenario.Scenario</span></code></a></li>
+<li><a class="reference internal" href="#scenario.Solo" title="scenario.Solo"><code class="xref py py-class docutils literal notranslate"><span class="pre">scenario.Solo</span></code></a></li>
+<li><a class="reference internal" href="#scenario.Duo" title="scenario.Duo"><code class="xref py py-class docutils literal notranslate"><span class="pre">scenario.Duo</span></code></a></li>
 </ol>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
 <dl class="class">
 <dt id="scenario.Duo">
 <em class="property">class </em><code class="descclassname">scenario.</code><code class="descname">Duo</code><span class="sig-paren">(</span><em>hhld_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scenario.html#Duo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scenario.Duo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal"><span class="pre">scenario.Scenario</span></code></a></p>
-<p>This class parametrizes / runs a simulation scenario for the cases where two Singleton     (<a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal"><span class="pre">singleton.Singleton</span></code></a>) persons live in the same residence.</p>
+<dd><p>Bases: <a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">scenario.Scenario</span></code></a></p>
+<p>This class parametrizes / runs a simulation scenario for the cases where two Singleton     (<a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal notranslate"><span class="pre">singleton.Singleton</span></code></a>) persons live in the same residence.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This scenario is used in order to check for activity conflicts among 2 agents living in         the same household. Currently it is used primarily as a debugging tool.</p>
@@ -64,7 +53,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; the parameters for the household that contain relevant information     for the simulation</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters for the household that contain relevant information     for the simulation</td>
 </tr>
 </tbody>
 </table>
@@ -73,19 +62,19 @@
 <dl class="class">
 <dt id="scenario.Scenario">
 <em class="property">class </em><code class="descclassname">scenario.</code><code class="descname">Scenario</code><span class="sig-paren">(</span><em>hhld_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scenario.html#Scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scenario.Scenario" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class governs what a simulation scenario consists of.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; the parameters for the household that contain relevant information     for the simulation</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters for the household that contain relevant information     for the simulation</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>id</strong> (<em>int</em>) &#8211; the scenario identifier number</li>
-<li><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) &#8211; the universe object for the simulation</li>
-<li><strong>'params'</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; the parameters needed that control the simulation</li>
+<li><strong>id</strong> (<em>int</em>) – the scenario identifier number</li>
+<li><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) – the universe object for the simulation</li>
+<li><strong>'params'</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters needed that control the simulation</li>
 </ul>
 </td>
 </tr>
@@ -114,8 +103,7 @@
 <dl class="method">
 <dt id="scenario.Scenario.default_location">
 <code class="descname">default_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scenario.html#Scenario.default_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scenario.Scenario.default_location" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the default location for all Person&#8217;s to be be at the home.</p>
-<p>This location may be overridden later in the initialization of Persons.</p>
+<dd><p>Sets the default location for all Person’s to be be at the home. This location may         be overridden later in the initialization of persons.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -182,17 +170,15 @@
 <dl class="method">
 <dt id="scenario.Scenario.set_state">
 <code class="descname">set_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scenario.html#Scenario.set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scenario.Scenario.set_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function initializes the scenario in order to run the simulation.</p>
-<p>More specifically, this function does the following:</p>
-<ol class="arabic simple">
-<li><dl class="first docutils">
-<dt>For each Person, the following is set:</dt>
-<dd><ol class="first last arabic">
+<dd><p>This function initializes the scenario in order to run the simulation. More         specifically, this function does the following:</p>
+<ol class="arabic">
+<li><p class="first">For each Person, the following is set:</p>
+<blockquote>
+<div><ol class="arabic simple">
 <li>identification number</li>
 <li>the state</li>
 </ol>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
@@ -210,13 +196,13 @@
 <dl class="class">
 <dt id="scenario.Solo">
 <em class="property">class </em><code class="descclassname">scenario.</code><code class="descname">Solo</code><span class="sig-paren">(</span><em>hhld_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scenario.html#Solo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scenario.Solo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal"><span class="pre">scenario.Scenario</span></code></a></p>
-<p>This class parametrizes / runs a simulation scenario for the Singleton (<a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal"><span class="pre">singleton.Singleton</span></code></a>) person.</p>
+<dd><p>Bases: <a class="reference internal" href="#scenario.Scenario" title="scenario.Scenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">scenario.Scenario</span></code></a></p>
+<p>This class parametrizes / runs a simulation scenario for the Singleton (<a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal notranslate"><span class="pre">singleton.Singleton</span></code></a>) person.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) &#8211; the parameters for the household that contain relevant information     for the simulation</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hhld_params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters for the household that contain relevant information     for the simulation</td>
 </tr>
 </tbody>
 </table>
@@ -241,21 +227,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/scenario.txt"
+      <li><a href="_sources/scenario.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -263,14 +248,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/scenario.txt"
+      <a href="_sources/scenario.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

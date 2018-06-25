@@ -12,7 +12,7 @@
 # August 14, 2017
 
 """
-This module contains information about a :class:`person.Person`'s biology.
+This module contains information about a Person's (:class:`person.Person`) biology.
 
 This module contains the following class: :class:`bio.Bio`.
 
@@ -74,11 +74,11 @@ class Bio(object):
     """
     This class holds the biologically relevant information for a person. This information is:
 
-    * Age
-    * Gender
-    * Mean / standard deviation of start time for sleeping
-    * Mean / standard deviation of end time for sleeping
-    * Probability distribution function sleep start time / end time
+    * age
+    * gender
+    * mean / standard deviation of start time for sleeping
+    * mean / standard deviation of end time for sleeping
+    * probability distribution function sleep start time / end time
 
     :ivar int age: the age [years]
     :ivar int gender: the gender
@@ -86,7 +86,7 @@ class Bio(object):
     :ivar int sleep_dt: the duration of time for a sleep event [minutes]
     
     :ivar int sleep_start_mean: the mean start time for a sleep event [minutes]
-    :ivar int sleep_start_std: the standard deviation for a starting a sleep event [minutes]
+    :ivar int sleep_start_std: the standard deviation for start time for a sleep event [minutes]
     :ivar int sleep_start: the start time for sleep [minutes, time of day]
     :ivar int sleep_start_univ: the start time for sleep[minutes, universal time]
     
@@ -95,10 +95,10 @@ class Bio(object):
     :ivar int sleep_end: the end time for sleep[minutes, time of day]
     :ivar int sleep_end_univ: the end time for sleep [minutes, universal time]
 
-    :ivar int start_trunc: the number of standard deviations to allow when sampling sleep start time truncated \
-    distribution
-    :ivar int end_trunc: the number of standard deviations to allow when sampling sleep end time truncated \
-    distribution
+    :ivar int start_trunc: the number of standard deviations to allow when sampling sleep the \
+    truncated distribution for start time
+    :ivar int end_trunc: the number of standard deviations to allow when sampling sleep the \
+    truncated distribution for end time
     
     :ivar func f_sleep_start: the distribution data for start time for sleep
     :ivar func f_sleep_end: the distribution data for end time for sleep
@@ -209,7 +209,7 @@ class Bio(object):
     def toString(self, do_decimal=False):
 
         """
-        This function represents the :class:`bio.Bio` object as a string.
+        This function represents the Bio object as a string.
 
         :param bool do_decimal: This controls whether or not to represent the values in time in a \
                                 decimal (hours) format where [1:30pm is 13.5] if True or as the minutes \

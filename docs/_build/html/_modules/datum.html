@@ -1,0 +1,1536 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>datum &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for datum</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains functions that analyze the raw data from the Consolidated Human Activity \</span>
+<span class="sd">Database (CHAD) to be processed/ filtered for use by the Agent-Based Model of Human Activity \</span>
+<span class="sd">Patterns (ABMHAP).</span>
+
+<span class="sd">This function primarily encapsulates functions to analyze data to be used as an \</span>
+<span class="sd">imported module. However, it may also be run as a main file.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># mathematical capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># dataframe capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># for grouping capability</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">groupby</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad</span><span class="o">,</span> <span class="nn">chad_code</span><span class="o">,</span> <span class="nn">social</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># functions</span>
+<span class="c1"># ===========================================</span>
+
+<div class="viewcode-block" id="analyze_commute"><a class="viewcode-back" href="../datum.html#datum.analyze_commute">[docs]</a><span class="k">def</span> <span class="nf">analyze_commute</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the commuting data to get information about BOTH \</span>
+<span class="sd">    commuting to work, commuting from work, **AND** working. The data are chosen from \</span>
+<span class="sd">    entries where a work event is sandwiched between a commuting to work event and a \</span>
+<span class="sd">    commuting from work event. The commuting data and working data are processed and \</span>
+<span class="sd">    filtered for use for ABMHAP.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: the raw CHAD commuting data also the data of people with both commute and work data,\</span>
+<span class="sd">    statistical data of commuting to work, statistical data of commuting from work, \</span>
+<span class="sd">    statistical data of working.</span>
+
+<span class="sd">    :rtype: dictionary, dictionary, dictionary, dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading commuting data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the raw commute data</span>
+    <span class="n">raw_comm</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE</span><span class="p">)</span>
+
+    <span class="c1"># get the raw work data</span>
+    <span class="n">raw_work</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">WORK</span><span class="p">)</span>
+
+    <span class="c1"># get the identifier&#39;s of people we have data for commuting and working</span>
+    <span class="n">pid_comm</span> <span class="o">=</span> <span class="n">raw_comm</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># check to see if the PID is in the commuting identifiers</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pid_comm</span>
+
+    <span class="c1"># index of work PIDs that are in commute data</span>
+    <span class="n">idx</span>     <span class="o">=</span> <span class="n">raw_work</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">temp</span>    <span class="o">=</span> <span class="n">raw_work</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;merging data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># longitudinal commuting and working data, respectively</span>
+    <span class="n">merge_comm</span>   <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw_comm</span><span class="p">)</span>
+    <span class="n">merge_work</span>   <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="c1"># get the data of people with BOTH commute and work data</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">merge_comm</span><span class="p">,</span> <span class="n">merge_work</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;CHADID&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;separate data into commuting to work, commuting from work, and being at work...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the commuting data for going to work and going from work</span>
+    <span class="n">to_work</span><span class="p">,</span> <span class="n">from_work</span><span class="p">,</span> <span class="n">at_work</span> <span class="o">=</span> <span class="n">get_commute_data</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
+
+    <span class="c1"># indices for individuals for commuting to work</span>
+    <span class="n">idx_to</span>      <span class="o">=</span> <span class="n">filter_commute</span><span class="p">(</span><span class="n">to_work</span><span class="p">,</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK_START_MIN</span><span class="p">,</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK_START_MAX</span><span class="p">,</span> \
+                                 <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK_END_MAX</span><span class="p">)</span>
+
+    <span class="c1"># indices for individuals for commuting from work</span>
+    <span class="n">idx_from</span>    <span class="o">=</span> <span class="n">filter_commute</span><span class="p">(</span><span class="n">from_work</span><span class="p">,</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK_START_MIN</span><span class="p">,</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK_START_MAX</span><span class="p">,</span> \
+                                 <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK_END_MAX</span><span class="p">)</span>
+
+    <span class="c1"># indices for individuals who have both commuting to and from work</span>
+    <span class="n">idx</span>         <span class="o">=</span> <span class="n">idx_to</span> <span class="o">&amp;</span> <span class="n">idx_from</span>
+
+    <span class="n">to_work</span><span class="p">,</span> <span class="n">from_work</span><span class="p">,</span> <span class="n">at_work</span> <span class="o">=</span> <span class="n">to_work</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">from_work</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">at_work</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;statistical results...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># store the commuting data</span>
+    <span class="c1"># this is odd: why use merged with &#39;long&#39;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;raw&#39;</span><span class="p">:</span> <span class="n">raw_comm</span><span class="p">,</span> <span class="s1">&#39;long&#39;</span><span class="p">:</span> <span class="n">merged</span><span class="p">}</span>
+
+    <span class="c1"># analyze the moments for commuting to work, commuting from work, and being at work</span>
+    <span class="n">d_to_work</span>   <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">to_work</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">d_from_work</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">from_work</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">d_at_work</span>   <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">at_work</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">d_to_work</span><span class="p">,</span> <span class="n">d_from_work</span><span class="p">,</span> <span class="n">d_at_work</span></div>
+
+<div class="viewcode-block" id="analyze_commute_school"><a class="viewcode-back" href="../datum.html#datum.analyze_commute_school">[docs]</a><span class="k">def</span> <span class="nf">analyze_commute_school</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the commuting to school data to get information \</span>
+<span class="sd">    to get data about commuting to school and commuting from school. The \</span>
+<span class="sd">    commuting to school data are processed and filtered for use for ABMHAP.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: the raw CHAD commuting data also the CHAD commuting data modified to handle \</span>
+<span class="sd">    over night events, statistical data of commuting to school, statistical data of \</span>
+<span class="sd">    commuting from school</span>
+
+<span class="sd">    :rtype: dictionary, dictionary, dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the acceptable of CHAD activity codes</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE</span> <span class="o">+</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE_EDU</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+
+    <span class="c1"># merged commuting events that occur over midnight</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># the commuting to school data</span>
+    <span class="n">to_school</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_SCHOOL_START_MIN</span><span class="p">)</span> \
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_SCHOOL_START_MAX</span><span class="p">)</span> \
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_TO_SCHOOL_END_MAX</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># the commuting from school data</span>
+    <span class="n">from_school</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_SCHOOL_START_MIN</span><span class="p">)</span> \
+                      <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_SCHOOL_START_MAX</span><span class="p">)</span> \
+                      <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">COMMUTE_FROM_SCHOOL_END_MAX</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># store the commuting data</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;raw&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;merged&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span>
+
+    <span class="c1"># analyze the moments for commuting to school, commuting from school</span>
+    <span class="n">d_to_school</span>     <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">to_school</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">d_from_school</span>   <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">from_school</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">d_to_school</span><span class="p">,</span> <span class="n">d_from_school</span></div>
+
+<div class="viewcode-block" id="analyze_eat"><a class="viewcode-back" href="../datum.html#datum.analyze_eat">[docs]</a><span class="k">def</span> <span class="nf">analyze_eat</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the CHAD data for eating in order to get information \</span>
+<span class="sd">    on eating breakfast, eating lunch, and eating dinner data. The data \</span>
+<span class="sd">    are processed and filtered for use for ABMHAP for the respective activities.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: statistical data of eating breakfast, statistical data of eating lunch, \</span>
+<span class="sd">    statistical data of eating dinner</span>
+
+<span class="sd">    :rtype: dictionary, dictionary, dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading raw eat-activity data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># raw CHAD eating data</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">EAT</span><span class="p">)</span>
+
+    <span class="c1"># separate the raw data into the respective meals</span>
+    <span class="n">breakfast</span><span class="p">,</span> <span class="n">lunch</span><span class="p">,</span> <span class="n">dinner</span> <span class="o">=</span> <span class="n">get_meals</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># merge data with overnight activities</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;merging the meals data...&#39;</span><span class="p">)</span>
+    <span class="n">breakfast_long</span>  <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span>
+    <span class="n">lunch_long</span>      <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">lunch</span><span class="p">)</span>
+    <span class="n">dinner_long</span>     <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">dinner</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;analyzing the moments for the meals...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the statistical data for breakfast, lunch, and dinner</span>
+    <span class="n">d_breakfast</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">breakfast_long</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">d_lunch</span>     <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">lunch_long</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">d_dinner</span>    <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">dinner_long</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d_breakfast</span><span class="p">,</span> <span class="n">d_lunch</span><span class="p">,</span> <span class="n">d_dinner</span></div>
+
+<div class="viewcode-block" id="analyze_education"><a class="viewcode-back" href="../datum.html#datum.analyze_education">[docs]</a><span class="k">def</span> <span class="nf">analyze_education</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the CHAD data for schooling in order to get information on \</span>
+<span class="sd">    going to school. \</span>
+<span class="sd">    The data are processed and filtered for use for ABMHAP for the school activity, \</span>
+<span class="sd">    namely school data are only taken if the event is considered &quot;fulltime&quot;, \</span>
+<span class="sd">    (i.e., having a long enough duration) in order to avoid part-time school events.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: the CHAD schooling data for &quot;fulltime&quot; educational data.</span>
+
+<span class="sd">    :rtype: dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading raw education-activity data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># raw CHAD data with education</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">EDUCATION</span><span class="p">)</span>
+
+    <span class="c1"># puts events that occur over midnight as 1 event</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;merging the education data...&#39;</span><span class="p">)</span>
+    <span class="n">merged</span>      <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># fulltime data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;getting fulltime education data...&#39;</span><span class="p">)</span>
+    <span class="n">full</span>        <span class="o">=</span> <span class="n">get_fulltime_data</span><span class="p">(</span><span class="n">merged</span><span class="p">,</span> <span class="n">start_min</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># get data about the moments</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;analyzing moments for education...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the statistical information for fulltime event data</span>
+    <span class="n">d_merged</span>    <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">full</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d_merged</span></div>
+
+<div class="viewcode-block" id="analyze_moments"><a class="viewcode-back" href="../datum.html#datum.analyze_moments">[docs]</a><span class="k">def</span> <span class="nf">analyze_moments</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the data for each person by calculating the moments for \</span>
+<span class="sd">    duration, start time, and end time for the following three cases.</span>
+
+<span class="sd">    #. General (weekday and weekend)</span>
+<span class="sd">    #. Weekday</span>
+<span class="sd">    #. Weekend</span>
+
+<span class="sd">    :param pandas.core.frame df: the data in the form of CHAD records to analyze</span>
+
+<span class="sd">    :return: the statistical moments data for the following: \</span>
+<span class="sd">    general duration, general start time, general end time, \</span>
+<span class="sd">    weekday duration, weekday start time, weekday end time, \</span>
+<span class="sd">    weekend duration, weekend start time, weekend end time</span>
+
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DatFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># statistics</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the CHAD personal identifiers, and the date values</span>
+    <span class="n">pid</span><span class="p">,</span> <span class="n">date</span>           <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># the duration, start time, and end time values, respectively</span>
+    <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span>      <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># general (weekday and weekend data combined)</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the statistical analysis about the moments data for the duration</span>
+    <span class="n">stats_dt</span>    <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments data for the start time</span>
+    <span class="n">stats_start</span> <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments data for the end time</span>
+    <span class="n">stats_end</span>   <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># weekday</span>
+    <span class="c1">#</span>
+    <span class="n">do_weekend</span>      <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekday data for the duration</span>
+    <span class="n">stats_wd_dt</span>     <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> \
+                                        <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekday data for the start time</span>
+    <span class="n">stats_wd_start</span>  <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> \
+                                        <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekday data for the end time</span>
+    <span class="n">stats_wd_end</span>    <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> \
+                                        <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+    <span class="c1"># weekend</span>
+    <span class="n">do_weekend</span>      <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekend data for the duration</span>
+    <span class="n">stats_we_dt</span>     <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekend data for the start time</span>
+    <span class="n">stats_we_start</span>  <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> \
+                                        <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># the statistical analysis about the moments of weekend data for end time</span>
+    <span class="n">stats_we_end</span>    <span class="o">=</span> <span class="n">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> \
+                                        <span class="n">do_weekend</span><span class="o">=</span><span class="n">do_weekend</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_wd_dt</span><span class="p">,</span> <span class="n">stats_wd_start</span><span class="p">,</span> <span class="n">stats_wd_end</span><span class="p">,</span> \
+           <span class="n">stats_we_dt</span><span class="p">,</span> <span class="n">stats_we_start</span><span class="p">,</span> <span class="n">stats_we_end</span></div>
+
+<div class="viewcode-block" id="analyze_sleep"><a class="viewcode-back" href="../datum.html#datum.analyze_sleep">[docs]</a><span class="k">def</span> <span class="nf">analyze_sleep</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the CHAD data for sleeping in order to get information \</span>
+<span class="sd">    on sleeping. The data are processed and filtered for use for ABMHAP for the \</span>
+<span class="sd">    sleep activity.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: the statistical data on CHAD sleep data</span>
+<span class="sd">    :rtype: dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the CHAD events data</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
+
+    <span class="c1"># load raw data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading sleep data...&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">)</span>
+
+    <span class="c1"># merge data across one day and the next (for events occurring over midnight)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;calculating merged data...&#39;</span><span class="p">)</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># periodicity assumption</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;calculating the periodicity assumption...&#39;</span><span class="p">)</span>
+    <span class="n">period</span>      <span class="o">=</span> <span class="n">periodicity_sleep</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
+
+    <span class="c1"># limit the periodic</span>
+    <span class="n">df</span>  <span class="o">=</span> <span class="n">period</span>
+
+    <span class="c1"># filter out the bad data and keep the good data</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_START_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_START_MAX</span><span class="p">)</span> \
+          <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_END_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_END_MAX</span><span class="p">)</span> \
+          <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_DT_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">SLEEP_DT_MAX</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;calculating the moments...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the sleep data with the good events data</span>
+    <span class="n">sleep</span>   <span class="o">=</span> <span class="n">period</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># analyze the statistics of the sleep events</span>
+    <span class="n">d_sleep</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">sleep</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d_sleep</span></div>
+
+<div class="viewcode-block" id="analyze_work"><a class="viewcode-back" href="../datum.html#datum.analyze_work">[docs]</a><span class="k">def</span> <span class="nf">analyze_work</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the CHAD data for working. The data are processed and \</span>
+<span class="sd">    filtered for use for ABMHAP for the work activity. Data in only chosen if the \</span>
+<span class="sd">    person surveyed in CHAD is marked as fulltime employed. This function does a statistical \</span>
+<span class="sd">    analysis of the following:</span>
+
+<span class="sd">    #. raw work data</span>
+<span class="sd">    #. longitudinal data</span>
+<span class="sd">    #. fulltime work data</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function may be antiquated and not currently used. Instead see :func:`analyze_commute` \</span>
+<span class="sd">        for obtaining work information.</span>
+
+<span class="sd">    :param chad.CHAD_RAW data: the raw CHAD data</span>
+
+<span class="sd">    :return: statistical data on CHAD work data on the following: raw CHAD data, \</span>
+<span class="sd">    raw CHAD data after being processed for overnight activities, raw CHAD data \</span>
+<span class="sd">    after being processed for data from people employed fulltime</span>
+
+<span class="sd">    :rtype: dictionary, dictionary, dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the fulltime work only</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">WORK</span>
+
+    <span class="c1"># the raw CHAD events data</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
+
+    <span class="c1"># the raw CHAD questionnaire data</span>
+    <span class="n">quest</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">quest</span>
+
+    <span class="c1"># group the events data by PID</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the CHADIDs that are fulltime workers</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">fulltime</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">employed</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the corresponding PID for fulltime workers</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">quest</span><span class="o">.</span><span class="n">PID</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># get all of the events data for fulltime workers</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">u</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading work data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># load the raw data</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># merging data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;calculating merged data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># merge data from overnight activities</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># merge multiple multiple work events occurring in one day as one event</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;calculating fulltime data...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get full time data</span>
+    <span class="n">full</span> <span class="o">=</span> <span class="n">get_fulltime_data</span><span class="p">(</span><span class="n">merged</span><span class="p">,</span> <span class="n">start_min</span><span class="o">=</span><span class="n">chad</span><span class="o">.</span><span class="n">WORK_START_MIN</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;analyzing moments...&#39;</span><span class="p">)</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># statistical information based on the raw CHAD data</span>
+    <span class="n">d_raw</span>       <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># statistical information based on the raw CHAD data after being processed</span>
+    <span class="c1"># for overnight activities</span>
+    <span class="n">d_merged</span>    <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">merged</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># statistical information based on data from CHAD from people identified</span>
+    <span class="c1"># as employed full time</span>
+    <span class="n">d_full</span>      <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">full</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d_raw</span><span class="p">,</span> <span class="n">d_merged</span><span class="p">,</span> <span class="n">d_full</span></div>
+
+<div class="viewcode-block" id="filter_commute"><a class="viewcode-back" href="../datum.html#datum.filter_commute">[docs]</a><span class="k">def</span> <span class="nf">filter_commute</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">start_min</span><span class="p">,</span> <span class="n">start_max</span><span class="p">,</span> <span class="n">end_max</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finds indices of the data that satisfy the filters \</span>
+<span class="sd">    placed on the commuting data by limiting the data to be within the start \</span>
+<span class="sd">    time range and end time range.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the commuting data</span>
+<span class="sd">    :param float start_min: the minimum start time [hours]</span>
+<span class="sd">    :param float start_max: the maximum start time [hours]</span>
+<span class="sd">    :param float end_max: the maximum end time [hours]</span>
+
+<span class="sd">    :return: indices of the commuting data that satisfy the filtering</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">idx</span>      <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">start_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">start_max</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">end_max</span><span class="p">)</span>
+    <span class="n">idx</span>      <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">return</span> <span class="n">idx</span></div>
+
+<div class="viewcode-block" id="get_commute_data"><a class="viewcode-back" href="../datum.html#datum.get_commute_data">[docs]</a><span class="k">def</span> <span class="nf">get_commute_data</span><span class="p">(</span><span class="n">df_all</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finds the following commuting data for BOTH commuting to work AND commuting \</span>
+<span class="sd">    from work.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df_all: the dataframe containing commuting and work data</span>
+<span class="sd">    :return: the commute to work data, the commute from work data, the work activity data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">gb</span>      <span class="o">=</span> <span class="n">df_all</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;CHADID&#39;</span><span class="p">)</span>
+    <span class="n">chadid</span>  <span class="o">=</span> <span class="n">df_all</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># store the data for commuting to work and from work respectively</span>
+    <span class="n">to_work</span><span class="p">,</span> <span class="n">from_work</span><span class="p">,</span> <span class="n">act_work</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># loop through the entries for each day</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">chadid</span><span class="p">:</span>
+
+        <span class="c1"># get the data for the CHADID</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span> <span class="ow">in</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="p">])</span>
+
+        <span class="c1"># index of commute</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># index of work</span>
+        <span class="n">iw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="c1"># check to see if at least 1 work event is sandwiched between the first and last commutes</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">iw</span> <span class="o">&gt;</span> <span class="n">ic</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">iw</span> <span class="o">&lt;</span> <span class="n">ic</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="c1"># add the first commute event as commute to work</span>
+            <span class="n">to_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ic</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="c1"># add the last commute event as commute from work</span>
+            <span class="n">from_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ic</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="c1"># add the work activity as the time between work</span>
+            <span class="n">act_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">iw</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">act</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># collect data about commuting to and from work</span>
+    <span class="n">to_work</span>     <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">to_work</span><span class="p">)</span>
+    <span class="n">from_work</span>   <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">from_work</span><span class="p">)</span>
+
+    <span class="c1"># calculate work as the time between two commute events</span>
+    <span class="n">at_work</span>     <span class="o">=</span> <span class="n">to_work</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">at_work</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">from_work</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">at_work</span><span class="o">.</span><span class="n">dt</span>  <span class="o">=</span> <span class="p">(</span><span class="n">at_work</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">at_work</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="mi">24</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span>
+    <span class="n">at_work</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">act_work</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">to_work</span><span class="p">,</span> <span class="n">from_work</span><span class="p">,</span> <span class="n">at_work</span></div>
+
+<div class="viewcode-block" id="get_data_help"><a class="viewcode-back" href="../datum.html#datum.get_data_help">[docs]</a><span class="k">def</span> <span class="nf">get_data_help</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns statistical information from the activity duration, \</span>
+<span class="sd">    start time, end time, and the CHAD records from the given indices.</span>
+
+<span class="sd">    :param numpy.ndarray idx: the indices of the CHAD individuals to \</span>
+<span class="sd">    keep in the statistical data</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_dt: the statistical moments for the \</span>
+<span class="sd">    activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_start: the statistical moments for \</span>
+<span class="sd">    the start time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_end: the statistical moments for \</span>
+<span class="sd">    the end time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame record: the CHAD records for a given \</span>
+<span class="sd">    activity</span>
+
+<span class="sd">    :return: the statistical data on duration, start time, and end time; \</span>
+<span class="sd">    the CHAD record data from the chosen individuals given by the indices.</span>
+
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># this function is used to get data in order to help the get_solo() and get_longitude() data</span>
+
+    <span class="c1"># the duration data to keep</span>
+    <span class="n">dt</span>      <span class="o">=</span> <span class="n">stats_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the start time data to keep</span>
+    <span class="n">start</span>   <span class="o">=</span> <span class="n">stats_start</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the end time data to keep</span>
+    <span class="n">end</span>     <span class="o">=</span> <span class="n">stats_end</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the person identifiers of the individuals of the kept CHAD data</span>
+    <span class="n">pid</span>     <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="n">f</span>       <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pid</span>
+
+    <span class="c1"># get the indices from the records of the individuals to keep</span>
+    <span class="n">idx</span>     <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># get the records</span>
+    <span class="n">rec</span>     <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">rec</span></div>
+
+<div class="viewcode-block" id="get_end_date"><a class="viewcode-back" href="../datum.html#datum.get_end_date">[docs]</a><span class="k">def</span> <span class="nf">get_end_date</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finds the date that an activity ends.</span>
+
+<span class="sd">    :param date: the date the activities start</span>
+<span class="sd">    :type: numpy.ndarray of datetime.timedelta</span>
+<span class="sd">    :param numpy.ndarray start: the start time of the activities</span>
+<span class="sd">    :param numpy.ndarray end: the end time of activities</span>
+
+<span class="sd">    :return: the end date for an activity</span>
+<span class="sd">    :rtype: numpy.ndarray of datetime.timedelta</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># convert the start time and end time to be expressed in hours as [-12, 12)</span>
+    <span class="n">start_p</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">end_p</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+    <span class="c1"># this means an event started before midnight and ended starting at midnight( the next day)</span>
+    <span class="n">idx_polarity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">start_p</span> <span class="o">*</span> <span class="n">end_p</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">date_end</span>        <span class="o">=</span> <span class="n">date</span> <span class="o">+</span> <span class="p">(</span><span class="n">idx_polarity</span><span class="p">)</span> <span class="o">*</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">date_end</span></div>
+
+<div class="viewcode-block" id="get_fulltime_data"><a class="viewcode-back" href="../datum.html#datum.get_fulltime_data">[docs]</a><span class="k">def</span> <span class="nf">get_fulltime_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">start_min</span><span class="o">=</span><span class="n">chad</span><span class="o">.</span><span class="n">WORK_START_MIN</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finds the data from CHAD that pertain to individuals that \</span>
+<span class="sd">    are working fulltime. That is, activities starting with with a minimum \</span>
+<span class="sd">    given mean start time.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the CHAD work data</span>
+<span class="sd">    :param float start_min: the minimum start time to be accepted [0, 24)</span>
+
+<span class="sd">    :return: the data frame of the workers</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># groub the dataframe by CHADID (CHAD identifier)</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;CHADID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the unique CHADIDs</span>
+    <span class="n">chadid</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># the list of new data frames</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># loop through the CHADIDs</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chadid</span><span class="p">:</span>
+
+        <span class="c1"># get data from the particular CHADID</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># turn scalars into numpy arrays</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+        <span class="c1"># only take data starting at the minimum start time</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">start_min</span><span class="p">):</span>
+
+            <span class="c1"># turn scalars into numpy arrays</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">24</span><span class="p">)</span> <span class="o">%</span> <span class="mi">24</span>
+
+            <span class="c1"># need to pass non-scalars into the dictionary</span>
+            <span class="n">chadid</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="c1"># person id</span>
+            <span class="n">pid</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="c1"># activity code</span>
+            <span class="n">act</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="c1"># date</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CHADID&#39;</span><span class="p">:</span> <span class="n">chadid</span><span class="p">,</span> <span class="s1">&#39;PID&#39;</span><span class="p">:</span> <span class="n">pid</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span> \
+                 <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">}</span>
+
+            <span class="c1"># create new data frame</span>
+            <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="c1"># make into 1 single data frame</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)[</span><span class="n">chad</span><span class="o">.</span><span class="n">EVENTS_COLNAMES</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="get_longitude"><a class="viewcode-back" href="../datum.html#datum.get_longitude">[docs]</a><span class="k">def</span> <span class="nf">get_longitude</span><span class="p">(</span><span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the longitudinal CHAD statistical data for \</span>
+<span class="sd">    duration, start time, and end time. This function also gets \</span>
+<span class="sd">    the CHAD record data from the respective statistical data.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame stats_dt: the statistical moments for the \</span>
+<span class="sd">    activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_start: the statistical moments for \</span>
+<span class="sd">    the start time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_end: the statistical moments for \</span>
+<span class="sd">    the end time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame record: the CHAD records for a given \</span>
+<span class="sd">    activity</span>
+<span class="sd">    :param int N: the minimum number of activities to be considered \</span>
+<span class="sd">    longitudinal</span>
+
+<span class="sd">    :return: longitudinal data for statistical moments for activity duration, \</span>
+<span class="sd">    start time, and end time also longitudinal CHAD records</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get longitudinal data</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">stats_dt</span><span class="o">.</span><span class="n">N</span> <span class="o">&gt;=</span> <span class="n">N</span>
+
+    <span class="c1"># get the data that correspond to the indices of the longitudinal statistical record</span>
+    <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">rec</span> <span class="o">=</span> <span class="n">get_data_help</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">stats_dt</span><span class="o">=</span><span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="o">=</span><span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="o">=</span><span class="n">stats_end</span><span class="p">,</span> \
+                                        <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">rec</span></div>
+
+<div class="viewcode-block" id="get_meals"><a class="viewcode-back" href="../datum.html#datum.get_meals">[docs]</a><span class="k">def</span> <span class="nf">get_meals</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes in eating data and separates that data into meals: breakfast, \</span>
+<span class="sd">    lunch, and dinner by filtering the data by minimum and maximum start time, \</span>
+<span class="sd">    end time, and duration.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: CHAD data on the eating data</span>
+
+<span class="sd">    :return: breakfast data, lunch data, and dinner data</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># filter out data that will be considered as a breakfast event</span>
+    <span class="n">breakfast</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">BREAKFAST_START_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">BREAKFAST_END_MAX</span><span class="p">)</span> \
+                   <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> \
+                   <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">BREAKFAST_DT_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">BREAKFAST_DT_MAX</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># filter out data that will be considered as a lunch event</span>
+    <span class="n">lunch</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">LUNCH_START_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">LUNCH_END_MAX</span><span class="p">)</span> \
+               <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">LUNCH_DT_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">LUNCH_DT_MAX</span><span class="p">)</span> \
+               <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># filter out data that will be considered as a dinner event</span>
+    <span class="n">dinner</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">DINNER_START_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">DINNER_END_MAX</span><span class="p">)</span> \
+                 <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">DINNER_START_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> \
+                 <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">DINNER_DT_MIN</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">chad</span><span class="o">.</span><span class="n">DINNER_DT_MAX</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">breakfast</span><span class="p">,</span> <span class="n">lunch</span><span class="p">,</span> <span class="n">dinner</span></div>
+
+<div class="viewcode-block" id="get_moments"><a class="viewcode-back" href="../datum.html#datum.get_moments">[docs]</a><span class="k">def</span> <span class="nf">get_moments</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start_periodic</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates data about the moments of start time, end time, and duration \</span>
+<span class="sd">    weekday + weekend data, weekday data, weekend data. Also there are the CHAD records for \</span>
+<span class="sd">    the following situations: daily data, weekday data, and weekend data.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame x: the CHAD data to be analyzed</span>
+<span class="sd">    :param bool start_periodic: a flag indicating whether start times should be analyzed \</span>
+<span class="sd">    in [-12, 12) if true or [0, 24) if false</span>
+
+<span class="sd">    :return: a dictionary of statistical moments for the following data: duration, \</span>
+<span class="sd">    start time, end time, weekday duration, weekday start time, weekday end time, \</span>
+<span class="sd">    weekend duration, weekend start time, weekend end time. Also there are the following \</span>
+<span class="sd">    CHAD records: daily records, weekend records, weekday records.</span>
+
+<span class="sd">    :rtype: dictionary of pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># analyze the moments</span>
+    <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_wd_dt</span><span class="p">,</span> <span class="n">stats_wd_start</span><span class="p">,</span> <span class="n">stats_wd_end</span><span class="p">,</span> <span class="n">stats_we_dt</span><span class="p">,</span> <span class="n">stats_we_start</span><span class="p">,</span> \
+    <span class="n">stats_we_end</span> <span class="o">=</span> <span class="n">analyze_moments</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># get the boolean indices of weekend data</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">get_weekend_index_df</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stats_dt&#39;</span><span class="p">:</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="s1">&#39;stats_start&#39;</span><span class="p">:</span> <span class="n">stats_start</span><span class="p">,</span> <span class="s1">&#39;stats_end&#39;</span><span class="p">:</span> <span class="n">stats_end</span><span class="p">,</span> \
+         <span class="s1">&#39;stats_wd_dt&#39;</span><span class="p">:</span> <span class="n">stats_wd_dt</span><span class="p">,</span> <span class="s1">&#39;stats_wd_start&#39;</span><span class="p">:</span> <span class="n">stats_wd_start</span><span class="p">,</span> <span class="s1">&#39;stats_wd_end&#39;</span><span class="p">:</span> <span class="n">stats_wd_end</span><span class="p">,</span> \
+         <span class="s1">&#39;stats_we_dt&#39;</span><span class="p">:</span> <span class="n">stats_we_dt</span><span class="p">,</span> <span class="s1">&#39;stats_we_start&#39;</span><span class="p">:</span> <span class="n">stats_we_start</span><span class="p">,</span> <span class="s1">&#39;stats_we_end&#39;</span><span class="p">:</span> <span class="n">stats_we_end</span><span class="p">,</span> \
+         <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;data_weekend&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="s1">&#39;data_weekday&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="o">~</span><span class="n">idx</span><span class="p">]}</span>
+
+    <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="get_skipped_meals"><a class="viewcode-back" href="../datum.html#datum.get_skipped_meals">[docs]</a><span class="k">def</span> <span class="nf">get_skipped_meals</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each person identified within CHAD, this function goes through activity \</span>
+<span class="sd">    data and finds, on a workday, and finds whether or not the individual \</span>
+<span class="sd">    skipped a meal (i.e., skipped breakfast, lunch, and/ or dinner).</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function is antiquated and not used.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: CHAD activity data</span>
+
+<span class="sd">    :return: the activity data of people within CHAD where a meal was skipped</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># group by PID</span>
+    <span class="n">gb_pid</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># group by CHADID</span>
+    <span class="n">gb_chadid</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;CHADID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># identifiers for PID and CHADID, respectively</span>
+    <span class="n">u_pid</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># check to see if the given activity (x) is a work activity</span>
+    <span class="n">f_workday</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">WORK</span>
+
+    <span class="c1"># check to see if the given activity (x) is an eat activity</span>
+    <span class="n">f_eat</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">EAT</span>
+
+    <span class="c1"># list of data frames</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># loop through data for each person</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">u_pid</span><span class="p">:</span>
+
+        <span class="c1"># get the data for the individual</span>
+        <span class="n">df_pid</span> <span class="o">=</span> <span class="n">gb_pid</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># the number of days of data</span>
+        <span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_pid</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+        <span class="c1"># reset info for workdays, and skipped meals</span>
+        <span class="n">workdays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+
+        <span class="n">breakfast_skipped</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+        <span class="n">lunch_skipped</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+        <span class="n">dinner_skipped</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+
+        <span class="c1"># reset the index</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># loop over data for each day</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">df_pid</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+
+            <span class="c1"># get the activities for the day</span>
+            <span class="n">df_chadid</span>       <span class="o">=</span> <span class="n">gb_chadid</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+            <span class="c1"># is the current day a workday</span>
+            <span class="n">is_workday</span>      <span class="o">=</span> <span class="n">df_chadid</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f_workday</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+
+            <span class="c1"># store results</span>
+            <span class="n">workdays</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>    <span class="o">=</span> <span class="n">is_workday</span>
+
+            <span class="c1"># get eating events</span>
+            <span class="n">idx</span>     <span class="o">=</span> <span class="n">df_chadid</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f_eat</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">meals</span>   <span class="o">=</span> <span class="n">df_chadid</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">breakfast</span><span class="p">,</span> <span class="n">lunch</span><span class="p">,</span> <span class="n">dinner</span> <span class="o">=</span> <span class="n">get_meals</span><span class="p">(</span><span class="n">meals</span><span class="p">)</span>
+
+            <span class="c1"># look at skipping meals</span>
+            <span class="n">breakfast_skipped</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">lunch_skipped</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>       <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lunch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">dinner_skipped</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>      <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dinner</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+            <span class="c1"># update index</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># store information about the specific individual</span>
+
+        <span class="c1"># the CHADID</span>
+        <span class="n">chadid</span> <span class="o">=</span> <span class="n">df_pid</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="c1"># the number of days of data for the individual</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chadid</span><span class="p">)</span>
+
+        <span class="c1"># the person identifier</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="p">[</span><span class="n">df_pid</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">N</span>
+
+        <span class="c1"># the skipping meals data to be stored for the individual</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CHADID&#39;</span><span class="p">:</span> <span class="n">chadid</span><span class="p">,</span> <span class="s1">&#39;PID&#39;</span><span class="p">:</span> <span class="n">pid</span><span class="p">,</span> <span class="s1">&#39;workday&#39;</span><span class="p">:</span> <span class="n">workdays</span><span class="p">,</span> <span class="s1">&#39;breakfast_skipped&#39;</span><span class="p">:</span> <span class="n">breakfast_skipped</span><span class="p">,</span> \
+             <span class="s1">&#39;lunch_skipped&#39;</span><span class="p">:</span> <span class="n">lunch_skipped</span><span class="p">,</span> <span class="s1">&#39;dinner_skipped&#39;</span><span class="p">:</span> <span class="n">dinner_skipped</span><span class="p">}</span>
+
+        <span class="c1"># store the result about the individual</span>
+        <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="c1"># store the results for all of the data</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="get_solo"><a class="viewcode-back" href="../datum.html#datum.get_solo">[docs]</a><span class="k">def</span> <span class="nf">get_solo</span><span class="p">(</span><span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the single-day (i.e. from individuals with only 1 entry) \</span>
+<span class="sd">    CHAD statistical data for \</span>
+<span class="sd">    duration, start time, and end time. This function also gets \</span>
+<span class="sd">    the CHAD record data from the respective statistical data.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame stats_dt: the statistical moments for the \</span>
+<span class="sd">    activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_start: the statistical moments for \</span>
+<span class="sd">    the start time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_end: the statistical moments for \</span>
+<span class="sd">    the end time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame record: the CHAD records for a given \</span>
+<span class="sd">    activity</span>
+
+<span class="sd">    :return: single-day data for statistical moments for activity duration, \</span>
+<span class="sd">    start time, and end time also longitudinal CHAD records</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the indices of individuals with only 1 data point</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">stats_dt</span><span class="o">.</span><span class="n">N</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="c1"># get the solo data</span>
+    <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">rec</span> <span class="o">=</span> <span class="n">get_data_help</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">stats_dt</span><span class="o">=</span><span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="o">=</span><span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="o">=</span><span class="n">stats_end</span><span class="p">,</span> \
+                                        <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">rec</span></div>
+
+<div class="viewcode-block" id="get_stats"><a class="viewcode-back" href="../datum.html#datum.get_stats">[docs]</a><span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the statistics about an activity-parameter (start time, end time, \</span>
+<span class="sd">    or duration) and stores the following data within a dataframe:</span>
+
+<span class="sd">    #. person identifier (PID)</span>
+<span class="sd">    #. the number of events (N)</span>
+<span class="sd">    #. the mean (mu)</span>
+<span class="sd">    #. the standard deviation (std)</span>
+<span class="sd">    #. the coefficient of variation (cv)</span>
+
+<span class="sd">    :param pid: the identifiers for the individuals within CHAD for a given activity</span>
+<span class="sd">    :type pid: numpy.ndarray of str</span>
+<span class="sd">    :param numpy.ndarray data: the CHAD records for a given activity</span>
+<span class="sd">    :param bool do_periodic: a flag whether (if True) or not (if False) time of day \</span>
+<span class="sd">    should be expressed in [-12, 12)</span>
+
+<span class="sd">    :return: the statistical results from an activity-parameter (start time, end time, \</span>
+<span class="sd">    or duration)</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># dataframe list for the created data</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># for each person within the data</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pid</span><span class="p">):</span>
+
+        <span class="c1"># get the correct indices, and the corresponding data</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">pid</span> <span class="o">==</span> <span class="n">p</span>
+        <span class="n">x</span>   <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">do_periodic</span><span class="p">:</span>
+
+            <span class="c1"># display time in [-12, 12) instead of [0, 24)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># get the stats for the individual</span>
+        <span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">get_stats_individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># store the information</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PID&#39;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">std</span><span class="p">,</span> <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="n">cv</span><span class="p">}</span>
+        <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="c1"># column names</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PID&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">,</span> <span class="s1">&#39;cv&#39;</span><span class="p">]</span>
+
+    <span class="c1"># store the data in a data frame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_list</span><span class="p">)[</span><span class="n">cols</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="get_stats_individual"><a class="viewcode-back" href="../datum.html#datum.get_stats_individual">[docs]</a><span class="k">def</span> <span class="nf">get_stats_individual</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the data from the records and returns the following.</span>
+
+<span class="sd">    #. the mean (mu)</span>
+<span class="sd">    #. the standard deviation (std)</span>
+<span class="sd">    #. the coefficient of variation (cv)</span>
+<span class="sd">    #. the number of events (N)</span>
+
+<span class="sd">    :param numpy.ndarray x: the individual records data</span>
+
+<span class="sd">    :return: the mean, standard deviation, coefficient of variation, \</span>
+<span class="sd">    and  number of entries</span>
+
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray, numpy.ndarray, int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the mean</span>
+    <span class="n">mu</span>  <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># the standard deviation</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+    <span class="c1"># the coefficient of variation</span>
+    <span class="n">cv</span>  <span class="o">=</span> <span class="n">std</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+    <span class="c1"># the number of entries</span>
+    <span class="n">N</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_stats_weekend"><a class="viewcode-back" href="../datum.html#datum.get_stats_weekend">[docs]</a><span class="k">def</span> <span class="nf">get_stats_weekend</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">do_weekend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the stats about the moments of the activity \</span>
+<span class="sd">    that occur on a weekends OR weekedays.</span>
+
+<span class="sd">    :param pid: the personal identifiers in the CHAD data</span>
+<span class="sd">    :type pid: numpy.ndarray of str</span>
+<span class="sd">    :param data: the CHAD records of the activity data</span>
+<span class="sd">    :param date: the dates of the activity data</span>
+<span class="sd">    :type date: numpy.ndarray of datetime.timedelta</span>
+<span class="sd">    :param numpy.ndarray start: the start time of the activity data</span>
+<span class="sd">    :param numpy.ndarray end: the end time of the activity data</span>
+<span class="sd">    :param bool do_weekend: a flag whether (if True) to use data that occurs on the \</span>
+<span class="sd">    weekend or (if False) and the weekday</span>
+<span class="sd">    :param bool do_periodic: a flag whether (if True) or not (if False) time of day \</span>
+<span class="sd">    should be expressed in [-12, 12)</span>
+
+<span class="sd">    :return: the statistical data for an activity-parameter (i.e. start time, \</span>
+<span class="sd">    end time, and duration) that occurs on the weekend or weekday</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># indices corresponding to days that are a weekend</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">get_weekend_index</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="c1"># get index corresponding to a weekday</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">do_weekend</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">==</span> <span class="kc">False</span>
+
+    <span class="c1"># if there is data, calculate it, else do nothing</span>
+    <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">do_periodic</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="get_weekend_index"><a class="viewcode-back" href="../datum.html#datum.get_weekend_index">[docs]</a><span class="k">def</span> <span class="nf">get_weekend_index</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the indices of activity information \</span>
+<span class="sd">    of the weekend data.</span>
+
+<span class="sd">    :param date: the date of the activity information</span>
+<span class="sd">    :type date: numpy.ndarray of datetime.timedelta</span>
+<span class="sd">    :param numpy.ndarray start: the start time of the activity information</span>
+<span class="sd">    :param numpy.ndarray end: the end time of the activity information</span>
+
+<span class="sd">    :return: this function gets the indices of activities that occur \</span>
+<span class="sd">    during the weekend</span>
+
+<span class="sd">    :rtype: numpy.ndarray of bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Monday is a zero</span>
+    <span class="n">weekend</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+
+    <span class="c1"># get the day an event ends</span>
+    <span class="n">date_end</span> <span class="o">=</span> <span class="n">get_end_date</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="c1"># the days that are a weekend</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="ow">in</span> <span class="n">weekend</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">date_end</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">idx</span></div>
+
+<div class="viewcode-block" id="get_weekend_index_df"><a class="viewcode-back" href="../datum.html#datum.get_weekend_index_df">[docs]</a><span class="k">def</span> <span class="nf">get_weekend_index_df</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the boolean indices of weekend data from a dataframe.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: CHAD activity record data</span>
+
+<span class="sd">    :return: the boolean indices of weekend data</span>
+<span class="sd">    :rtype: numpy.ndarray of bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">get_weekend_index</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">idx</span></div>
+
+<div class="viewcode-block" id="histogram"><a class="viewcode-back" href="../datum.html#datum.histogram">[docs]</a><span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots a histogram of the data where the y axis corresponds \</span>
+<span class="sd">    to the relative frequency.</span>
+
+<span class="sd">    :param ax: the plotting axis (plt or from axes)</span>
+<span class="sd">    :type ax: matplotlib.figure.Figure</span>
+<span class="sd">    :param numpy.ndarray x: the data to be plotted</span>
+<span class="sd">    :param numpy.ndarray bins: the bins for the histogram</span>
+<span class="sd">    :param str color: the color for the histogram</span>
+<span class="sd">    :param str label: the label of the data</span>
+<span class="sd">    :param float alpha: the alpha for plotting</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># create the bins</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x_min</span>   <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">x_max</span>   <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">dx</span>      <span class="o">=</span> <span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span>
+        <span class="n">N</span>       <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">bins</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># plot histogram</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="merge"><a class="viewcode-back" href="../datum.html#datum.merge">[docs]</a><span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">df_full</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each person in the activity data, the function does the following:</span>
+
+<span class="sd">    #. groups the contiguous daily activity data</span>
+<span class="sd">    #. merges data that occur over midnight into one event</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df_full: the full set of the activity data</span>
+
+<span class="sd">    :return: a data frame that merges activities that occur over midnight</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># unique person identifiers</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">df_full</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># group by unique person identifiers</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">df_full</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+    <span class="n">df_list_merged</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># for each person, merge the data</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pid</span><span class="p">:</span>
+
+        <span class="c1"># get the data of person p</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># splits the data into groups of sequential days</span>
+        <span class="n">df_list</span> <span class="o">=</span> <span class="n">sequential_data</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="c1"># merge the activity events that start before midnight and end after midnight</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">merge_end_of_day</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">df_list</span><span class="p">]</span>
+
+        <span class="c1"># add to list</span>
+        <span class="n">df_list_merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list_merged</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="merge_end_of_day"><a class="viewcode-back" href="../datum.html#datum.merge_end_of_day">[docs]</a><span class="k">def</span> <span class="nf">merge_end_of_day</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes longitudinal data and merges the data if the data \</span>
+<span class="sd">    starts before midnight and ends after midnight.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity records data</span>
+
+<span class="sd">    :return: activity events that start before midnight and end after midnight</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># find indices where the end time is at midnight</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="c1"># add a False for the last day. We will seek to merge the final day in the longitudinal sequence</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="kc">False</span><span class="p">])</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># get indices of days that should be merged</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the start of the event</span>
+    <span class="n">idx_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># the end of the event</span>
+    <span class="n">idx_end</span> <span class="o">=</span> <span class="n">idx_start</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># indices of events that will be merged</span>
+    <span class="n">idx_merged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+    <span class="n">idx_merged</span><span class="p">[</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># the data that will not be merged</span>
+    <span class="n">df_old</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">idx_merged</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+
+    <span class="c1"># create the merged data</span>
+    <span class="n">df_merge</span>        <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_start</span><span class="p">])</span>
+    <span class="n">df_merge</span><span class="o">.</span><span class="n">end</span>    <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_end</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">df_merge</span><span class="o">.</span><span class="n">dt</span>     <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_start</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_end</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># create a new data frame of the merged and non-merged data</span>
+    <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_merge</span><span class="p">,</span> <span class="n">df_old</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">df_new</span></div>
+
+<div class="viewcode-block" id="periodicity_CHADID"><a class="viewcode-back" href="../datum.html#datum.periodicity_CHADID">[docs]</a><span class="k">def</span> <span class="nf">periodicity_CHADID</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function combines entries for sleep with the periodicity assumption for a \</span>
+<span class="sd">    given day (CHADID).</span>
+
+<span class="sd">    If there are two events starting at 0:00 and ending in the morning AND \</span>
+<span class="sd">    another event starting in the evening and ending at 0:00 on the SAME DAY, \</span>
+<span class="sd">    we combine the two events into one event. We assume that the person goes to sleep \</span>
+<span class="sd">    on the same start time and wakes up at the same time (periodicity assumption).</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: sleep events for 1 CHADID</span>
+
+<span class="sd">    :return: return sleep data with the periodicity assumption for 1 CHADID</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create an empty list</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># if the list contains only 1 or 0 entries</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="p">):</span>
+        <span class="n">result</span>  <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)[</span><span class="n">chad</span><span class="o">.</span><span class="n">EVENTS_COLNAMES</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c1"># store the activity</span>
+        <span class="n">act</span>     <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">act</span><span class="p">]</span>
+        <span class="c1"># store the data</span>
+        <span class="n">date</span>    <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">date</span><span class="p">]</span>
+        <span class="c1"># store the CHADID</span>
+        <span class="n">chadid</span>  <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">CHADID</span><span class="p">]</span>
+        <span class="c1"># store the PID</span>
+        <span class="n">pid</span>     <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">PID</span><span class="p">]</span>
+
+        <span class="c1"># for each entry</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
+
+            <span class="c1"># store the start time</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+
+            <span class="c1"># if the current entry does not end with 0, keep the entry</span>
+            <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">end</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">end</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if the entry ends with zero, take the value of the first entry</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end</span>
+
+            <span class="c1"># calculate the duration</span>
+            <span class="n">dt</span>      <span class="o">=</span> <span class="p">[</span><span class="n">mg</span><span class="o">.</span><span class="n">from_periodic</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+            <span class="c1"># set the start and end time for entry into dataframe</span>
+            <span class="n">start</span>   <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
+            <span class="n">end</span>     <span class="o">=</span> <span class="p">[</span><span class="n">end</span><span class="p">]</span>
+
+            <span class="c1"># create dictionary for the new entry</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CHADID&#39;</span><span class="p">:</span> <span class="n">chadid</span><span class="p">,</span> <span class="s1">&#39;PID&#39;</span><span class="p">:</span> <span class="n">pid</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span> \
+                 <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">}</span>
+
+            <span class="c1"># add the entry to the list</span>
+            <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+            <span class="c1"># if the entry includes the periodicity assumption, throw away the top entry</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">end</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">df_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># store the results as a dataframe</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)[</span><span class="n">chad</span><span class="o">.</span><span class="n">EVENTS_COLNAMES</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="periodicity_PID"><a class="viewcode-back" href="../datum.html#datum.periodicity_PID">[docs]</a><span class="k">def</span> <span class="nf">periodicity_PID</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform the periodicity assumption for a given person by its \</span>
+<span class="sd">    person identifier (PID).</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the sleep data of a person with 1 PID</span>
+
+<span class="sd">    :return: sleep data with the periodicity assumption</span>
+<span class="sd">    :rtype: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the data list</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># group data by CHADID</span>
+    <span class="n">gb</span>      <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;CHADID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># for each CHADID and use the periodicity assumption</span>
+    <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">[</span> <span class="n">periodicity_CHADID</span><span class="p">(</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">CHADID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># flatten out the list</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subitem</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">df_list</span> <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df_list</span></div>
+
+<div class="viewcode-block" id="periodicity_sleep"><a class="viewcode-back" href="../datum.html#datum.periodicity_sleep">[docs]</a><span class="k">def</span> <span class="nf">periodicity_sleep</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform the periodicity assumption (i.e., expressing time as [-12, 12)) for an \</span>
+<span class="sd">    entire dataset of multiple entries.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame data: the sleep data over many individuals</span>
+
+<span class="sd">    :return: sleep data with the periodicity assumption</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># group data frame by PID</span>
+    <span class="n">gb_pid</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># list of data frames</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="c1"># loop through each PID</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+
+        <span class="c1"># get data for the PID</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">gb_pid</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># set the periodicity for sleep for the PID</span>
+        <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">periodicity_PID</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
+
+        <span class="c1"># flatten out the df_list</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subitem</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">df_list</span> <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
+
+    <span class="c1"># create one data frame</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../datum.html#datum.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves the following information as a .csv file:</span>
+
+<span class="sd">    #. the statistical moments data for the activity duration (&#39;stats_dt.csv&#39;)</span>
+<span class="sd">    #. the statistical moments data for the activity start time (&#39;stats_start.csv&#39;)</span>
+<span class="sd">    #. the statistical moments data for the activity end time (&#39;stats_end.csv&#39;)</span>
+<span class="sd">    #. the statistical moments data for the activity records (&#39;record.csv&#39;)</span>
+
+<span class="sd">    :param str fpath: the file directory in which to save the data</span>
+<span class="sd">    :param pandas.core.frame.DataFrame record: the CHAD records for a given \</span>
+<span class="sd">    activity</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_dt: the statistical moments for the \</span>
+<span class="sd">    activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_start: the statistical moments for \</span>
+<span class="sd">    the start time activity duration</span>
+<span class="sd">    :param pandas.core.frame.DataFrame stats_end: the statistical moments for \</span>
+<span class="sd">    the end time activity duration</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the name of the files</span>
+    <span class="n">fname_dt</span>        <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">stats_dt.csv&#39;</span>
+    <span class="n">fname_start</span>     <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">stats_start.csv&#39;</span>
+    <span class="n">fname_end</span>       <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">stats_end.csv&#39;</span>
+    <span class="n">fname_record</span>    <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">record.csv&#39;</span>
+
+    <span class="c1"># flag used to save the row index in .csv files</span>
+    <span class="n">do_row_index</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># the data to save</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">record</span><span class="p">]</span>
+
+    <span class="c1"># the file names of the respective data</span>
+    <span class="n">fnames</span>  <span class="o">=</span> <span class="p">[</span><span class="n">fname_dt</span><span class="p">,</span> <span class="n">fname_start</span><span class="p">,</span> <span class="n">fname_end</span><span class="p">,</span> <span class="n">fname_record</span><span class="p">]</span>
+
+    <span class="c1"># save the data to .csv files</span>
+    <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+        <span class="c1"># create the directory for the save file if it does not exist</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># save the dataframe as a .csv file</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">do_row_index</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="sequential_data"><a class="viewcode-back" href="../datum.html#datum.sequential_data">[docs]</a><span class="k">def</span> <span class="nf">sequential_data</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a given PID, this function groups the data in terms of sets of data \</span>
+<span class="sd">    for consecutive days. This function \</span>
+<span class="sd">    assumes that all the data given is for a given (generalized) activity.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        In the data, it is not necessarily the case that if there are multiple days of consecutive activity, \</span>
+<span class="sd">        that all of them form 1 contiguous period. Ex. It is possible to have entries Jan 1, Jan 2, Jan 3, Feb 10, \</span>
+<span class="sd">        Feb 11. This function will group the data into 2 groups when this occurs.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the data of a specific PID for an activity</span>
+<span class="sd">    :return: a list of dataframes for sequential longitudinal-data</span>
+<span class="sd">    :rtype: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of events</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">N</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># get labels indicating sequential days</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">sequential_days</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># keys are the sequence identifier [0, 1, 2] in the above example</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groupby</span><span class="p">(</span><span class="n">b</span><span class="p">)]</span>
+
+        <span class="c1"># a list of sets of longitudinal data for a given PID</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">b</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="sequential_days"><a class="viewcode-back" href="../datum.html#datum.sequential_days">[docs]</a><span class="k">def</span> <span class="nf">sequential_days</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates label indicating sequential days. This is done by writing a sequence \</span>
+<span class="sd">    where each group of consecutive dates have a label starting at 0.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        the following sequence of dates [0, 0, 1,1, 3, 4, 5, 10], would have the \</span>
+<span class="sd">        following sequence [0, 0, 0, 0, 1, 1, 1, 2]</span>
+
+<span class="sd">    :param date: the date of the activity data</span>
+<span class="sd">    :type date: numpy.ndarray datetime.timedelta</span>
+<span class="sd">    :param numpy.ndarray start: the start time of the activity data</span>
+<span class="sd">    :param numpy.ndarray end: the end time of the activity data</span>
+
+<span class="sd">    :return: a sequence whose indices indicates sequential dates for an activity</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dt_min</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dt_max</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># return true if the events occur on consecutive days</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[(</span><span class="n">later</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&gt;=</span> <span class="n">dt_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">later</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;=</span> <span class="n">dt_max</span><span class="p">)</span> <span class="k">for</span> <span class="n">now</span><span class="p">,</span> <span class="n">later</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># get the date that the activity ends</span>
+        <span class="n">date_end</span> <span class="o">=</span> <span class="n">get_end_date</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+        <span class="c1"># find where the dates are the same or in a consecutive series</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">date_end</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+
+    <span class="c1"># write sequence where each group of consecutive dates have a label starting at 0</span>
+    <span class="c1"># the following sequence of dates [0, 0, 1,1, 3, 4, 5, 10], would have the following sequence</span>
+    <span class="c1"># [0, 0, 0, 0, 1, 1, 1, 2]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">b</span></div>
+
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># run</span>
+<span class="c1"># ===========================================</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># get all data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">chad</span><span class="o">.</span><span class="n">CHAD_RAW</span><span class="p">(</span><span class="n">min_age</span><span class="o">=</span><span class="n">social</span><span class="o">.</span><span class="n">ADULT_AGE</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="n">social</span><span class="o">.</span><span class="n">MAX_AGE</span><span class="p">)</span>
+
+    <span class="c1"># the activity to look at</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">chad_code</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">]</span>
+
+    <span class="c1"># the minimum duration</span>
+    <span class="n">dt_min</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="c1"># load raw data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading sleep data...&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># THIS IS NOT longitudinal data</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># sleep data</span>
+    <span class="n">slumber</span> <span class="o">=</span> <span class="n">merged</span><span class="p">[</span><span class="n">merged</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">dt_min</span><span class="p">]</span>
+
+    <span class="c1"># get data about the moments</span>
+    <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_wd_dt</span><span class="p">,</span> <span class="n">stats_wd_start</span><span class="p">,</span> <span class="n">stats_we_dt</span><span class="p">,</span> <span class="n">stats_we_start</span> <span class="o">=</span> <span class="n">analyze_moments</span><span class="p">(</span><span class="n">slumber</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

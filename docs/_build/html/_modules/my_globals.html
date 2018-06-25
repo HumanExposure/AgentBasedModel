@@ -1,38 +1,27 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>my_globals &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>my_globals &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
-    <link rel="up" title="Module code" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -60,30 +49,30 @@
 <span class="sd">This module contains information about the following constants:</span>
 
 <span class="sd">#. Identifiers for activity codes</span>
-<span class="sd">#. File names \ file paths for saving figures for the different demographics</span>
-<span class="sd">#. File names \ file paths for saving figures for the different activities</span>
+<span class="sd">#. File names \\ file paths for saving figures for the different demographics</span>
+<span class="sd">#. File names \\ file paths for saving figures for the different activities</span>
 
 <span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># ===============================================</span>
 <span class="c1"># import</span>
-<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># ===============================================</span>
+
 <span class="c1"># general math capability</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># statistical modeling features</span>
-<span class="kn">from</span> <span class="nn">statsmodels.distributions.empirical_distribution</span> <span class="kn">import</span> <span class="n">ECDF</span>
+<span class="kn">from</span> <span class="nn">statsmodels.distributions.empirical_distribution</span> <span class="k">import</span> <span class="n">ECDF</span>
 
 <span class="c1"># statistical capability</span>
-<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 
-<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">shutil</span>
 
-
-<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># ===============================================</span>
 <span class="c1"># constants</span>
-<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># ===============================================</span>
 
 <span class="c1"># these are keys values to be used in dictionaries for the respective activities</span>
 <span class="n">KEY_IDLE</span>                <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -141,9 +130,35 @@
 
 <span class="c1"># file ending used for batch saves</span>
 <span class="n">F_BATCH_ENDING</span> <span class="o">=</span> <span class="s1">&#39;_b</span><span class="si">%04d</span><span class="s1">.pkl&#39;</span>
-<span class="c1"># -----------------------------------------------</span>
-<span class="c1"># functions</span>
-<span class="c1"># -----------------------------------------------</span>
+
+<span class="c1">#</span>
+<span class="c1"># file extensions</span>
+<span class="c1">#</span>
+
+<span class="c1"># acceptable file extensions for python pickle files</span>
+<span class="n">EXTENSION_PKL</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;.pickle&#39;</span><span class="p">)</span>
+
+<span class="c1"># ===============================================</span>
+<span class="c1"># function</span>
+<span class="c1"># ===============================================</span>
+<div class="viewcode-block" id="check_filename_extension"><a class="viewcode-back" href="../my_globals.html#my_globals.check_filename_extension">[docs]</a><span class="k">def</span> <span class="nf">check_filename_extension</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns whether or not the given file name has the given</span>
+<span class="sd">    filename extension.</span>
+
+<span class="sd">    :param str fname: the file name</span>
+<span class="sd">    :param list or str ext: a single (or list) of acceptable filename extensions</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if the filename extension is just a string, create a list</span>
+    <span class="k">if</span>  <span class="nb">type</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="p">[</span><span class="n">ext</span><span class="p">,</span> <span class="p">]</span>
+
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">fname</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):]</span> <span class="o">==</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ext</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ok</span></div>
 
 <div class="viewcode-block" id="fill_out_data"><a class="viewcode-back" href="../my_globals.html#my_globals.fill_out_data">[docs]</a><span class="k">def</span> <span class="nf">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 
@@ -165,8 +180,8 @@
     <span class="c1"># create 1 large numpy array</span>
     <span class="n">y_fill</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">y_group</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">y_fill</span>
-</div>
+    <span class="k">return</span> <span class="n">y_fill</span></div>
+
 <div class="viewcode-block" id="fill_out_time"><a class="viewcode-back" href="../my_globals.html#my_globals.fill_out_time">[docs]</a><span class="k">def</span> <span class="nf">fill_out_time</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -189,9 +204,9 @@
     <span class="c1"># fill out the times</span>
     <span class="n">t_fill</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">t_group</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">t_fill</span>
-</div>
-<div class="viewcode-block" id="from_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.from_periodic">[docs]</a><span class="k">def</span> <span class="nf">from_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">t_fill</span></div>
+
+<div class="viewcode-block" id="from_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.from_periodic">[docs]</a><span class="k">def</span> <span class="nf">from_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function returns the time of day in a 24 hour format. It takes the time :math:`t \\in [-12, 12)` and \</span>
@@ -210,8 +225,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
 <div class="viewcode-block" id="get_ecdf"><a class="viewcode-back" href="../my_globals.html#my_globals.get_ecdf">[docs]</a><span class="k">def</span> <span class="nf">get_ecdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -240,8 +255,8 @@
     <span class="c1"># calculate the cdf</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">ecdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
 <div class="viewcode-block" id="group_time"><a class="viewcode-back" href="../my_globals.html#my_globals.group_time">[docs]</a><span class="k">def</span> <span class="nf">group_time</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -257,8 +272,8 @@
 
     <span class="n">t_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
 
-    <span class="k">return</span> <span class="n">t_group</span>
-</div>
+    <span class="k">return</span> <span class="n">t_group</span></div>
+
 <div class="viewcode-block" id="hours_to_minutes"><a class="viewcode-back" href="../my_globals.html#my_globals.hours_to_minutes">[docs]</a><span class="k">def</span> <span class="nf">hours_to_minutes</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -273,8 +288,25 @@
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">t</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="initialize_random_number_generator"><a class="viewcode-back" href="../my_globals.html#my_globals.initialize_random_number_generator">[docs]</a><span class="k">def</span> <span class="nf">initialize_random_number_generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function initializes the random number generators with a specified seed, if given (i.e., that is if</span>
+<span class="sd">    seed is not None). Both the *random* module and the *numpy.random* module&#39;s random number generator are \</span>
+<span class="sd">    seeded. This is useful for reproducing results.</span>
+
+<span class="sd">    :param int seed: the seed for the number generator</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># initialize the random number generators</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../my_globals.html#my_globals.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -283,6 +315,15 @@
 <span class="sd">    :param str fname: the file name to be loaded from</span>
 <span class="sd">    :return: the data unpickled</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if fname reflects a python pickle file</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">check_filename_extension</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">EXTENSION_PKL</span><span class="p">)</span>
+
+    <span class="c1"># message for assert failure</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;fname: </span><span class="si">%s</span><span class="s1"> is NOT a pickle file&#39;</span> <span class="o">%</span> <span class="n">fname</span>
+
+    <span class="c1"># assert the condition</span>
+    <span class="k">assert</span> <span class="n">condition</span><span class="p">,</span> <span class="n">msg</span>
 
     <span class="c1"># open the file for reading</span>
     <span class="n">fin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
@@ -293,8 +334,27 @@
     <span class="c1"># close the file</span>
     <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="sample"><a class="viewcode-back" href="../my_globals.html#my_globals.sample">[docs]</a><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function creates N samples of the empirical distribution of the values in the \</span>
+<span class="sd">    data array.</span>
+
+<span class="sd">    :param numpy.ndarray data: the data to sample</span>
+<span class="sd">    :param int N: the number of data points to sample</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># randomly sample percentile numbers [0, 100]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># sample the data array according to pth percentile</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span></div>
+
 <div class="viewcode-block" id="sample_normal"><a class="viewcode-back" href="../my_globals.html#my_globals.sample_normal">[docs]</a><span class="k">def</span> <span class="nf">sample_normal</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="n">dx</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -331,8 +391,8 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">is_bad_value</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
 <div class="viewcode-block" id="save"><a class="viewcode-back" href="../my_globals.html#my_globals.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -344,7 +404,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># create the directory for the save file if it does not exist</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># open the file for writing</span>
     <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
@@ -355,26 +415,72 @@
     <span class="c1"># close the file</span>
     <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">return</span>
-</div>
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="save_diary_to_csv"><a class="viewcode-back" href="../my_globals.html#my_globals.save_diary_to_csv">[docs]</a><span class="k">def</span> <span class="nf">save_diary_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves an activity diary as a .csv file. The output is changed from the</span>
+<span class="sd">    original data in the following manor. We add  + 1 minute to the end time so that</span>
+<span class="sd">    16:00 - 16:59 (original version) becomes 16:00 - 17:00 (saved version).</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity-diary output of the simulation</span>
+<span class="sd">    :param str fname: the file name of the saved file. It must end with a .csv extension</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># acceptable file extension</span>
+    <span class="n">FILE_EXT</span> <span class="o">=</span> <span class="s1">&#39;.csv&#39;</span>
+
+    <span class="c1"># condition to pass assert statement: filename must end in .csv</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">fname</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">FILE_EXT</span><span class="p">):]</span> <span class="o">==</span> <span class="n">FILE_EXT</span>
+
+    <span class="c1"># message for assert failure</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;file name is NOT in a .csv format&#39;</span>
+
+    <span class="c1"># assert that the file name is a .csv file</span>
+    <span class="k">assert</span> <span class="n">condition</span><span class="p">,</span> <span class="n">msg</span>
+
+    <span class="c1"># the conversion of 1 hour into minutes</span>
+    <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="c1"># copy the data frame to avoid changing the original data in df</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># convert the end time in minutes.</span>
+    <span class="c1"># Add the + 1 minute to the end time so that 16:00 - 16:59 becomes 16:00 - 17:00</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">hours_to_minutes</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># convert the end time into hours</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span> <span class="o">/</span> <span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># create the directory for the save file if it does not exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># save the data</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
 <div class="viewcode-block" id="save_zip"><a class="viewcode-back" href="../my_globals.html#my_globals.save_zip">[docs]</a><span class="k">def</span> <span class="nf">save_zip</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">source_dir</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function compresses an entire directory as a zip file.</span>
 
-<span class="sd">    :param str out_file: the filename of the save zip file with out the .zip extension</span>
+<span class="sd">    :param str out_file: the filename of the save zip file without the .zip extension</span>
 <span class="sd">    :param str source_dir: the directory to be compressed</span>
 <span class="sd">    :return: the name of the compressed directory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># create the file path to the save file if it does not exist</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_file</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_file</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># zip the source directory</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">make_archive</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;zip&#39;</span><span class="p">,</span> <span class="n">source_dir</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
 <div class="viewcode-block" id="set_distribution"><a class="viewcode-back" href="../my_globals.html#my_globals.set_distribution">[docs]</a><span class="k">def</span> <span class="nf">set_distribution</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -390,8 +496,8 @@
 
     <span class="n">f</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">truncnorm</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span>
 
-    <span class="k">return</span> <span class="n">f</span>
-</div>
+    <span class="k">return</span> <span class="n">f</span></div>
+
 <div class="viewcode-block" id="set_distribution_dt"><a class="viewcode-back" href="../my_globals.html#my_globals.set_distribution_dt">[docs]</a><span class="k">def</span> <span class="nf">set_distribution_dt</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">x_min</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -428,9 +534,9 @@
     <span class="c1"># set the truncated normal distribution</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">set_distribution</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">the_std</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">the_std</span>
-</div>
-<div class="viewcode-block" id="to_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.to_periodic">[docs]</a><span class="k">def</span> <span class="nf">to_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">the_std</span></div>
+
+<div class="viewcode-block" id="to_periodic"><a class="viewcode-back" href="../my_globals.html#my_globals.to_periodic">[docs]</a><span class="k">def</span> <span class="nf">to_periodic</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function returns the time of day in a periodic format. It takes the time :math:`t \\in [0, 24)` and \</span>
@@ -451,8 +557,9 @@
         <span class="c1"># do the calculation in minutes</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span>
-</pre></div></div>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+</pre></div>
 
           </div>
         </div>
@@ -469,15 +576,14 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -485,10 +591,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

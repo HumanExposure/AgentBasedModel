@@ -13,8 +13,8 @@
 
 """
 This module contains information about the activities associated with eating. This class is an \
-:class:`activity.Activity` that gives a :class:`person.Person` the ability to eat and satisfy the need \
-:class:`hunger.Hunger`.
+Activity (:class:`activity.Activity`) that gives a Person (:class:`person.Person`) the ability \
+to eat and satisfy the need Hunger (:class:`hunger.Hunger`).
 
 This module contains the following classes:
 
@@ -26,33 +26,19 @@ This module contains the following classes:
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general math capability
 import numpy as np
 
-# ABM modules
+# agent-based model modules
 import activity, location, meal, need, occupation, state, temporal
 
-# ================================================================================
-# CLASS Eat
-#
-# This class is derived from CLASS Activity
-#
-# Attributes:
-#    id:       int. The activity code identifier
-#
-# Method:
-#    advertise():                    This function calculates the value from advertising the eating activity.
-#    advertise_interruption():       This function calculates the score from advertising an interruption by eating.
-#    end():                          This function ends the eating activity scenario.
-#    end_meal():                     This function ends eating a meal.
-#    set_end_time:                   This function calculates the end time of the activity.
-#    start():                        This function starts the eat activity scenario.
-#    start_meal():                   This function starts the eat activity.
-# ================================================================================
+# ===============================================
+# class
+# ===============================================
 
 
 class Eat(activity.Activity):
@@ -166,7 +152,7 @@ class Eat(activity.Activity):
     def end_meal(self, p):
 
         """
-        This function ends the eat activity by doing the following.
+        This function ends the eat activity by doing the following:
         
         #. frees the person's use of the asset
         #. sets the state to idle (:const:`state.IDLE`)
@@ -284,7 +270,7 @@ class Eat(activity.Activity):
     def start_meal(self,p):
 
         """
-        This function starts the eat activity by doing the following.
+        This function starts the eat activity by doing the following:
 
         #. sets the person's state to busy (:const:`state.BUSY`)
         #. set the decay rate of hunger to 0
@@ -328,10 +314,23 @@ class Eat(activity.Activity):
 
     def test_func(self, p):
 
+        """
+        .. note::
+            This function is for debugging and has no practical purpose. This function will be \
+            removed in the future.
+
+        :param person.Person p: person of interest
+        :return: None
+        """
+
         print([(m.t_start_univ - p.clock.t_univ) for m in p.socio.meals])
         print('current meal: %s' % meal.INT_2_STR[p.socio.current_meal.id])
 
         return
+
+# ===============================================
+# class Eat_Breakfast
+# ===============================================
 
 class Eat_Breakfast(Eat):
 
@@ -350,19 +349,25 @@ class Eat_Breakfast(Eat):
     def advertise(self, p):
 
         """
-        This function calculates the score of an activities advertisement to a person.
-
-        Advertise to the agent if the following conditions are met
+        This function calculates the score of the activity's advertisement to a person. The activity \
+        advertise to the agent if the following conditions are met:
         
         #. the current meal is breakfast
         #. the agent's location is at home (:const:`location.HOME`)
-        #. calculate the score
+        #. calculate the score :math:`S`
                                         
         .. math::     
             S = \\begin{cases}
             0  & n_{hunger}(t) > \\lambda \\\\
             W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) & n_{hunger}(t) \\le \\lambda
             \\end{cases}
+
+        where
+            * :math:`t` is the current time
+            * :math:`\\Delta{t}` is the duration of eating breakfast [minutes]
+            * :math:`n_{hunger}(t)` is the satiation for Hunger at time :math:`t`
+            * :math:`\\lambda` is the threshold value of Hunger
+            * :math:`W(n)` is the weight function for Hunger
 
         :param person.Person p: the person of interest
         :return score: the advertised score of doing the eat breakfast activity
@@ -384,10 +389,10 @@ class Eat_Breakfast(Eat):
     def end_meal(self, p):
 
         """
-        This function handles the logistics for ending the eat activity by doing the following.
+        This function handles the logistics for ending the eat breakfast activity by doing the following:
          
          #. call :func:`eat.end_meal`
-         #. If planning to skip lunch, update the lunch event to be the next day
+         #. if planning to skip lunch, update the lunch event to be the next day
         
         :param person.Person p: the person who's meal is ending 
         :return: 
@@ -407,7 +412,7 @@ class Eat_Breakfast(Eat):
     def start_meal(self, p):
 
         """
-        This function handles the logistics for starting the eat activity by doing the following
+        This function handles the logistics for starting the eat activity by doing the following:
         
         #. set the current meal to breakfast
         #. call :func:`eat.start_meal`
@@ -421,6 +426,10 @@ class Eat_Breakfast(Eat):
         super(Eat_Breakfast, self).start_meal(p)
 
         return
+
+# ===============================================
+# class Eat Lunch
+# ===============================================
 
 class Eat_Lunch(Eat):
 
@@ -439,27 +448,33 @@ class Eat_Lunch(Eat):
     def advertise(self, p):
 
         """        
-        This function calculates the score of an activities advertisement to a person.
-
-        Advertise to the agent if the following conditions are met
+        This function calculates the score of an activities advertisement to a person. The activity \
+        advertise to the agent if the following conditions are met:
         
         #. the current meal is lunch
         #. the agent's location is at home (:const:`location.HOME`) or the agent's location is at the \
         workplace (:const:`location.OFF_SITE`)
-        #. calculate the score
+        #. calculate the score :math:`S`
                                         
         .. math::     
             S = \\begin{cases}
             0  & n_{hunger}(t) > \\lambda \\\\
             W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) & n_{hunger}(t) \\le \\lambda
             \\end{cases}
-            
+
+        where
+            * :math:`t` is the current time
+            * :math:`\\Delta{t}` is the duration of eating lunch [minutes]
+            * :math:`n_{hunger}(t)` is the satiation for Hunger at time :math:`t`
+            * :math:`\\lambda` is the threshold value of Hunger
+            * :math:`W(n)` is the weight function for Hunger
+
         If the threshold is not met, score is 0. The advertisements assume that the duration \
         of the activity is the mean duration.
 
-        :param person.Person p: The person of interest
+        :param person.Person p: the person of interest
 
-        :return score: the advertised score of doing the Eat activity
+        :return score: the advertised score of doing the eat lunch activity
         :rtype: float
         """
 
@@ -492,10 +507,11 @@ class Eat_Lunch(Eat):
     def end_meal(self, p):
 
         """
-        This function ends the eat activity by doing the following:
+        This function ends the eat lunch activity by doing the following:
 
         #. calls :func:`eat.end_meal`
         #. if dinner is to be skipped, update the dinner event by doing the following:
+
             * if the lunch is an interrupting activity
                 * set the time until the next lunch activity
                 * update the schedule for the interruption to the next lunch activity
@@ -543,6 +559,10 @@ class Eat_Lunch(Eat):
 
         return
 
+# ===============================================
+# class Eat_Dinner
+# ===============================================
+
 class Eat_Dinner(Eat):
 
     """
@@ -561,26 +581,32 @@ class Eat_Dinner(Eat):
     def advertise(self, p):
 
         """
-        This function calculates the score of an activities advertisement to a Person.
-
-        Advertise to the agent if the following conditions are met
+        This function calculates the score of an activities advertisement to a Person. This activity \
+        advertises to the agent if the following conditions are met
         
         #. the current meal is lunch
         #. the agent's location is at home (:const:`location.HOME`)
-        #. calculate the score
+        #. calculate the score :math:`S`
                                         
         .. math::     
             S = \\begin{cases}
             0  & n_{hunger}(t) > \\lambda \\\\
             W( n_{hunger}(t) ) - W( n_{hunger}(t + \\Delta{t} )) & n_{hunger}(t) \\le \\lambda
             \\end{cases}
-            
+
+        where
+            * :math:`t` is the current time
+            * :math:`\\Delta{t}` is the duration of eating dinner [minutes]
+            * :math:`n_{hunger}(t)` is the satiation for Hunger at time :math:`t`
+            * :math:`\\lambda` is the threshold value of Hunger
+            * :math:`W(n)` is the weight function for Hunger
+
         If the threshold is not met, score is 0. The advertisements assume that the duration \
         of the activity is the mean duration.
 
-        :param person.Person p: The person of interest
+        :param person.Person p: the person of interest
 
-        :return score: the advertised score of doing the Eat activity
+        :return score: the advertised score of doing the eat dinner activity
         :rtype: float
         """
 
@@ -600,7 +626,7 @@ class Eat_Dinner(Eat):
         This function goes through the logistics of ending the dinner meal by doing the following:
         
         #. calls :func:`end.end_meal`
-        #. If breakfast will be skipped, update the lunch event to be 2 days from the current day 
+        #. if breakfast will be skipped, update the lunch event to be 2 days from the current day
         
         :param person.Person p: the person who is finishing the eating dinner event 
         :return:  None

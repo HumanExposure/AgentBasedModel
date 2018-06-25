@@ -1,0 +1,415 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>data_counter notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="driver module" href="driver.html" />
+    <link rel="prev" title="commute_to_work_trial module" href="commute_to_work_trial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-counter-notebook">
+<h1>data_counter notebook<a class="headerlink" href="#data-counter-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 20, 2018</span>
+</pre></div>
+</div>
+<p>This file loads the activity-data assigned with each activity for the
+respective demographic group. For each activity, then the file counts
+the amount of Consolidated Human Acitivyt Databse (CHAD) individuals
+from both the single day and the longitudinal entries.</p>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capability</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># data frame capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># zipfile capability</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+
+<span class="c1"># ABMHAP capability</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_non_work</span> <span class="k">as</span> <span class="nn">cdanw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_work</span> <span class="k">as</span> <span class="nn">cdaw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_school</span> <span class="k">as</span> <span class="nn">cdcs</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_young</span> <span class="k">as</span> <span class="nn">cdcy</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">chad</span><span class="o">,</span> <span class="nn">datum</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> auto
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Using</span> <span class="n">matplotlib</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Qt5Agg</span>
+</pre></div>
+</div>
+<p>Functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function loads the activity parameter data (start time, end time, \</span>
+<span class="sd">    duration, and CHAD records) for an activity for the demographic.</span>
+
+<span class="sd">    :param zipfile.Zipfile z: the ZipFile object for a given demographic group</span>
+<span class="sd">    :param fnames: the file names for CHAD activity-moments data</span>
+<span class="sd">    :type fnames: dict mapping int to str</span>
+
+<span class="sd">    :return: the start time, end time, duration, and record data for a \</span>
+<span class="sd">    given activity</span>
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span> <span class="n">fnames</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">START</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span> <span class="n">fnames</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">END</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span> <span class="n">fnames</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">DT</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span> <span class="n">fnames</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">RECORD</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">record</span>
+
+<span class="k">def</span> <span class="nf">filter_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">the_filter</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">end_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes CHAD data for an activity and filters the CHAD data \</span>
+<span class="sd">    the satisfy the sampling parameters. This function returns the CHAD data \</span>
+<span class="sd">    suitable for use in parameterizing ABMHAP.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the record data for a given activity</span>
+<span class="sd">    :param the_filter: for a given activity code, get the respective parameters \</span>
+<span class="sd">    for sampling CHAD data</span>
+<span class="sd">    :type the_filter: dict mapping int to :class:`chad_params.CHAD_params`</span>
+<span class="sd">    :param bool start_periodic: whether (if True) or not (if False) the start \</span>
+<span class="sd">    time should be in a [-12, 12) format</span>
+<span class="sd">    :param bool end_periodic: whether (if True) or not (if False) the end \</span>
+<span class="sd">    time should be in a [-12, 12) format</span>
+
+<span class="sd">    :return: the CHAD data that satisfy the sampling parameters for the following:</span>
+<span class="sd">    start time moments, end time moments, duration momments, and records</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the_filter are the sampling paramters for the activity</span>
+
+    <span class="c1"># the start time and end time data</span>
+    <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span>
+
+    <span class="c1"># change the start time data to a [-12, 12) format</span>
+    <span class="k">if</span> <span class="n">start_periodic</span><span class="p">:</span>
+        <span class="n">x_start</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># change the start time data to a [-12, 12) format</span>
+    <span class="k">if</span> <span class="n">end_periodic</span><span class="p">:</span>
+        <span class="n">x_end</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">x_end</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># the indices that satisfy the requirements for mean start time, end time, and</span>
+    <span class="c1"># and duration respectively</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span> <span class="n">x_start</span> <span class="o">&gt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">start_mean_min</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">x_start</span> <span class="o">&lt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">start_mean_max</span> <span class="p">)</span> \
+    <span class="o">&amp;</span> <span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">end_mean_min</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">end_mean_max</span> <span class="p">)</span> \
+    <span class="o">&amp;</span> <span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">dt_mean_min</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">the_filter</span><span class="o">.</span><span class="n">dt_mean_max</span> <span class="p">)</span>
+
+    <span class="c1"># get the record data that satisfy the proper sampling ranges</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the personal identifier values within the CHAD data</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># obtain the duraation, start time, and end time values from the filtered CHAD records</span>
+    <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># the CHAD data that satisfy the sampling parameters for the start time moments</span>
+    <span class="n">stats_start</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># the CHAD data that satisfy the sampling parameters for the end time moments</span>
+    <span class="n">stats_end</span>   <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">)</span>
+
+    <span class="c1"># the CHAD data that satisfy the sampling parameters for the duration moments</span>
+    <span class="n">stats_dt</span>    <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_stats</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">record</span>
+
+<span class="k">def</span> <span class="nf">get_activity_data</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fnames</span><span class="p">,</span> <span class="n">the_filter</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">end_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function loads CHAD data for an activity and filters the CHAD data \</span>
+<span class="sd">    the satisfy the sampling parameters. This function returns the CHAD data \</span>
+<span class="sd">    suitable for use in parameterizing ABMHAP.</span>
+
+<span class="sd">    :param zipfile.Zipfile z: the ZipFile object for a given demographic group</span>
+<span class="sd">    :param fnames: the file names for CHAD activity-moments data</span>
+<span class="sd">    :type fnames: dict mapping int to str</span>
+<span class="sd">    :param the_filter: for a given activity code, get the respective parameters \</span>
+<span class="sd">    for sampling CHAD data</span>
+<span class="sd">    :type the_filter: dict mapping int to :class:`chad_params.CHAD_params`</span>
+<span class="sd">    :param bool start_periodic: whether (if True) or not (if False) the start \</span>
+<span class="sd">    time should be in a [-12, 12) format</span>
+<span class="sd">    :param bool end_periodic: whether (if True) or not (if False) the end \</span>
+<span class="sd">    time should be in a [-12, 12) format</span>
+
+<span class="sd">    :return: the CHAD data that satisfy the sampling parameters for the following:</span>
+<span class="sd">    start time moments, end time moments, duration momments, and records</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the longitudinal data</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">record</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fnames</span><span class="p">)</span>
+
+    <span class="c1"># filter the records and get the moments</span>
+    <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">record</span> <span class="o">=</span> \
+    <span class="n">filter_data</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">the_filter</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">start_periodic</span><span class="p">,</span> <span class="n">end_periodic</span><span class="o">=</span><span class="n">end_periodic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">record</span>
+
+<span class="k">def</span> <span class="nf">get_fnames</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">do_long</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a demographic, this function obtains the file names of the \</span>
+<span class="sd">    activity data for longitudinal or single-day data.</span>
+
+<span class="sd">    :param demography.Demography demo: the demographic of choice to access the CHAD data</span>
+<span class="sd">    :param int k: the activity code</span>
+<span class="sd">    :param bool do_long: whether (if True) to load the longitduinal data. If not (False), \</span>
+<span class="sd">    load the single-day data.</span>
+
+<span class="sd">    :return: the file names for CHAD activity-moments data for longitudinal data \</span>
+<span class="sd">    or single-day data</span>
+<span class="sd">    :rtype: dict of int to str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the file names of the longitudinal data</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="n">fname_stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">do_long</span><span class="p">:</span>
+        <span class="c1"># get the file names of the single-day data</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;solo&#39;</span><span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fnames</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">]</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fnames</span>
+
+<span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets data and plots the empiricial cumulative dsitribution \</span>
+<span class="sd">    function (CDF) of the data.</span>
+
+<span class="sd">    :param numpy.ndarray data: the data to create a CDF of</span>
+<span class="sd">    :param matplotlib.axes._subplots.AxesSubplot ax: the subplot that&#39;s plotting</span>
+<span class="sd">    :param str label: the label for the data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get an empiricial CDF based on the data</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># plot the CDF</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="c1"># show legend</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>Run</p>
+<p>Load data via demographic</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># map a demographic type to the respective CHAD_demography object</span>
+<span class="n">chooser</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">cdaw</span><span class="o">.</span><span class="n">CHAD_demography_adult_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">cdanw</span><span class="o">.</span><span class="n">CHAD_demography_adult_non_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">cdcs</span><span class="o">.</span><span class="n">CHAD_demography_child_school</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">cdcy</span><span class="o">.</span><span class="n">CHAD_demography_child_young</span><span class="p">()}</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># choose the demography</span>
+<span class="n">demo_type</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span>
+
+<span class="c1"># get the name of the compressed data file</span>
+<span class="n">fname_zip</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_DEMOGRAPHY</span><span class="p">[</span><span class="n">demo_type</span><span class="p">]</span>
+
+<span class="c1"># create the ZipFile object for the respective demographic group</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span> <span class="n">fname_zip</span> <span class="p">)</span>
+
+<span class="c1"># set the demographic object</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">chooser</span><span class="p">[</span><span class="n">demo_type</span><span class="p">]</span>
+
+<span class="c1"># store all of the activity-keys for the demographic</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="c1"># print flag</span>
+<span class="n">do_print</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Count the number of CHAD persons for each activity</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># if true, count the number of people with longitudinal data (at least 2 entries)</span>
+<span class="c1"># if false, count the number of people with single data (only 1 entry)</span>
+<span class="n">do_long</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="c1"># for each activity in the demographic, count the amount of data</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+    <span class="c1"># set whether to set the time to periodic time [-12, 12) hours instead of [0, 24) hours</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># sampling / filtering params</span>
+    <span class="n">the_filter</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="n">int_2_param</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="c1"># get the names of the statistics files</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="n">get_fnames</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">do_long</span><span class="p">)</span>
+
+    <span class="c1"># load and filter data fitting for the demographic</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">record</span> <span class="o">=</span> <span class="n">get_activity_data</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fnames</span><span class="p">,</span> <span class="n">the_filter</span><span class="p">,</span> <span class="n">start_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># print the activity</span>
+    <span class="k">if</span> <span class="n">do_print</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># count the number of longitudinal or single-day data, respectively</span>
+        <span class="k">if</span> <span class="n">do_long</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="n">start</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">N</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="n">start</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+..processingdatum.py:689: RuntimeWarning: invalid value encountered in double_scalars
+  cv  = std / np.abs(mu)
+..processingdatum.py:689: RuntimeWarning: divide by zero encountered in double_scalars
+  cv  = std / np.abs(mu)
+</pre>
+<p>Plot the data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the subplots</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># the title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+<span class="c1">#</span>
+<span class="c1"># plot the start time data</span>
+<span class="c1">#</span>
+
+<span class="c1"># select the subplot</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># the start time data</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># plot the end time data</span>
+<span class="c1">#</span>
+
+<span class="c1"># select the subplot</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># the end time data</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">end</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># plot the duration data</span>
+<span class="c1">#</span>
+
+<span class="c1"># select the subplot</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># the duration data</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+
+<span class="c1"># show plots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="commute_to_work_trial.html" title="previous chapter">commute_to_work_trial module</a></li>
+      <li>Next: <a href="driver.html" title="next chapter">driver module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/data_counter.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/data_counter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

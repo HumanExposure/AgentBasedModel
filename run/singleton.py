@@ -13,17 +13,17 @@
 
 """
 This file contains information for creating the default agent that represents a person that lives \
-alone in the home. Singleton will be \
-the name of this type of agent.
+alone in the home. Singleton will be the name of this type of agent.
 
 This module contains :class:`singleton.Singleton`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
+
 import sys
 sys.path.append('..\\source')
 
@@ -33,7 +33,7 @@ import collections
 import bio, meal, occupation, person, temporal
 
 # ===============================================
-# class
+# class Singleton
 # ===============================================
 
 class Singleton(person.Person):
@@ -182,15 +182,15 @@ class Singleton(person.Person):
         """
         This function sets the Singleton's parameters.
 
-        The function does the following
+        The function does the following:
 
-        #. Sets the biology
-        #. Sets the job information
-        #. Sets the alarm
-        #. Sets the meal information
+        #. sets the biology
+        #. sets the job information
+        #. sets the alarm
+        #. sets the meal information
 
         :param params.Params param: parameters describing the household
-        :param int idx: the respective index number of the Person of interest in the household
+        :param int idx: the respective index number of the person of interest in the household
 
         :return: None
         """

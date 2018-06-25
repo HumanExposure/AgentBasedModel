@@ -19,9 +19,9 @@ This module contains the class :class:`income.Income`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-#-----------------------------------------------------------
+# ===============================================
 # import
-#-----------------------------------------------------------
+# ===============================================
 
 # agent-based model module
 import need, occupation, state
@@ -33,7 +33,7 @@ import need, occupation, state
 class Income(need.Need):
 
     """
-    This class governs the need association dealing with work / school. Recall that income mathematically \
+    This class governs the need dealing with work / school. Recall that income mathematically \
     resembles a step function.
 
     :param temporal.Temporal clock: the time
@@ -50,10 +50,6 @@ class Income(need.Need):
         self.id = need.INCOME
 
         return
-
-    # ------------------------------------------------------
-    # functions
-    # -------------------------------------------------------
 
     def decay(self, p):
 
@@ -86,6 +82,7 @@ class Income(need.Need):
         
         #. decay the income satiation
         #. if the person is supposed to be at work
+
             * set the person to the workplace location
             * else, set the amount of time until the next work event
         #. update the scheduler for the income need

@@ -14,14 +14,15 @@
 """
 This module contains information about governing the need Hunger.
 
-This module contains the class hunger (:class:`hunger.Hunger`).
+This module contains the class Hunger (:class:`hunger.Hunger`).
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
+
 # general math capability
 import numpy as np
 
@@ -29,7 +30,7 @@ import numpy as np
 import need, temporal
 
 # ===============================================
-# class
+# class Hunger
 # ===============================================
 
 class Hunger(need.Need):
@@ -37,7 +38,7 @@ class Hunger(need.Need):
     """
     This class governs the behavior of the need Hunger need. When Hunger is unstatisfied,
     the agent feels compelled to eat a meal in order to satisfy the need. Mathematically \
-    speaking, Hunger is modeled as linearly-behaving need.
+    speaking, Hunger is modeled as linear-behaving need.
 
     :param temporal.Temporal clock: the time
     :param int num_sample_points: the number of temporal nodes in the simulation
@@ -101,8 +102,14 @@ class Hunger(need.Need):
 
         .. math::
             n(t + \Delta{t}) = n(t) + m_{decay}\,\Delta{t}
-            
-        :param int dt: the duration of time [minutes] used to decay the need
+
+        where
+            * :math:`t` is the current time
+            * :math:`\\Delta{t}` is the duration of time to decay the satiation [minutes]
+            * :math:`n(t)` is the satiation for Hunger at time :math:`t`
+            * :math:`m_{decay}` the decay rate for Hunger
+
+        :param int dt: the duration of time [minutes] :math:`\\Delta{t}` used to decay the need
         :return: None
         """
 
@@ -117,27 +124,32 @@ class Hunger(need.Need):
     def initialize(self, p):
 
         """
-        This function initializes the the hunger need at the first step of the simulation. The function \
+        This function initializes the the Hunger need at the first step of the simulation. The function \
         checks to see whether or not the current time implies that there should be an eating event. The \
-        hunger object is set to the respective state.
+        Hunger object is set to the respective state.
 
-        This function does the following exactly
+        This function does the following exactly:
         
         #. initialize all of the meals
         #. check to see if a meal should be occurring at the current time
+
         #. if no meals should be occurring
-            * figure out the next meal :math:`m`
+
+            * figure out the next meal
             * calculate the decay rate for hunger until the next meal
             * calculate the amount of time until the next meal :math:`\Delta{t}`
-            * set the current meal :math:`m`
+            * set the current meal
             * update the schedule for the hunger need to be the time the next meal starts
+
         #. if a meal should be occurring
-            * get the index of the meal that should be occurring :math:`m`
-            * set the current meal :math:`m`
+
+            * get the index of the meal that should be occurring
+            * set the current meal
             * calculate the final time of the meal
             * calculate the duration until the end of the next meal :math:`\Delta{t}`
             * set the recharge rate
-            * update the scheduler for the hunger need to be the time the current meal should end            
+            * update the scheduler for the hunger need to be the time the current meal should end
+
         #. initialize the start time for each meal
                     
         :param person.Person p: the person whose hunger need is being initialized
@@ -247,13 +259,13 @@ class Hunger(need.Need):
 
         """
         This function checks every meal and sees whether or not the current time \
-        implies that there should be an eventing event for a respective meal
+        implies that there should be an eventing event for a respective meal.
 
 
-        :param int t: The current time of day [minutes]
-        :param list meals: A list of Meals
+        :param int t: the current time of day [minutes]
+        :param list meals: a list of meals that a person has
 
-        :return: A list of boolean flags indicating True or False, indicating whether or not an \
+        :return: a list of boolean flags indicating True or False, indicating whether or not an \
         eating event should occur for the respective meal
 
         :rtype: list
@@ -286,7 +298,8 @@ class Hunger(need.Need):
     def reset(self):
 
         """
-        This function resets the values in order for the need to be used in the next simulation
+        This function resets the values in order for the need to be used in the next simulation.
+
         :return:
         """
 
@@ -304,12 +317,11 @@ class Hunger(need.Need):
         """
         This function calculates the decay rate of hunger to the next meal.
 
-        :param int dt: the amount of time to the next meal [minutes]
+        :param int dt: the amount of time :math:`\\Delta{t}` to the next meal [minutes]
         :param int t_start: the start time [in minutes] of the next meal
         :return: None
         """
 
-        do_test = True
         # the amount of minutes in a day
         DAY_2_MIN = temporal.DAY_2_MIN
 
@@ -317,11 +329,11 @@ class Hunger(need.Need):
         dt = (t_start - self.clock.time_of_day + DAY_2_MIN) % DAY_2_MIN
 
         # set the decay rate. Avoid integer division
-        if do_test:
-            if dt == 0:
-                self.decay_rate = -1
-            else:
-                self.decay_rate = -1 * (1.0 - self.threshold) / dt
+
+        if dt == 0:
+            self.decay_rate = -1
+        else:
+            self.decay_rate = -1 * (1.0 - self.threshold) / dt
 
         return
 
@@ -330,7 +342,7 @@ class Hunger(need.Need):
         """
         This function calculates the decay rate of hunger to the next meal.
 
-        :param int dt: the amount of time to the next meal [minutes]
+        :param int dt: the amount of time :math:`\\Delta{t}` to the next meal [minutes]
         :return: None
         """
 
@@ -347,7 +359,7 @@ class Hunger(need.Need):
         """
         This function calculates the recharge rate of hunger due to eating the current meal.
 
-        :param int dt: the amount of time it takes to finish a meal [minutes]
+        :param int dt: the amount of time :math:`\\Delta{t}` it takes to finish a meal [minutes]
 
         :return: None
         """
@@ -365,7 +377,7 @@ class Hunger(need.Need):
         The suggested recharge rate is based on the duration of the sleeping event \
         and the threshold. The sleep duration is based on the biological data (no rounding).
 
-        :param int dt: The duration of time of the eating event [minutes]
+        :param int dt: The duration of time :math:`\\Delta{t}` of the eating event [minutes]
         :return: None
         """
 

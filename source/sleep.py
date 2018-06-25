@@ -12,17 +12,18 @@
 # August 14, 2017
 
 """
-This module contains information about the activity dealing with sleeping. This class is :class:`activity.Activity` \
-that gives a :class:`person.Person` the ability to eat and satisfy the need :class:`rest.Rest`.
+This module contains information about the activity dealing with sleeping. This class is an Activity \
+(:class:`activity.Activity`) that gives a person (:class:`person.Person`) the ability to eat and \
+satisfy the need Rest (:class:`rest.Rest`).
 
 This file contains class :class:`sleep.Sleep`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# -------------------------
+# ===============================================
 # import
-# -------------------------
+# ===============================================
 
 # general math functions
 import numpy as np
@@ -31,9 +32,8 @@ import numpy as np
 import activity, need, state, temporal
 
 # ===============================================
-# class
+# class Sleep
 # ===============================================
-
 
 class Sleep(activity.Activity):
 
@@ -49,10 +49,6 @@ class Sleep(activity.Activity):
         self.id = activity.SLEEP
 
         return
-     
-    #--------------------------------
-    #  Functions
-    #---------------------------------
 
     def advertise(self, p):
 
@@ -94,7 +90,8 @@ class Sleep(activity.Activity):
     def end_sleep(self, p):
 
         """
-        This function addresses logistics with a person waking up from sleep
+        This function addresses logistics with a person waking up from sleep. More \
+        specifically, the function does the following:
 
         #. free the asset from use
         #. set the state of the person to idle (:const:`state.IDLE`)
@@ -158,7 +155,7 @@ class Sleep(activity.Activity):
         :return: True, if the sleep event resembles a workday. False, otherwise.
         """
 
-        # constants
+        # conversion of 1 hour into minutes
         HOUR_2_MIN = temporal.HOUR_2_MIN
 
         # default assumes that sleeping duration reflects a workday
@@ -189,9 +186,8 @@ class Sleep(activity.Activity):
     def set_end_time(self, p):
 
         """
-        This function returns the end time of sleeping
-
-        The end time :math:`t_{end}` is set as follows
+        This function returns the end time of sleeping. The end time :math:`t_{end}` \
+        is set as follows:
 
         .. math::
             :nowrap:
@@ -204,19 +200,16 @@ class Sleep(activity.Activity):
             \\]
 
         where
-            * :math:`\\Delta{t}` is the duration of sleep
-            * :math:`m_{suggested}` is the suggested recharge rate
-            * :math:`n(t)` is the magnitude of sleep at time t
+            * :math:`\\Delta{t}` is the duration of sleep [minutes]
+            * :math:`t_{end}` is the end time of the sleep activity [universal time, minutes]
+            * :math:`m_{suggested}` is the suggested recharge rate for Rest
+            * :math:`n(t)` is the satiation of Rest at time t
 
         :param person.Person p: the person of interest
 
         :return t_end: the end time of the sleep event [minutes, universal time]
         :rtype: int
         """
-
-        do_test = True
-
-        # the natural sleep end time
 
         # suggested recharge rate assumes current magnitude is at threshold
 
@@ -232,9 +225,6 @@ class Sleep(activity.Activity):
         # the default time to wake up, if uninterrupted
         t_end = p.state.t_start + dt
 
-        if do_test:
-            if (dt <= 0):
-                uu = 1
 
         return t_end
 
@@ -258,17 +248,20 @@ class Sleep(activity.Activity):
     def start_sleep(self, p):
 
         """
-        This handles what happens when a Person goes to sleep.
+        This handles what happens when a person goes to sleep. Specifically, this function does the \
+        following:
 
-        #. The asset's status is updated.
-        #. The Person's state is set to the sleep state (:const:`state.SLEEP`)
-        #. The end time is calculated
-        #. The recharge rate is set (according to whether or not it is a workday / non-workday)
+        #. the asset's status is updated.
+        #. the person's state is set to the sleep state (:const:`state.SLEEP`)
+        #. the end time is calculated
+        #. the recharge rate is set (according to whether or not it is a workday / non-workday)
 
         :param person.Person p: the person of interest
 
         :return: None
         """
+
+        # the conversion for 1 hour and 1 day into minutes, respectively
 
         HOUR_2_MIN, DAY_2_MIN = temporal.HOUR_2_MIN, temporal.DAY_2_MIN
         #
@@ -309,6 +302,7 @@ class Sleep(activity.Activity):
         return
 
     def toString(self):
+
         """
         This function represents the Sleep object as a string
 

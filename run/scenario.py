@@ -50,7 +50,7 @@ SOLO            = 1
 DUO             = 10
 
 # ===============================================
-# class
+# class Scenario
 # ===============================================
 class Scenario(object):
 
@@ -77,7 +77,8 @@ class Scenario(object):
 
         # create the universe object
         self.u      = universe.Universe(self.params.num_steps, self.params.dt, t_start=self.params.t_start, \
-                                        num_people=self.params.num_people)
+                                        num_people=self.params.num_people, \
+                                        do_minute_by_minute=self.params.do_minute_by_minute)
 
         # set the clock to the desired time
         self.u.clock.t_univ = self.params.t_start
@@ -110,9 +111,8 @@ class Scenario(object):
     def default_location(self):
 
         """
-        Sets the default location for all Person's to be be at the home.
-
-        This location may be overridden later in the initialization of Persons.
+        Sets the default location for all Person's to be be at the home. This location may \
+        be overridden later in the initialization of persons.
 
         :return: None
         """
@@ -194,11 +194,11 @@ class Scenario(object):
     def set_state(self):
 
         """
-        This function initializes the scenario in order to run the simulation.
-
-        More specifically, this function does the following:
+        This function initializes the scenario in order to run the simulation. More \
+        specifically, this function does the following:
 
         #. For each Person, the following is set:
+
             #. identification number
             #. the state
 
@@ -233,8 +233,9 @@ class Scenario(object):
         return
 
 # ===============================================
-# class
+# class Solo
 # ===============================================
+
 class Solo(Scenario):
 
     """
@@ -263,8 +264,9 @@ class Solo(Scenario):
         return
 
 # ===============================================
-# class
+# class Duo
 # ===============================================
+
 class Duo(Scenario):
 
     """

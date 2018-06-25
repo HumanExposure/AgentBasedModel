@@ -1,38 +1,27 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>singleton &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>singleton &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
-    <link rel="up" title="Module code" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -56,17 +45,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This file contains information for creating the default agent that represents a person that lives \</span>
-<span class="sd">alone in the home. Singleton will be \</span>
-<span class="sd">the name of this type of agent.</span>
+<span class="sd">alone in the home. Singleton will be the name of this type of agent.</span>
 
 <span class="sd">This module contains :class:`singleton.Singleton`.</span>
 
 <span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># ===============================================</span>
 <span class="c1"># import</span>
-<span class="c1"># ----------------------------------------------------------</span>
+<span class="c1"># ===============================================</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
 
@@ -76,7 +65,7 @@
 <span class="kn">import</span> <span class="nn">bio</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">person</span><span class="o">,</span> <span class="nn">temporal</span>
 
 <span class="c1"># ===============================================</span>
-<span class="c1"># class</span>
+<span class="c1"># class Singleton</span>
 <span class="c1"># ===============================================</span>
 
 <div class="viewcode-block" id="Singleton"><a class="viewcode-back" href="../singleton.html#singleton.Singleton">[docs]</a><span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">Person</span><span class="p">):</span>
@@ -99,7 +88,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># constructor</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">):</span>
 
         <span class="c1"># constructor for the parent class</span>
         <span class="n">person</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">)</span>
@@ -155,7 +144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">set_job_preset</span><span class="p">()</span>
 
         <span class="c1"># set the alarm for work. This is not used and will be removed in future versions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">uses_alarm</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">uses_alarm</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">set_work_alarm</span><span class="p">(</span><span class="n">HOUR_2_MIN</span><span class="p">)</span>
 
         <span class="c1"># set the meals: breakfast, lunch, and dinner, respectively</span>
@@ -218,22 +207,22 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">od</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">default_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">%</span> <span class="mi">24</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">msg</span>
-</div>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
 <div class="viewcode-block" id="Singleton.set"><a class="viewcode-back" href="../singleton.html#singleton.Singleton.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function sets the Singleton&#39;s parameters.</span>
 
-<span class="sd">        The function does the following</span>
+<span class="sd">        The function does the following:</span>
 
-<span class="sd">        #. Sets the biology</span>
-<span class="sd">        #. Sets the job information</span>
-<span class="sd">        #. Sets the alarm</span>
-<span class="sd">        #. Sets the meal information</span>
+<span class="sd">        #. sets the biology</span>
+<span class="sd">        #. sets the job information</span>
+<span class="sd">        #. sets the alarm</span>
+<span class="sd">        #. sets the meal information</span>
 
 <span class="sd">        :param params.Params param: parameters describing the household</span>
-<span class="sd">        :param int idx: the respective index number of the Person of interest in the household</span>
+<span class="sd">        :param int idx: the respective index number of the person of interest in the household</span>
 
 <span class="sd">        :return: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -315,15 +304,14 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -331,10 +319,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

@@ -1,38 +1,27 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>person &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>person &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
-    <link rel="up" title="Module code" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -63,19 +52,20 @@
 <span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># -------------------------------------</span>
-<span class="c1"># import </span>
-<span class="c1"># --------------------------------------</span>
+<span class="c1"># ===============================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===============================================</span>
 
 <span class="c1"># general math capability</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># agent-based model modules</span>
-<span class="kn">import</span> <span class="nn">location</span> <span class="kn">as</span> <span class="nn">loc</span>
-<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">bio</span><span class="o">,</span> <span class="nn">home</span><span class="o">,</span> <span class="nn">hunger</span><span class="o">,</span> <span class="nn">income</span><span class="o">,</span> <span class="nn">interruption</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">rest</span><span class="o">,</span> <span class="nn">social</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span><span class="o">,</span> <span class="nn">travel</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">location</span> <span class="k">as</span> <span class="nn">loc</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">diary</span><span class="o">,</span> <span class="nn">bio</span><span class="o">,</span> <span class="nn">home</span><span class="o">,</span> <span class="nn">hunger</span><span class="o">,</span> <span class="nn">income</span><span class="o">,</span> <span class="nn">interruption</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">rest</span><span class="o">,</span> <span class="nn">social</span><span class="o">,</span> <span class="nn">state</span><span class="o">,</span> <span class="nn">temporal</span><span class="o">,</span> <span class="nn">travel</span>
 
 <span class="c1"># ===============================================</span>
-<span class="c1"># class</span>
+<span class="c1"># class Person</span>
 <span class="c1"># ===============================================</span>
 
 <div class="viewcode-block" id="Person"><a class="viewcode-back" href="../person.html#person.Person">[docs]</a><span class="k">class</span> <span class="nc">Person</span> <span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -92,13 +82,14 @@
 <span class="sd">    * a history of activities and states</span>
 
 <span class="sd">    * Needs</span>
+
 <span class="sd">        #. Hunger</span>
 <span class="sd">        #. Rest</span>
 <span class="sd">        #. Income</span>
 <span class="sd">        #. Travel</span>
 <span class="sd">        #. Interruption</span>
 
-<span class="sd">    :param home.Home house: the Home object the Person resides in. (will need to remove this)</span>
+<span class="sd">    :param home.Home house: the Home object the person resides in. (will need to remove this)</span>
 <span class="sd">    :param temporal.Temporal clock: the time</span>
 <span class="sd">    :param scheduler.Scheduler schedule: the schedule</span>
 <span class="sd">    </span>
@@ -106,11 +97,11 @@
 <span class="sd">    :var temporal.Temporal clock: keeps track of the current time. It is linked to the Universe clock</span>
 <span class="sd">    :var numpy.ndarray hist_state: the state history [int] for each time step</span>
 <span class="sd">    :var numpy.ndarray hist_activity: the activity history [int] for each time step</span>
-<span class="sd">    :var home.Home &#39;home&#39;: this contains the place where the Person resides</span>
+<span class="sd">    :var home.Home &#39;home&#39;: this contains the place where the person resides</span>
 <span class="sd">    :var int id: unique person identifier</span>
 <span class="sd">    :var income.Income &#39;income&#39;: the need that concerns itself with working/school</span>
 <span class="sd">    :var interruption.Interruption &#39;interruption&#39;: the need that concerns itself with interrupting an ongoing activity</span>
-<span class="sd">    :var location.Location &#39;location&#39;: the location data of a Person</span>
+<span class="sd">    :var location.Location &#39;location&#39;: the location data of a person</span>
 <span class="sd">    :var dict needs: a dictionary of all of the  needs</span>
 <span class="sd">    :var rest.Rest &#39;rest&#39;: the need that concerns itself with sleeping</span>
 <span class="sd">    :var social.Social socio: the social characteristics of a Person</span>
@@ -125,11 +116,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># -----------------------------</span>
-    <span class="c1"># constructors</span>
-    <span class="c1"># -----------------------------</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">schedule</span><span class="p">):</span>
 
         <span class="c1"># this allows the Person to be aware of the time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">clock</span>
@@ -187,12 +174,47 @@
 
         <span class="k">return</span>
 
+<div class="viewcode-block" id="Person.get_diary"><a class="viewcode-back" href="../person.html#person.Person.get_diary">[docs]</a>    <span class="k">def</span> <span class="nf">get_diary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function output the result of the simulation in terms of an activity diary.</span>
+
+<span class="sd">        :return: the activity diary describing the behavior of the agent</span>
+<span class="sd">        :rtype: diary.Diary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the indices of simulation data</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="c1"># the time</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="c1"># the array of the activities</span>
+        <span class="n">hist_act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># the array of the locations</span>
+        <span class="n">hist_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_local</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># make the time continuous</span>
+        <span class="n">t_all</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c1"># fill out the time in between events to get data that corresponds to contiguous time</span>
+        <span class="n">act_all</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">hist_act</span><span class="p">)</span>
+
+        <span class="c1"># fill out the location data in between events that corresponds to contiguous time</span>
+        <span class="n">loc_all</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">fill_out_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">hist_loc</span><span class="p">)</span>
+
+        <span class="c1"># create the activity diary</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">diary</span><span class="o">.</span><span class="n">Diary</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">t_all</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">act_all</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="n">loc_all</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">d</span></div>
+
 <div class="viewcode-block" id="Person.print_basic_info"><a class="viewcode-back" href="../person.html#person.Person.print_basic_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_basic_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function expresses basic information about the Person as a string.</span>
-<span class="sd">        </span>
-<span class="sd">        This prints the following:</span>
+<span class="sd">        This function expresses basic information about the Person object as a string by \</span>
+<span class="sd">        printing the following:</span>
 <span class="sd">        </span>
 <span class="sd">        * person identifier</span>
 <span class="sd">        * home identifier</span>
@@ -217,8 +239,8 @@
         <span class="c1"># the gender of a person</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Gender: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">print_gender</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
-        <span class="k">return</span> <span class="n">msg</span>
-</div>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
 <div class="viewcode-block" id="Person.reset"><a class="viewcode-back" href="../person.html#person.Person.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -247,8 +269,8 @@
         <span class="c1"># reset the needs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_needs</span><span class="p">()</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Person.reset_history"><a class="viewcode-back" href="../person.html#person.Person.reset_history">[docs]</a>    <span class="k">def</span> <span class="nf">reset_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -265,8 +287,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[:]</span>  <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">NO_ACTIVITY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hist_local</span><span class="p">[:]</span>     <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">HOME</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Person.reset_needs"><a class="viewcode-back" href="../person.html#person.Person.reset_needs">[docs]</a>    <span class="k">def</span> <span class="nf">reset_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -278,8 +300,8 @@
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">x</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Person.toString"><a class="viewcode-back" href="../person.html#person.Person.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -308,12 +330,12 @@
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">n</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">msg</span>
-</div>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
 <div class="viewcode-block" id="Person.update_history"><a class="viewcode-back" href="../person.html#person.Person.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function updates the history of the following values with their current values  </span>
+<span class="sd">        This function updates the history of the following values with their current values:</span>
 <span class="sd">        </span>
 <span class="sd">        * state history</span>
 <span class="sd">        * location history</span>
@@ -337,8 +359,8 @@
         <span class="c1"># store the history of the needs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_history_needs</span><span class="p">()</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Person.update_history_activity"><a class="viewcode-back" href="../person.html#person.Person.update_history_activity">[docs]</a>    <span class="k">def</span> <span class="nf">update_history_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -355,8 +377,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hist_activity</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Person.update_history_needs"><a class="viewcode-back" href="../person.html#person.Person.update_history_needs">[docs]</a>    <span class="k">def</span> <span class="nf">update_history_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -387,15 +409,14 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -403,10 +424,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

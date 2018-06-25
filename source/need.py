@@ -19,26 +19,25 @@ This module contains the class :class:`need.Need`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-#----------------------------------------------------------
+# ===============================================
 # import
-#----------------------------------------------------------
+# ===============================================
+
 # general math package
 import numpy as np
 
-#----------------------------------------------------------
-# Constants
-#----------------------------------------------------------
+# ===============================================
+# constants
+# ===============================================
 
 # the needs value also corresponds to a position in the matrix
 
-# Major needs-associations. These need-association do NOT depend on the state of other
-# need-associations.
+# Major needs. These needs do NOT depend on the state of other needs
 REST    = 0
 INCOME  = 1
 HUNGER  = 2
 
-# Minor need-associations. These need-associations may depend on the state of other
-# need-associations
+# Minor needs. These needs may depend on the state of other need
 TRAVEL          = 3
 INTERRUPTION    = 4
 
@@ -60,38 +59,38 @@ N = len( INT_2_STR.items() )
 STR_2_INT = { v: k for k, v in INT_2_STR.items() }
 
 
-# this function is the minimum need-association level under normal conditions.
+# this function is the minimum satiation under normal conditions.
 # since this value is > 0, the program may allow emergency situations by
-# allowing the need-association level to decrease under this amount
-MIN_DEFAULT = 1e-10
+# allowing the satiation to decrease under this amount
+MIN_DEFAULT         = 1e-10
 
 # this sets the magnitude of a interrupting need
-MAG_INTERRUPTION = 1e-11
+MAG_INTERRUPTION    = 1e-11
 
 # The magnitude of the need association when it is time to be at work/ school
-MAG_WORK = max(1e-9, MIN_DEFAULT)
+MAG_WORK            = max(1e-9, MIN_DEFAULT)
 
-# the travel need-association magnitude level for commuting. This should be less than the magnitude for work
-MAG_COMMUTE = max( MAG_WORK/2, MIN_DEFAULT)
+# the travel need's satiation for commuting. This should be less than the magnitude for work
+MAG_COMMUTE         = max( MAG_WORK/2, MIN_DEFAULT)
 
 # default threshold for need
-THRESHOLD = 0.2
+THRESHOLD           = 0.2
 
 # used in weight function to avoid division by 0
-EPS = 1e-12
+EPS                 = 1e-12
 
 # this is to take care of machine precision errors
-# when checking the magnitude of the need-association to the threshold
-EPS_THRESHOLD = 1e-13
+# when checking the magnitude of the satiation to the threshold
+EPS_THRESHOLD       = 1e-13
 
 # ===============================================
-# class
+# class Need
 # ===============================================
 
 class Need(object):
 
     """
-    This class holds information about need-associations.
+    This class holds general information about needs.
 
     :param temporal.Temporal clock: the clock governing time in the simulation
     :param int num_sample_points: the number of time nodes in the simulation
@@ -133,7 +132,7 @@ class Need(object):
     def decay(self):
 
         """
-        This calculates the amount of decay over a time step dt.
+        This calculates the amount of decay over a time step.
 
         .. note::
             This function is meant to be overridden.
@@ -146,7 +145,7 @@ class Need(object):
     def initialize(self):
 
         """
-        This function initializes the state of the Need at the very beginning of simulation.
+        This function initializes the state of the need at the very beginning of simulation.
 
         .. note::
             This function is meant to be overridden.
@@ -195,9 +194,9 @@ class Need(object):
     def toString(self):
 
         """
-        This function represents the Need as a string.
+        This function represents the Need object as a string.
 
-        :return msg: The string representation of the Need object.
+        :return msg: the string representation of the Need object
         :rtype: str
         """
 
@@ -211,7 +210,7 @@ class Need(object):
     def under_threshold(self, n):
 
         """
-        Compares the value of a Need to the threshold.
+        Compares the value of anNeed's satiation to the threshold.
 
         :param float n: the satiation
 

@@ -12,27 +12,28 @@
 # August 14, 2017
 
 """
-This module contains code that governs the social behavior/ characteristics relevant to a Person.
+This module contains code that governs the social behavior/ characteristics relevant \
+to a Person (:class:`person.Person`).
 
 This module contains class :class:`social.Social`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
-# import 
-# ----------------------------------------------------------
-# general math capability
+# ===============================================
+# import
+# ===============================================
+
+#  general math capability
 import numpy as np
 
 # agent-based model modules
 import my_globals as mg
 import meal, occupation, temporal
 
-
-# ----------------------------------------------------------
+# ===============================================
 # constants
-# ----------------------------------------------------------
+# ===============================================
 
 # school age
 SCHOOL_AGE  = 5
@@ -47,27 +48,27 @@ MAX_AGE     = 130
 MIN_AGE     = 1
 
 # ===============================================
-# class
+# class Social
 # ===============================================
 
 class Social(object):
 
     """
-    This class contains all of the relevant information governing the Person's \
+    This class contains all of the relevant information governing the person's \
     social behavior.
 
     .. note::
-        The current version of the ABM does not have any "alarm" functionality / capability. The remnants of any \
+        The current version of ABMHAP does not have any "alarm" functionality / capability. The remnants of any \
         code that governs the use of an alarm  will be removed in future updates.
         
-    :param int age: the age of the Person [years]
+    :param int age: the age of the person [years]
     :param int num_meals: the number of meals per day
 
-    :var bool is_child: this flag is True if the Person is a child, False otherwise
+    :var bool is_child: this flag is True if the person is a child, False otherwise
     :var occupation.Occupation job: the information pertaining the the job
     :var int num_meals: the number of meals per day a person will eat
     :var list meals: a list of the meals that a person eats (:class:`meal.Meal`)
-    :var meal.Meal current_meal: the meal that is currently being eaten **or** if the Person is not eating a meal, \
+    :var meal.Meal current_meal: the meal that is currently being eaten **or** if the person is not eating a meal, \
     it is the upcoming meal
     :var meal.Meal next_meal: the meal that is after the meal indicated by :mod:`current_meal`
     :var bool uses_alarm: indicates whether or not a person uses an alarm to wake up
@@ -93,19 +94,17 @@ class Social(object):
 
         self.current_meal   = None
         self.next_meal      = None
-        # does the Person ever set an alarm
+        # does the Person ever set an alarm. Currently, there is no real alarm capability
         self.uses_alarm = False
         
         # this depends on whether a Person uses an alarm and 
         # whether the day is a work day
+        # Currently, there is no real alarm capability
         self.is_alarm_set   = False
         self.t_alarm        = 7 * temporal.HOUR_2_MIN
 
         return
 
-    # -----------------------------------------------------
-    # function
-    # -----------------------------------------------------
     def duration_to_next_commute_event(self, clock):
 
         """
@@ -125,7 +124,7 @@ class Social(object):
             The only reason this code is place here is because the work activity and the commute activity use it.
 
         :param temporal.Temporal clock: the current time
-        :return: the duration in time [minutes] until the next commute event
+        :return: the duration in time [mintues] until the next commute event
         :rtype: int
         """
 
@@ -209,8 +208,10 @@ class Social(object):
 
         #. If the person is employed, the duration to the next meal is set to infinity
         #. If the current time is a workday before the time work starts,
+
             * set the duration to the amount of time until the start of work
         #. Else,
+
             * set the duration until the next work event 
         
         .. note::
@@ -352,7 +353,7 @@ class Social(object):
 
         :param temporal.Temporal clock: the current time
 
-        :return the_meal: the next meal
+        :return: the next meal
         :rtype: meal.Meal
         """
 
@@ -414,7 +415,10 @@ class Social(object):
         """
         This function sets the job and the alarm time (if used) that corresponds to the job. The alarm  is set, \
         if a person is using the alarm.
-        
+
+        .. note::
+            The current version of ABMHAP has no alarm capability.
+
         :param int job_id: job identifier
         :param int dt: the amount of time before the job start.
 
@@ -430,9 +434,11 @@ class Social(object):
     def set_work_alarm(self, dt=0):
 
         """
-        This sets the alarm time due to work
+        This sets the alarm time due to work. If a person uses an alarm, the alarm \
+        is set to be "dt" minutes before work time.
 
-        If a person uses an alarm, the alarm is set to be "dt" minutes before work time
+        .. note::
+            The current version of ABMHAP has no alarm capability.
 
         :param int dt: the amount of time to wake up before the work event [minutes]
 

@@ -1,0 +1,244 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>driver_result &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for driver_result</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module holds the results from running the Monte-Carlo simulations.</span>
+
+<span class="sd">This module contains class :class:`driver_result.Driver_Result` and :class:`driver_result.Batch_Result`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># mathematical capabilities</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># dataframe capabilities</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># class Driver_Result</span>
+<span class="c1"># ===========================================</span>
+<div class="viewcode-block" id="Driver_Result"><a class="viewcode-back" href="../driver_result.html#driver_result.Driver_Result">[docs]</a><span class="k">class</span> <span class="nc">Driver_Result</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class holds the result of running driver.run().</span>
+
+<span class="sd">    :param list diaries: the activity diaries for each household in the simulation</span>
+<span class="sd">    :type diaries: list of :class:`diary.Diary`</span>
+<span class="sd">    :param list chad_param_list: the CHAD parameters used for sampling the CHAD data</span>
+<span class="sd">    :type chad_param_list: list of :class:`chad_params.CHAD_params`</span>
+<span class="sd">    :param int demographic: the demography identifier</span>
+
+<span class="sd">    :var diaries: the activity diaries for each household in the simulation</span>
+<span class="sd">    :type diaries: list of :class:`diary.Diary`</span>
+
+<span class="sd">    :var chad_param_list: the CHAD parameters used for sampling the CHAD data</span>
+<span class="sd">    :type chad_param_list: list of :class:`chad_params.CHAD_params`</span>
+
+<span class="sd">    :var int demographic: the demography identifier</span>
+<span class="sd">    :var int num_hhld: the number of households</span>
+<span class="sd">    :var int num_people: the number of people in the simulation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diaries</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">demographic</span><span class="p">):</span>
+
+        <span class="c1"># the diaries for each household in the simulation</span>
+        <span class="c1"># each item in the list is a list of diaries for the household</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diaries</span> <span class="o">=</span> <span class="n">diaries</span>
+
+        <span class="c1"># the parameters of the simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chad_param_list</span> <span class="o">=</span> <span class="n">chad_param_list</span>
+
+        <span class="c1"># the number of households per simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hhld</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diaries</span><span class="p">)</span>
+
+        <span class="c1"># the demographic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demographic</span> <span class="o">=</span> <span class="n">demographic</span>
+
+        <span class="c1"># the number of people in the simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">df</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">diaries</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Driver_Result.add_id"><a class="viewcode-back" href="../driver_result.html#driver_result.Driver_Result.add_id">[docs]</a>    <span class="k">def</span> <span class="nf">add_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_list</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function adds an integer identifier to each simulated agent&#39;s activity diary.</span>
+
+<span class="sd">        :param df_list: the activity diaries for the simulated agents</span>
+<span class="sd">        :type df_list: list of pandas.core.frame.DataFrame</span>
+
+<span class="sd">        :return: the updated activity diaries for each agent</span>
+<span class="sd">        :rtype: list of pandas.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># add an identifier for each simulated agent&#39;s diary</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df_list</span><span class="p">):</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">return</span> <span class="n">df_list</span></div>
+
+<div class="viewcode-block" id="Driver_Result.get_all_data"><a class="viewcode-back" href="../driver_result.html#driver_result.Driver_Result.get_all_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the diaries as a pandas data frame.</span>
+
+<span class="sd">        :return: activity diaries for each person in the simulation</span>
+<span class="sd">        :rtype list of pandas.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># &#39;flatten&#39; out the list so that all the diaries are in 1 list</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">df</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">diaries</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Driver_Result.get_combined_diary"><a class="viewcode-back" href="../driver_result.html#driver_result.Driver_Result.get_combined_diary">[docs]</a>    <span class="k">def</span> <span class="nf">get_combined_diary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function combines all of the activity diaries from the simulation into one.</span>
+
+<span class="sd">        :return: all of the activity diaries from the simulated agents combine into one* dataframe</span>
+<span class="sd">        :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># list of each data frame</span>
+        <span class="n">df_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_data</span><span class="p">()</span>
+
+        <span class="c1"># add unique identifiers for each diary</span>
+        <span class="n">df_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_id</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span>
+
+        <span class="c1"># get the name of the columns to include the id as the first column instead of the last</span>
+        <span class="n">colnames</span> <span class="o">=</span> <span class="n">df_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">colnames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">colnames</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># set the reorder the columns for each dataframe</span>
+        <span class="n">df_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">colnames</span><span class="p">]</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">df_list</span><span class="p">]</span>
+
+        <span class="c1"># combine the data into one dataframe</span>
+        <span class="n">df</span>      <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># class Batch_Result</span>
+<span class="c1"># ===========================================</span>
+
+<div class="viewcode-block" id="Batch_Result"><a class="viewcode-back" href="../driver_result.html#driver_result.Batch_Result">[docs]</a><span class="k">class</span> <span class="nc">Batch_Result</span><span class="p">(</span><span class="n">Driver_Result</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class holds the results from batch runs from the driver in one object.</span>
+
+<span class="sd">    :param dr_list: the results from the simulation from each batch that was used.</span>
+<span class="sd">    :type dr_list: list of :class:`driver_result.Driver_Result`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dr_list</span><span class="p">):</span>
+
+        <span class="c1"># the demographic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demographic</span>        <span class="o">=</span> <span class="n">dr_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">demographic</span>
+
+        <span class="c1"># the diaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diaries</span>            <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">dr_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dr</span><span class="o">.</span><span class="n">diaries</span><span class="p">]</span>
+
+        <span class="c1"># CHAD parameter list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chad_param_list</span>    <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">dr_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dr</span><span class="o">.</span><span class="n">chad_param_list</span><span class="p">]</span>
+
+        <span class="c1"># number of people</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_people</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">dr</span><span class="o">.</span><span class="n">num_people</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">dr_list</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># number of households</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_hhld</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">dr</span><span class="o">.</span><span class="n">num_hhld</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">dr_list</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">return</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

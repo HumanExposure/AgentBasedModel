@@ -1,0 +1,384 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>figure_residuals notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="longitude_plot notebook" href="longitude_plot.html" />
+    <link rel="prev" title="figure_loader_with_without_variation notebook" href="figure_loader_with_without_variation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="figure-residuals-notebook">
+<h1>figure_residuals notebook<a class="headerlink" href="#figure-residuals-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 20, 2018</span>
+</pre></div>
+</div>
+<p>This file calculates the residuals in the cumaltive distribution
+functions (CDFs) for the activities in each demographic.</p>
+<p>The file calculates the residuals = |cdf_predicted - cdf_observed|
+as a function of percentile from 0 to 1. Then the mean value for the
+residual plot is calculated which represents the expected deviation from
+the data for each percentile</p>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">plotting&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capability analysis</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># python data compression</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_work</span> <span class="k">as</span> <span class="nn">cdaw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_non_work</span> <span class="k">as</span> <span class="nn">cdanw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_school</span> <span class="k">as</span> <span class="nn">cdcs</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_young</span> <span class="k">as</span> <span class="nn">cdcy</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">plotter</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> auto
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Using</span> <span class="n">matplotlib</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Qt5Agg</span>
+</pre></div>
+</div>
+<p>define functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="c1"># create the residuals between the prediction (ABMHAP) and observation (CHAD)</span>
+    <span class="c1"># data. Plot the quantiles of the data [alpha, 1 - alpha] percentiles of the data.</span>
+
+    <span class="c1"># predicted data and observed data</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="c1"># the x and y values for the predicted data and observed data</span>
+    <span class="n">x_pred</span><span class="p">,</span> <span class="n">y_pred</span> <span class="o">=</span> <span class="n">pred</span>
+    <span class="n">x_obs</span><span class="p">,</span> <span class="n">y_obs</span> <span class="o">=</span> <span class="n">obs</span>
+
+    <span class="c1"># residual</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_obs</span><span class="p">)</span>
+
+    <span class="c1"># the number of data points</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="c1"># the bottom and top percentile</span>
+    <span class="n">bot</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="o">/</span><span class="mi">2</span>
+
+    <span class="c1"># get the percentiles within range</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x_pred</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">bot</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">top</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="c1"># get the moments</span>
+<span class="k">def</span> <span class="nf">get_moments</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="c1"># the mean data</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># the standard deviation data</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span>
+</pre></div>
+</div>
+<p>set up the parameters</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># choose the deomography</span>
+<span class="c1">#</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span>
+
+<span class="n">chooser</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">cdaw</span><span class="o">.</span><span class="n">CHAD_demography_adult_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">cdanw</span><span class="o">.</span><span class="n">CHAD_demography_adult_non_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">cdcs</span><span class="o">.</span><span class="n">CHAD_demography_child_school</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">cdcy</span><span class="o">.</span><span class="n">CHAD_demography_child_young</span><span class="p">(),</span>
+           <span class="p">}</span>
+
+<span class="c1"># the CHAD demogramphy object</span>
+<span class="n">chad_demo</span> <span class="o">=</span> <span class="n">chooser</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+
+<span class="c1"># the CHAD sampling parameters</span>
+<span class="n">s_params</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">int_2_param</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the figures</span>
+<span class="n">do_save_fig</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># whether or not to show the plots</span>
+<span class="n">do_show</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># the linewidth</span>
+<span class="n">linewidth</span> <span class="o">=</span> <span class="mf">1.5</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># choose the appropriate figure directory</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">12_07_2017</span><span class="se">\\</span><span class="s1">n8192_d364&#39;</span>
+
+<span class="n">chooser_fin</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_work&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_non_work&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_school&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_young&#39;</span><span class="p">,</span>
+      <span class="p">}</span>
+
+<span class="n">fpath_figure_save</span> <span class="o">=</span> <span class="n">chooser_fin</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+
+<span class="c1"># print the save figure directory</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;the figure save path:</span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fpath_figure_save</span><span class="p">)</span>
+
+<span class="c1"># different sets of activitiy data to plot</span>
+<span class="n">keys_all</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="c1"># eating activities</span>
+<span class="n">keys_eat</span> <span class="o">=</span> <span class="p">[</span><span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_BREAKFAST</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_DINNER</span><span class="p">]</span>
+
+<span class="c1"># non eating activities</span>
+<span class="n">keys_not_eat</span> <span class="o">=</span> <span class="p">[</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_all</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys_eat</span> <span class="p">]</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+the figure save path:       ..my_datafig12_07_2017n8192_d364child_young
+</pre>
+<p>Load plotting data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DO_ALL</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DO_MEALS</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">DO_NOT_MEALS</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># (the activites to plot, part of the file name that matches the keys)</span>
+<span class="n">chooser_keys</span> <span class="o">=</span> <span class="p">{</span> <span class="n">DO_ALL</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_all</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">),</span> \
+                <span class="n">DO_MEALS</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_eat</span><span class="p">,</span> <span class="s1">&#39;meals&#39;</span><span class="p">),</span>\
+                <span class="n">DO_NOT_MEALS</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_not_eat</span><span class="p">,</span> <span class="s1">&#39;not_meals&#39;</span><span class="p">),</span>
+               <span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># set the activities to plot</span>
+<span class="c1">#</span>
+<span class="n">plot_keys</span> <span class="o">=</span> <span class="n">DO_ALL</span>
+
+<span class="n">keys</span><span class="p">,</span> <span class="n">fname_keys</span> <span class="o">=</span> <span class="n">chooser_keys</span><span class="p">[</span><span class="n">plot_keys</span><span class="p">]</span>
+<span class="n">name_keys</span> <span class="o">=</span> <span class="p">[</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+
+<span class="c1"># labels on the right hand side of the plot</span>
+<span class="n">ylabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Start Time&#39;</span><span class="p">,</span> <span class="s1">&#39;End Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Load all data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># choose the activities to plot</span>
+
+<span class="c1"># get the figure directories</span>
+<span class="n">fpaths</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">fpath_figure_save</span> <span class="o">+</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_2_FDIR_SAVE_FIG</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_RANDOM_DAY</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+<span class="c1"># the file name (no file path) of the data to save</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="n">fpath_figure_save</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_inv_&#39;</span> <span class="o">+</span> <span class="n">fname_keys</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
+
+<span class="c1"># file name to load</span>
+<span class="n">fnames_load</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_inv_start.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_inv_end.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_inv_dt.pkl&#39;</span><span class="p">)</span>
+
+<span class="c1"># load the data</span>
+<span class="n">data_list_all</span><span class="p">,</span> <span class="n">fname_subplot</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_figure_data</span><span class="p">(</span><span class="n">fpaths</span><span class="p">,</span> <span class="n">fpath_figure_save</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fnames_load</span><span class="o">=</span><span class="n">fnames_load</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Load the data for a specific activity-data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">data_list_start</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">data_list_end</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">data_list_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="n">f_end</span> <span class="o">=</span> <span class="n">fnames_end</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">f_start</span> <span class="o">=</span> <span class="n">fnames_start</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">f_dt</span> <span class="o">=</span> <span class="n">fnames_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f_start</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f_end</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f_dt</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+..my_datafig12_07_2017n8192_d364child_youngsleeprandom_daycdf_inv_start.pkl
+..my_datafig12_07_2017n8192_d364child_youngsleeprandom_daycdf_inv_end.pkl
+..my_datafig12_07_2017n8192_d364child_youngsleeprandom_daycdf_inv_dt.pkl
+</pre>
+<p>plot the residuals</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plot the residuals</span>
+<span class="c1">#</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+
+    <span class="nb">print</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># load the start time, end time, and duration data</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">data_list_start</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">data_list_end</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">data_list_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># quantile, and residual data</span>
+    <span class="n">x_start</span><span class="p">,</span> <span class="n">r_start</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">x_end</span><span class="p">,</span> <span class="n">r_end</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">x_dt</span><span class="p">,</span> <span class="n">r_dt</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="c1"># covert the residuals into minutes</span>
+    <span class="n">r_start</span> <span class="o">=</span> <span class="n">r_start</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="n">r_end</span> <span class="o">=</span> <span class="n">r_end</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="n">r_dt</span> <span class="o">=</span> <span class="n">r_dt</span>
+
+    <span class="c1"># get the moments on the residuals for start time, end time, and duration</span>
+    <span class="n">mu_start</span><span class="p">,</span> <span class="n">std_start</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">r_start</span><span class="p">)</span>
+    <span class="n">mu_end</span><span class="p">,</span> <span class="n">std_end</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">r_end</span><span class="p">)</span>
+    <span class="n">mu_dt</span><span class="p">,</span> <span class="n">std_dt</span> <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">r_dt</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mu start: </span><span class="si">%.2f</span><span class="se">\t\t</span><span class="s1">std start: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mu_start</span><span class="p">,</span> <span class="n">std_start</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mu end: </span><span class="si">%.2f</span><span class="se">\t\t</span><span class="s1">std end: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mu_end</span><span class="p">,</span> <span class="n">std_end</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mu dt: </span><span class="si">%.2f</span><span class="se">\t\t</span><span class="s1">std dt: </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mu_dt</span><span class="p">,</span> <span class="n">std_dt</span><span class="p">))</span>
+
+    <span class="c1"># create subplots</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># create title</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># plot data about start time</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span> <span class="n">r_start</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">mu_start</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="c1"># plot data about end time</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_end</span><span class="p">,</span> <span class="n">r_end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">mu_end</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="c1"># plot data about duration</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">r_dt</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">mu_dt</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eat</span> <span class="n">Breakfast</span>
+<span class="n">mu</span> <span class="n">start</span><span class="p">:</span> <span class="mf">11.83</span>             <span class="n">std</span> <span class="n">start</span><span class="p">:</span> <span class="mf">8.87</span>
+<span class="n">mu</span> <span class="n">end</span><span class="p">:</span> <span class="mf">8.20</span>                <span class="n">std</span> <span class="n">end</span><span class="p">:</span> <span class="mf">9.31</span>
+<span class="n">mu</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">3.79</span>         <span class="n">std</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">4.17</span>
+
+<span class="n">Eat</span> <span class="n">Lunch</span>
+<span class="n">mu</span> <span class="n">start</span><span class="p">:</span> <span class="mf">12.39</span>             <span class="n">std</span> <span class="n">start</span><span class="p">:</span> <span class="mf">8.78</span>
+<span class="n">mu</span> <span class="n">end</span><span class="p">:</span> <span class="mf">14.46</span>               <span class="n">std</span> <span class="n">end</span><span class="p">:</span> <span class="mf">7.60</span>
+<span class="n">mu</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">2.10</span>         <span class="n">std</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">1.56</span>
+
+<span class="n">Eat</span> <span class="n">Dinner</span>
+<span class="n">mu</span> <span class="n">start</span><span class="p">:</span> <span class="mf">7.21</span>              <span class="n">std</span> <span class="n">start</span><span class="p">:</span> <span class="mf">5.18</span>
+<span class="n">mu</span> <span class="n">end</span><span class="p">:</span> <span class="mf">8.86</span>                <span class="n">std</span> <span class="n">end</span><span class="p">:</span> <span class="mf">4.73</span>
+<span class="n">mu</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">3.24</span>         <span class="n">std</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">2.95</span>
+
+<span class="n">Sleep</span>
+<span class="n">mu</span> <span class="n">start</span><span class="p">:</span> <span class="mf">5.94</span>              <span class="n">std</span> <span class="n">start</span><span class="p">:</span> <span class="mf">4.78</span>
+<span class="n">mu</span> <span class="n">end</span><span class="p">:</span> <span class="mf">5.88</span>                <span class="n">std</span> <span class="n">end</span><span class="p">:</span> <span class="mf">5.57</span>
+<span class="n">mu</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">13.44</span>                <span class="n">std</span> <span class="n">dt</span><span class="p">:</span> <span class="mf">10.27</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="figure_loader_with_without_variation.html" title="previous chapter">figure_loader_with_without_variation notebook</a></li>
+      <li>Next: <a href="longitude_plot.html" title="next chapter">longitude_plot notebook</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/figure_residuals.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/figure_residuals.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

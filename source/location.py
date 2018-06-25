@@ -20,9 +20,9 @@ This module contains class :class:`location.Location`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-#----------------------------------------------------------
-# Constants
-#----------------------------------------------------------
+# ===============================================
+# constants
+# ===============================================
 
 # geographical location constants
 NORTH   = 1
@@ -54,9 +54,8 @@ INT_2_STR_LOCAL = {
 }
 
 # ===============================================
-# class
+# class Location
 # ===============================================
-
 
 class Location(object):
 
@@ -66,7 +65,7 @@ class Location(object):
     :param int geography: the geographical location code
     :param int local: the local location code
 
-    :ivar int geo: the geographical location code within the U.S (e.g. north, south, eats, or west)
+    :ivar int geo: the geographical location code within the United States (e.g. north, south, eats, or west)
     :ivar int local: the local location code (e.g. home, off site, etc)
     """
 
@@ -76,7 +75,7 @@ class Location(object):
 
     def __init__( self, geography=NORTH, local=HOME ):
 
-        # the geographical location (referring to area of the U.S.A)        
+        # the geographical location (referring to area of the United States)
         self.geo = geography
         
         # the local location

@@ -123,7 +123,7 @@ class Activity(object):
         """
         Calculates the advertised score of doing an activity. Let
         :math:`\\Omega` be the set of all needs addressed by the activity.
-        The score is calculated by doing the following
+        The score :math:`S` is calculated by doing the following
         
         .. math::     
             S = \\begin{cases}
@@ -131,10 +131,15 @@ class Activity(object):
                 \\sum_{j \in \Omega} W_j( n_j(t) ) - W_j( n_j(t + \\Delta{t} )) & n(t) \\le \\lambda
             \\end{cases}
             
-        where :math:`W(n)` is the weight function for the particular need.
-        
+        where
+            * :math:`t` is the current time
+            * :math:`\\Delta{t}` is the duration of the activity
+            * :math:`n(t)` is the satiation at time :math:`t`
+            * :math:`\\lambda` is the threshold value of the need
+            * :math:`W(n)` is the weight function for the particular need
+
         :param need.Need the_need: the primary need associated with the respective activity
-        :param int dt: the duration :math:`\\Delta{t}` of doing the activity [seconds]
+        :param int dt: the duration :math:`\\Delta{t}` of doing the activity [minutes]
 
         :returns score: the score of the advertisement
         :rtype: float
@@ -183,14 +188,14 @@ class Activity(object):
 
         """
         This function handles some of the common logistics in ending a specific activity assuming \
-        the activity ends without interruption.
+        the activity ends without an interruption.
 
         Currently the function does the following:
         
-        #. Reset the :class:`state.State` variable's start time to the current time
-        #. Reset the :class:`state.State` variable's end time to the current time
+        #. reset the :class:`state.State` variable's start time to the current time
+        #. reset the :class:`state.State` variable's end time to the current time
          
-        :param person.Person p: the person whose activity is ending.
+        :param person.Person p: the person whose activity is ending
         :return: None
         """
 
@@ -208,29 +213,16 @@ class Activity(object):
 
         Currently the function does the following:
         
-        #. Reset the :class:`state.State` variable's start time to the current time
-        #. Reset the :class:`state.State` variable's end time to the current time
+        #. reset the :class:`state.State` variable's start time to the current time
+        #. reset the :class:`state.State` variable's end time to the current time
         
-        :param person.Person p: The person whose activity is being interrupted.
+        :param person.Person p: the person whose activity is being interrupted
         :return: None
         """
 
         # do the logistics in ending an activity normally (without interruption)
         p.state.t_start = p.clock.t_univ
         p.state.t_end   = p.state.t_start
-
-        return
-
-    def start(self):
-
-        """
-        This function starts a specific activity.
-
-        .. note::
-            This function is meant to be overloaded by derived activity classes.
-
-        :return: None
-        """
 
         return
 
@@ -251,12 +243,25 @@ class Activity(object):
         return INT_2_STR.get(self.id, msg)
 
 
+    def start(self):
+
+        """
+        This function starts a specific activity.
+
+        .. note::
+            This function is meant to be overloaded by derived activity classes.
+
+        :return: None
+        """
+
+        return
+
     def toString(self):
 
         """
-        This function represents the activity object as a string.
+        This function represents the Activity object as a string.
 
-        :return msg: The string representation of the activity object
+        :return msg: the string representation of the activity object
         :rtype: str
         """
 

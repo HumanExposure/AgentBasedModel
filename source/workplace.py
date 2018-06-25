@@ -12,16 +12,17 @@
 # August 14, 2017
 
 """
-This module contains code for the :class:`asset.Asset` that allows a Person to go to work / school.
+This module contains code for the asset that allows a person to go to work / school.
 
 This file contains :class:`workplace.Workplace`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
+
 # general math capabilities
 import numpy as np
 
@@ -29,9 +30,8 @@ import numpy as np
 import asset, location, work
 
 # ===============================================
-# class
+# class Workplace
 # ===============================================
-
 
 class Workplace(asset.Asset):
 

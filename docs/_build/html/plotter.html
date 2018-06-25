@@ -1,0 +1,384 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plotter module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="commute_school notebook" href="commute_school.html" />
+    <link rel="prev" title="plot_diary notebook" href="plot_diary.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-plotter">
+<span id="plotter-module"></span><h1>plotter module<a class="headerlink" href="#module-plotter" title="Permalink to this headline">¶</a></h1>
+<p>This module contains information and functions for plotting various data related to the algorithm. In short,
+this module is a plotting library for the algorithm.</p>
+<dl class="function">
+<dt id="plotter.calc_log_weight">
+<code class="descclassname">plotter.</code><code class="descname">calc_log_weight</code><span class="sig-paren">(</span><em>w</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#calc_log_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.calc_log_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the log10 of the weights. To avoid the possibility of getting an     error due to taking log10(w=0), we zero-valued weight values to None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>w</strong> (<em>numpy.ndarray</em>) – the values of the weights of a corresponding need</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the log10 for the non-zero values of the weights</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.calc_weight">
+<code class="descclassname">plotter.</code><code class="descname">calc_weight</code><span class="sig-paren">(</span><em>x</em>, <em>threshold=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#calc_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.calc_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the weight value corresponding to a given value     of satiation and threshold value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the satiation values from an agent</li>
+<li><strong>threshold</strong> (<em>float</em>) – the threshold value for a need</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">an array of the weight values</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.get_figure_data">
+<code class="descclassname">plotter.</code><code class="descname">get_figure_data</code><span class="sig-paren">(</span><em>fpaths</em>, <em>fpath_figure_save</em>, <em>fname</em>, <em>fnames_load=None</em>, <em>do_single_day=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#get_figure_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.get_figure_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets figure data from the subplots of cumulative distribution functions (CDFs)
+of activity-parameters (start time, end time, and duration).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fpaths</strong> (<em>list of str</em>) – a list of file paths of the figure data for each activity to load</li>
+<li><strong>fpath_figure_save</strong> (<em>str</em>) – the file path to save the figure</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name (no file path) to save the data</li>
+<li><strong>fnames_load</strong> (<em>list of str</em>) – the ending of the file names of the figure files to load (start time, end time, duration)</li>
+<li><strong>do_single_day</strong> (<em>bool</em>) – a flag indicating whether to load single-day (if True) or     longitudinal(if False) figure data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the x and y values of the lines in the figure for start time, end time, and duration plots</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list, str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.get_satiation_and_weight">
+<code class="descclassname">plotter.</code><code class="descname">get_satiation_and_weight</code><span class="sig-paren">(</span><em>p</em>, <em>start_day</em>, <em>end_day</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#get_satiation_and_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.get_satiation_and_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obtains the satiation values and weight values for the agent during the simulation over the
+range of the selected days.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the agent whose satiation and weight values are to be plotted</li>
+<li><strong>start_day</strong> (<em>int</em>) – the day to start plotting</li>
+<li><strong>end_day</strong> (<em>int</em>) – the day to end plotting</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple of an array of the selected time (in hours), a list of the satiation values, and     a list of the weights for the respective times</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.load_fig_data">
+<code class="descclassname">plotter.</code><code class="descname">load_fig_data</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#load_fig_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.load_fig_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load figure data.
+:param str fname: the file name of the figure to load. The file must be a .pkl file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the x and y values of the lines in the figure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_activity_cdfs">
+<code class="descclassname">plotter.</code><code class="descname">plot_activity_cdfs</code><span class="sig-paren">(</span><em>d</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_activity_cdfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_activity_cdfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the cumulative distribution function of start time, end time, and duration for     each activity in the the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>d</strong> (<a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><em>diary.Diary</em></a>) – the results of the simulation</li>
+<li><strong>keys</strong> (<em>list</em>) – list of activities to graph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_activity_histograms">
+<code class="descclassname">plotter.</code><code class="descname">plot_activity_histograms</code><span class="sig-paren">(</span><em>d</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_activity_histograms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_activity_histograms" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the histograms of start time, end time, and duration for each activity in     the the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>d</strong> (<a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><em>diary.Diary</em></a>) – the results of the simulation</li>
+<li><strong>keys</strong> (<em>list</em>) – list of activities to graph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_count">
+<code class="descclassname">plotter.</code><code class="descname">plot_count</code><span class="sig-paren">(</span><em>data</em>, <em>keys</em>, <em>do_abs=True</em>, <em>title=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots a histogram showing the amount of times each activity was done     in an ABMHAP simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity diary</li>
+<li><strong>keys</strong> (<em>list</em>) – the activity codes</li>
+<li><strong>do_abs</strong> (<em>bool</em>) – whether (if True) to plot a histogram of the number     of agents or (if False) to plot a histogram of percentage of agents</li>
+<li><strong>title</strong> (<em>str</em>) – the title of the plot</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_history">
+<code class="descclassname">plotter.</code><code class="descname">plot_history</code><span class="sig-paren">(</span><em>t</em>, <em>y_list</em>, <em>labels</em>, <em>colors</em>, <em>linestyles</em>, <em>ylabel</em>, <em>linewidth=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots information related to data related to needs (such as satiation and     weight function values) over time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>numpy.ndarray</em>) – the time values [hours] of interest</li>
+<li><strong>y_list</strong> (<em>list</em>) – the satiation values for each need over time</li>
+<li><strong>labels</strong> (<em>list</em>) – the labels that corresponds to the respective need</li>
+<li><strong>colors</strong> (<em>list</em>) – the colors that corresponds to the respective need</li>
+<li><strong>linestyles</strong> (<em>list</em>) – the line styles that corresponds to the respective need</li>
+<li><strong>ylabel</strong> (<em>str</em>) – the y-axis label</li>
+<li><strong>linewidth</strong> (<em>int</em>) – the line width for each line</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_longitude">
+<code class="descclassname">plotter.</code><code class="descname">plot_longitude</code><span class="sig-paren">(</span><em>data</em>, <em>titles</em>, <em>linewidth=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_longitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the day-to-day variation of activity duration for each activity     over time from an ABMHAP simulation. This is done for each demographic in order     to compare their differences and daily behavior. Within each subplot, an agent     representing a respective demographic has its activity behavior is plotted
+in a log10 scale over time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>list of pandas.core.frame.DataFrame</em>) – the activity diaries of the agents to plot. Each agent represents     a different demograhic.</li>
+<li><strong>titles</strong> (<em>list of str</em>) – the names of the demographics that are being plot</li>
+<li><strong>linewidth</strong> (<em>float</em>) – the line width of the plot lines</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_longitude_help">
+<code class="descclassname">plotter.</code><code class="descname">plot_longitude_help</code><span class="sig-paren">(</span><em>ax</em>, <em>df</em>, <em>linewidth=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_longitude_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_longitude_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the day-to-day variation of activity duration for each activity     over time from an ABMHAP simulation. Within each subplot, an agent has its activity     behavior is plotted in a log10 scale over time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib.figure.Figure</em>) – the subplot object</li>
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity diary of an agent</li>
+<li><strong>linewidth</strong> (<em>float</em>) – the line width of the plot lines</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.plot_satiation_and_weight">
+<code class="descclassname">plotter.</code><code class="descname">plot_satiation_and_weight</code><span class="sig-paren">(</span><em>p</em>, <em>start_day</em>, <em>end_day</em>, <em>fid_satiation=100</em>, <em>fid_weight=101</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#plot_satiation_and_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.plot_satiation_and_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the satiation values and weight values for the agent during the simulation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is best used when the simulation moves through time minute by minute. If not,
+the slopes in both the satiation and weight plots will <strong>not</strong> be accurate.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the agent whose satiation and weight values are to be plotted</li>
+<li><strong>start_day</strong> (<em>int</em>) – the day to start plotting</li>
+<li><strong>end_day</strong> (<em>int</em>) – the day to end plotting</li>
+<li><strong>fid_satiation</strong> (<em>int</em>) – the figure identifier for the satiation plot</li>
+<li><strong>fid_weight</strong> (<em>int</em>) – the figure identifier for the weights plot</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plotter.separate_activities_into_days">
+<code class="descclassname">plotter.</code><code class="descname">separate_activities_into_days</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plotter.html#separate_activities_into_days"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plotter.separate_activities_into_days" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function finds the activities tha occur over midnight and breaks down     creates a new activity diary in which an activity occurring over midnight     is split into two activities: one activity entry ending at midnight, and     one activity entry starting at midnight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity diary of an agent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the new activity diary</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="plot_diary.html" title="previous chapter">plot_diary notebook</a></li>
+      <li>Next: <a href="commute_school.html" title="next chapter">commute_school notebook</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/plotter.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/plotter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

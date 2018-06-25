@@ -1,0 +1,816 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>driver module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="driver_params module" href="driver_params.html" />
+    <link rel="prev" title="data_counter notebook" href="data_counter.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-driver">
+<span id="driver-module"></span><h1>driver module<a class="headerlink" href="#module-driver" title="Permalink to this headline">¶</a></h1>
+<p>This code runs the simulation for the Agent-Based Model of Human Activity Patterns (ABMHAP) module of the Life Cycle Human Exposure Model (LC-HEM) project. This code is the driver for seeing how well ABMHAP parameterized with empirical human behavior data from the Consolidated Human Activity Database (CHAD) compares to results seen in CHAD.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This code may be run in batches in order to run many households while conserving memory. That is,     instead of running 32 households at once (and keeping 32 households in memory), the program can     run 2 batches of 16 households (for a total of 32 household). This halves the amount of memory     used in the simulation compared to running the simulation of 1 batch of 32 households. We      will shown how to run the code using “batches” below.</p>
+</div>
+<p>The driver can also be run in <strong>parallel</strong>. We will show how to do so below.</p>
+<p>To run the code, do the following.</p>
+<ol class="arabic">
+<li><p class="first">Set the simulation-centric parameters in driver_params.py</p>
+</li>
+<li><dl class="first docutils">
+<dt>Run the code as</dt>
+<dd><p class="first">&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">num_process</span> <span class="pre">num_hhld</span> <span class="pre">num_batch</span></code>
+where</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">num_process</span></code> is the total number of cores (i.e, processing units) used in the simulation</li>
+<li><code class="docutils literal notranslate"><span class="pre">num_hhld</span></code> is the number of simulations to run per batch</li>
+<li><code class="docutils literal notranslate"><span class="pre">num_batch</span></code> is the number of batches used per core</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+</ol>
+<p>The following are examples on how to run the code:</p>
+<p>To run in <strong>serial</strong> with with 64 households per batch, 1 batch (implied)</p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">64</span> <span class="pre">1</span></code></p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">64</span></code></p>
+<p>To run in serial using 2 batches with 1 thread with 32 households per batch, 2 batches</p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">32</span> <span class="pre">2</span></code></p>
+<p>To run in <strong>parallel</strong> using 4 cores with 64 households total (16 household per core per batch), 1 batch (implied)</p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">64</span> <span class="pre">1</span></code></p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">64</span></code></p>
+<p>To run in parallel using 4 cores with 32 households per batch, 2 batches(8 households per core per batch)</p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">32</span> <span class="pre">2</span></code></p>
+<dl class="function">
+<dt id="driver.create_trials">
+<code class="descclassname">driver.</code><code class="descname">create_trials</code><span class="sig-paren">(</span><em>num_hhld</em>, <em>num_days</em>, <em>num_hours</em>, <em>num_min</em>, <em>trial_code</em>, <em>chad_activity_params</em>, <em>demographic</em>, <em>num_people</em>, <em>do_minute_by_minute</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#create_trials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.create_trials" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates the input data for each household in the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_hhld</strong> (<em>int</em>) – the number of households simulated</li>
+<li><strong>num_days</strong> (<em>int</em>) – the number of days in the simulation</li>
+<li><strong>num_hours</strong> (<em>int</em>) – the number of additional hours</li>
+<li><strong>num_min</strong> (<em>int</em>) – the number of additional minutes</li>
+<li><strong>trial_code</strong> (<em>int</em>) – the trial identifier</li>
+<li><strong>chad_activity_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the activity parameters     used to sample “good” CHAD data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier</li>
+<li><strong>num_people</strong> (<em>int</em>) – the number of people per household</li>
+<li><strong>do_minute_by_minute</strong> (<em>bool</em>) – a flag for how the time steps progress in the scheduler</li>
+<li><strong>do_print</strong> (<em>bool</em>) – flag whether to print messages to the console</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">input data where each entry corresponds to the input     for the respective household in the simulation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.delete_batch_files">
+<code class="descclassname">driver.</code><code class="descname">delete_batch_files</code><span class="sig-paren">(</span><em>fname_base</em>, <em>num_batch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#delete_batch_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.delete_batch_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function deletes the batch files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_base</strong> (<em>str</em>) – the file name for the files without the “.pkl”, that are the basis of the batch files     that will be deleted</li>
+<li><strong>num_batch</strong> (<em>int</em>) – the number of batches used in the code run</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_batch_filenames">
+<code class="descclassname">driver.</code><code class="descname">get_batch_filenames</code><span class="sig-paren">(</span><em>fpath</em>, <em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_batch_filenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_batch_filenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>This file gets the file names for the batch saves.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fpath</strong> (<em>str</em>) – the name of the directory that the batch file names are stored</li>
+<li><strong>fname</strong> (<em>str</em>) – the name of the file to save (.pkl)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the batched file names</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_chad_demo">
+<code class="descclassname">driver.</code><code class="descname">get_chad_demo</code><span class="sig-paren">(</span><em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_chad_demo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_chad_demo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the demographic, this function returns the respective CHAD_demography object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>demographic</strong> (<em>int</em>) – the demography identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the respective CHAD_demography object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_cmd_line_params">
+<code class="descclassname">driver.</code><code class="descname">get_cmd_line_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_cmd_line_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_cmd_line_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the parameters from the command line.</p>
+<p>The order of arguments to be read on the command line in order:</p>
+<ol class="arabic simple">
+<li>the number of processors (threads)</li>
+<li>the number of households per batch</li>
+<li>the number of batches</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the number of processors, the, the total number of households to simulate, the number of batches</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int, int, int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_current_batch_size">
+<code class="descclassname">driver.</code><code class="descname">get_current_batch_size</code><span class="sig-paren">(</span><em>num_hhld</em>, <em>idx</em>, <em>max_batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_current_batch_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_current_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the number of households for the current batch if the total
+number of households is a multiple of the number of batches. Each batch
+contains max_batch_size amount of households.
+However, if not, the last batch will be smaller than the number of the max_batch_size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_hhld</strong> (<em>int</em>) – the total amount of households in the simulation</li>
+<li><strong>idx</strong> (<em>int</em>) – the index of the current batch number</li>
+<li><strong>max_batch_size</strong> (<em>int</em>) – the maximum number of households per batch</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the current batch size</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_fnames">
+<code class="descclassname">driver.</code><code class="descname">get_fnames</code><span class="sig-paren">(</span><em>fpath</em>, <em>demographic</em>, <em>num_days</em>, <em>N</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_fnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_fnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a directory, this function creates the file names that will be used
+to save the ABMHAP trials (input) and the ABMHAP data (output) according
+to the respective demographic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fpath</strong> (<em>str</em>) – the directory in which to save the files</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demography identifier</li>
+<li><strong>num_days</strong> (<em>int</em>) – the number of days in the simulation</li>
+<li><strong>N</strong> (<em>int</em>) – the total number of households</li>
+<li><strong>do_print</strong> (<em>bool</em>) – a flag to indicate whether (if True) or not     (if False) to print a message to the screen</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the file name to save the trials data (“.pkl” extension);     the file name to save the data (“.pkl” extension”),     the file name to save the the basis (no “.pkl” extension) of the file     name to save the trials data,     the basis (no “.pkl” extension) of the file name to save the ABMHAP output data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str, str, str, str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_loaded_trials_for_batch">
+<code class="descclassname">driver.</code><code class="descname">get_loaded_trials_for_batch</code><span class="sig-paren">(</span><em>loaded_trials</em>, <em>i</em>, <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_loaded_trials_for_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_loaded_trials_for_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function extracts the household input information from the pre-loaded
+input data for the respective batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>loaded_trials</strong> (list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>) – input data needed for the simulation</li>
+<li><strong>i</strong> (<em>int</em>) – the current batch number</li>
+<li><strong>batch_size</strong> (<em>int</em>) – the number of households in the batch</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the input data that corresponds to the batch number</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_max_batch_size">
+<code class="descclassname">driver.</code><code class="descname">get_max_batch_size</code><span class="sig-paren">(</span><em>num_hhld</em>, <em>num_batch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_max_batch_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_max_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the maximum number of households
+simulated per batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_hhld</strong> (<em>int</em>) – the total number of households to simulate</li>
+<li><strong>num_batch</strong> (<em>int</em>) – the number of batches</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the number of households to simulate per batch</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.get_results">
+<code class="descclassname">driver.</code><code class="descname">get_results</code><span class="sig-paren">(</span><em>diaries</em>, <em>trials</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#get_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.get_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes the output and input from the simulation and converts
+the data into the appropriate output and input types.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>diaries</strong> (list of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a>) – each activity diary (output) in the Monte-Carlo simulation</li>
+<li><strong>trials</strong> (list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>) – the input data for each household simulation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the output, the input</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="driver_result.html#driver_result.Driver_Result" title="driver_result.Driver_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Driver_Result</span></code></a>, list of <a class="reference internal" href="params.html#params.Params" title="params.Params"><code class="xref py py-class docutils literal notranslate"><span class="pre">params.Params</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.initialize_trials">
+<code class="descclassname">driver.</code><code class="descname">initialize_trials</code><span class="sig-paren">(</span><em>param_list</em>, <em>trial_code</em>, <em>chad_activity_params</em>, <em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#initialize_trials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.initialize_trials" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes the trials (input parameters) for the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>param_list</strong> – contains information on how to initialize the     simulation for each household.</li>
+<li><strong>trial_code</strong> (<em>int</em>) – the code of what trial to run</li>
+<li><strong>chad_activity_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the activity parameters used to sample “good” CHAD data</li>
+<li><strong>demographic</strong> (<em>int</em>) – this is the code for what demographic to run</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the initialized simulation scenarios</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.is_batch_file">
+<code class="descclassname">driver.</code><code class="descname">is_batch_file</code><span class="sig-paren">(</span><em>fname</em>, <em>extensions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#is_batch_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.is_batch_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function indicates whether or not the filename is a batch file. For example,
+given a file name called filename_b0000.pkl will return True. On the other hand,
+filename.pkl will return False.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – the file name</li>
+<li><strong>extensions</strong> (<em>str</em><em>, </em><em>list of str</em>) – the file extensions for the file name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">flag indicating whether the file name is a batch file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.load_trials_for_batches">
+<code class="descclassname">driver.</code><code class="descname">load_trials_for_batches</code><span class="sig-paren">(</span><em>fname_load_trials_base</em>, <em>num_batch</em>, <em>do_print</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#load_trials_for_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.load_trials_for_batches" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads pre-existing trials data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_load_trials</strong> (<em>str</em>) – the filename (.pkl) of the trials data to load</li>
+<li><strong>num_batch</strong> (<em>int</em>) – the number of batches</li>
+<li><strong>do_print</strong> (<em>bool</em>) – a flag to indicate whether or not to print a message to      screen about the logistics of loading the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the input data that has been loaded,      the file name for the input data,      the batch size</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>, str, int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.print_end">
+<code class="descclassname">driver.</code><code class="descname">print_end</code><span class="sig-paren">(</span><em>elapsed_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#print_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.print_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the elapsed time for the simulation message.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elapsed_time</strong> (<em>float</em>) – the elapsed time for the simulation [seconds]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.print_start">
+<code class="descclassname">driver.</code><code class="descname">print_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#print_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.print_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the message about starting the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.print_starting_info">
+<code class="descclassname">driver.</code><code class="descname">print_starting_info</code><span class="sig-paren">(</span><em>num_hhld</em>, <em>batch_size</em>, <em>num_batch</em>, <em>num_days</em>, <em>num_process</em>, <em>total_cpus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#print_starting_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.print_starting_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print information before the beginning of the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_hhld</strong> (<em>int</em>) – the total number of households</li>
+<li><strong>batch_size</strong> (<em>int</em>) – the maximum number of households to simulate per batch</li>
+<li><strong>num_hhld_per_batch</strong> (<em>int</em>) – the number of households per batch</li>
+<li><strong>num_days</strong> – the number of days in the simulation</li>
+<li><strong>num_process</strong> – the number of processors used</li>
+<li><strong>total_cpus</strong> – the total amount of potential CPUs available.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run">
+<code class="descclassname">driver.</code><code class="descname">run</code><span class="sig-paren">(</span><em>num_process</em>, <em>trials</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs each simulation (in serial or parallel).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_process</strong> (<em>int</em>) – the number of processors to use</li>
+<li><strong>trials</strong> (list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>) – the input for each simulation</li>
+<li><strong>do_print</strong> (<em>bool</em>) – a flag indicating whether to print (if True) or not (if False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the results of the simulations, the input parameters</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">diary_result.Diary_result, list of <a class="reference internal" href="params.html#params.Params" title="params.Params"><code class="xref py py-class docutils literal notranslate"><span class="pre">params.Params</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run_batch">
+<code class="descclassname">driver.</code><code class="descname">run_batch</code><span class="sig-paren">(</span><em>num_batch</em>, <em>num_hhld</em>, <em>num_process</em>, <em>num_days</em>, <em>num_hours</em>, <em>num_min</em>, <em>trial_code</em>, <em>chad_activity_params</em>, <em>demographic</em>, <em>num_people</em>, <em>do_minute_by_minute</em>, <em>do_print</em>, <em>do_save</em>, <em>fpath</em>, <em>do_load_trials=False</em>, <em>fname_load_trials_base=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the simulation in batches.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_batch</strong> (<em>int</em>) – the number of batches</li>
+<li><strong>num_hhld</strong> (<em>int</em>) – the total number of households to simulate</li>
+<li><strong>num_process</strong> (<em>int</em>) – the number of processors used</li>
+<li><strong>num_days</strong> (<em>int</em>) – the number of days in the simulation</li>
+<li><strong>num_hours</strong> (<em>int</em>) – the number of additional hours in the simulation</li>
+<li><strong>num_min</strong> (<em>int</em>) – the number of additional minutes in the simulation</li>
+<li><strong>trial_code</strong> (<em>int</em>) – the identifier for the trial being run</li>
+<li><strong>chad_activity_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the activity parameters used to sample “good” CHAD data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier</li>
+<li><strong>do_print</strong> (<em>bool</em>) – a flag indicating whether to print (if True) or not (if False)</li>
+<li><strong>do_save</strong> (<em>bool</em>) – flag to save the output</li>
+<li><strong>fname_trials_base</strong> (<em>str</em>) – the file name for the trials without the .pkl, which will be used for saving the     trial information (.pkl)</li>
+<li><strong>fname_data_base</strong> (<em>str</em>) – the file name for the ABMHAP without the .pkl, which will be used for saving the     trial information (.pkl)</li>
+<li><strong>do_load_trials</strong> (<em>bool</em>) – indicating whether (if True) or not (if False) to load trials from a saved     file instead of creating a new set of trials</li>
+<li><strong>fname_load_trials_base</strong> (<em>str</em>) – the file name for the ABMHAP trials without the .pkl, which will be used for     saving the trial information (.pkl)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the file name of the input data,     the file name of the output data,     the file name of the input data (no “.pkl”),     the file name of the output data (no “.pkl”)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str, str, str, str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run_everything">
+<code class="descclassname">driver.</code><code class="descname">run_everything</code><span class="sig-paren">(</span><em>num_process</em>, <em>num_hhld</em>, <em>num_batch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run_everything"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run_everything" title="Permalink to this definition">¶</a></dt>
+<dd><p>This code runs the Monte-Carlo simulations. More specifically, it</p>
+<ol class="arabic simple">
+<li>creates / loads the input data</li>
+<li>runs the simulations</li>
+<li>saves both the input and output data</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_process</strong> (<em>int</em>) – the number of processes</li>
+<li><strong>num_hhld</strong> (<em>int</em>) – the number of households per core per batch</li>
+<li><strong>num_batch</strong> (<em>int</em>) – the number of batches</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the file name for the input data, the file name for the output data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str, str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run_parallel">
+<code class="descclassname">driver.</code><code class="descname">run_parallel</code><span class="sig-paren">(</span><em>num_process</em>, <em>trials</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run_parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs the simulation in parallel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_process</strong> (<em>int</em>) – the number of processors used</li>
+<li><strong>trials</strong> (list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>) – the input data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the output of the simulations</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run_serial">
+<code class="descclassname">driver.</code><code class="descname">run_serial</code><span class="sig-paren">(</span><em>trials</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run_serial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs the simulation in serial.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trials</strong> (list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>) – the input data</li>
+<li><strong>do_print</strong> (<em>bool</em>) – a flag whether or not to print the trial number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the output of the simulations</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.run_trials_parallel">
+<code class="descclassname">driver.</code><code class="descname">run_trials_parallel</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#run_trials_parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.run_trials_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called in order to run the trials in parallel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><em>trial.Trial</em></a>) – the trial to run</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the results of the simulation</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary">diary.Diary</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.save">
+<code class="descclassname">driver.</code><code class="descname">save</code><span class="sig-paren">(</span><em>fname_data</em>, <em>fname_trials</em>, <em>fname_data_base</em>, <em>fname_trials_base</em>, <em>num_batch</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves the input and output from the simulation. It merges     the data from the batch save files into one file for not only the     trials data (input) but also the ABMHAP simulation data (output). Afterwards,     the individual batch files are deleted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_data</strong> (<em>str</em>) – the file name in which to save the ABMHAP data (output)</li>
+<li><strong>fname_trials</strong> (<em>str</em>) – the file name in which to save the ABMHAP trials (input)</li>
+<li><strong>fname_data_base</strong> (<em>str</em>) – the base (no “.pkl” extension) of the file name in     which to save the ABMHAP data (output)</li>
+<li><strong>fname_trials_base</strong> (<em>str</em>) – the base (no “.pkl” extension) of file name in     which to save the ABMHAP trials (input)</li>
+<li><strong>do_print</strong> (<em>bool</em>) – print flag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.save_batch_data_as_one_file">
+<code class="descclassname">driver.</code><code class="descname">save_batch_data_as_one_file</code><span class="sig-paren">(</span><em>fname</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#save_batch_data_as_one_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.save_batch_data_as_one_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function combines the ABMHAP data from the individual batch saves and saves them in one file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – the file name of the ABMHAP data (.pkl)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.save_batch_trials_as_one_file">
+<code class="descclassname">driver.</code><code class="descname">save_batch_trials_as_one_file</code><span class="sig-paren">(</span><em>fname</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#save_batch_trials_as_one_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.save_batch_trials_as_one_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function combines the trial (input) data from the individual     batch saves and saves them in one file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – the file name of the trials data (.pkl)</li>
+<li><strong>do_print</strong> (<em>bool</em>) – print flag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.save_diary_to_csv">
+<code class="descclassname">driver.</code><code class="descname">save_diary_to_csv</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#save_diary_to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.save_diary_to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads an activity diary from a compressed file format     and saves it as a .csv file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – the pickle file that holds the activity diary file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.save_for_batch">
+<code class="descclassname">driver.</code><code class="descname">save_for_batch</code><span class="sig-paren">(</span><em>result</em>, <em>fname</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#save_for_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.save_for_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the data for the current batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> (<a class="reference internal" href="driver_result.html#driver_result.Driver_Result" title="driver_result.Driver_Result"><em>driver_result.Driver_Result</em></a>) – the result of the simulation for the current batch</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name to save the data for the current batch</li>
+<li><strong>do_print</strong> (<em>bool</em>) – print flag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.set_save_files_for_batch">
+<code class="descclassname">driver.</code><code class="descname">set_save_files_for_batch</code><span class="sig-paren">(</span><em>fname_trials_base</em>, <em>fname_data_base</em>, <em>i</em>, <em>do_print=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#set_save_files_for_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.set_save_files_for_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the save files (inputs and output files) for the current batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_trials_base</strong> (<em>str</em>) – the file name for the ABMHAP data without the .pkl,     which will be used for saving the input data (.pkl)</li>
+<li><strong>fname_data_base</strong> (<em>str</em>) – the file name for the ABMHAP data without the .pkl,     which will be used for saving the output data (.pkl)</li>
+<li><strong>i</strong> (<em>int</em>) – the current batch index</li>
+<li><strong>do_print</strong> (<em>bool</em>) – flag indicating whether or not to print relevant     information to the console</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the save file name for the input data,     the save file name for the output data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str, str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="driver.set_save_path">
+<code class="descclassname">driver.</code><code class="descname">set_save_path</code><span class="sig-paren">(</span><em>fpath</em>, <em>N</em>, <em>num_days</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver.html#set_save_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver.set_save_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets the save path for the data. Given a save path, the function appends it by adding an     extension of the current year, month, day, number of households, and number of days in the format.</p>
+<p>For example, if this code is being run to simulate 64 households for 100 days on July 4, 2017 and the     file path is “output_path”, the file path is set to the following: //output_path//2017_07_04//n0064_d100.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fpath</strong> (<em>str</em>) – the file path in which to save the data</li>
+<li><strong>N</strong> (<em>int</em>) – the number of households</li>
+<li><strong>num_days</strong> (<em>int</em>) – the number of days in the simulation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the file directory in the format ‘//output_file_path//YYYY_MM_DD//nXXXX_dXXX’</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="data_counter.html" title="previous chapter">data_counter notebook</a></li>
+      <li>Next: <a href="driver_params.html" title="next chapter">driver_params module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/driver.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/driver.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

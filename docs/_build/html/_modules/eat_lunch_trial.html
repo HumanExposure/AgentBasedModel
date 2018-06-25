@@ -1,0 +1,277 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>eat_lunch_trial &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for eat_lunch_trial</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains code in order to run Monte-Carlo simulations to comparing the \</span>
+<span class="sd">Agent-Based Model of Human Activity Patterns (ABMHAP) with the data from the Consolidated \</span>
+<span class="sd">Human Activity Database (CHAD) for the **eat lunch** activity.</span>
+
+<span class="sd">This module contains class :class:`eat_lunch_trial.Eat_Lunch_Trial`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># math capabilities</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad</span><span class="o">,</span> <span class="nn">food</span><span class="o">,</span> <span class="nn">location</span><span class="o">,</span> <span class="nn">meal</span><span class="o">,</span> <span class="nn">occupation</span><span class="o">,</span> <span class="nn">temporal</span><span class="o">,</span> <span class="nn">transport</span><span class="o">,</span> <span class="nn">trial</span><span class="o">,</span> <span class="nn">workplace</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># class Eat_Lunch_Trial</span>
+<span class="c1"># ===========================================</span>
+<div class="viewcode-block" id="Eat_Lunch_Trial"><a class="viewcode-back" href="../eat_lunch_trial.html#eat_lunch_trial.Eat_Lunch_Trial">[docs]</a><span class="k">class</span> <span class="nc">Eat_Lunch_Trial</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">Trial</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class runs the ABMHAP simulations initialized with eat lunch data from CHAD.</span>
+
+<span class="sd">    :param params.Params parameters: the parameters describing each person in the household</span>
+<span class="sd">    :param chad_params.CHAD_params sampling_params: the sampling parameters used to filter &quot;good&quot; CHAD \</span>
+<span class="sd">    eat lunch data</span>
+<span class="sd">    :param int demographic: the demographic identifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">sampling_params</span><span class="p">,</span> <span class="n">demographic</span><span class="p">):</span>
+
+        <span class="c1"># constructor</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">Trial</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">sampling_params</span><span class="p">,</span> <span class="n">demographic</span><span class="p">)</span>
+
+        <span class="c1"># the trial identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">EAT_LUNCH</span>
+
+        <span class="c1"># the filename for the chad</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">chad</span><span class="o">.</span><span class="n">FNAME_EAT_LUNCH</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Eat_Lunch_Trial.adjust_params"><a class="viewcode-back" href="../eat_lunch_trial.html#eat_lunch_trial.Eat_Lunch_Trial.adjust_params">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function adjusts the values for the mean and standard deviation of  eat lunch start time in the \</span>
+<span class="sd">        key-word arguments based on the CHAD data that was sampled. These new values will be used in the runs.</span>
+
+<span class="sd">        :param numpy.ndarray start_mean: the mean eat lunch start time [hours] for each person</span>
+<span class="sd">        :param numpy.ndarray start_std: the standard deviation of eat lunch start time [hours] for each person</span>
+<span class="sd">        :param numpy.ndarray dt_mean: the eat lunch mean duration [hours] for each person</span>
+<span class="sd">        :param numpy.ndarray dt_std: the eat lunch standard deviation of duration [hours] for each person</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the number of minutes in 1 hour and 1 day, respectively</span>
+        <span class="n">DAY_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+        <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># set the job to not working</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">job_id</span>     <span class="o">=</span> <span class="p">(</span><span class="n">occupation</span><span class="o">.</span><span class="n">STANDARD_JOB</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">num_people</span>
+
+        <span class="c1"># set the relevant parameters for the runs</span>
+        <span class="n">t_monday</span>            <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">MONDAY</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">t_monday</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span>  <span class="n">HOUR_2_MIN</span>
+
+        <span class="c1"># this converts time from hours to minutes</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">hours_to_minutes</span>
+
+        <span class="c1"># set up the lunch for each person in the household</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">lunches</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">init_meal</span><span class="p">(</span><span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">start_mean</span><span class="p">),</span> <span class="n">start_std</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">start_std</span><span class="p">),</span> \
+                                  <span class="n">dt_mean</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">dt_mean</span><span class="p">),</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">dt_std</span><span class="p">))</span>
+
+        <span class="c1"># the number of people</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">num_people</span>
+
+        <span class="c1"># time in hours for mean start time and end time for work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">work_start_mean</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">work_end_mean</span>   <span class="o">=</span> <span class="n">f</span><span class="p">(</span> <span class="mi">17</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Eat_Lunch_Trial.create_universe"><a class="viewcode-back" href="../eat_lunch_trial.html#eat_lunch_trial.Eat_Lunch_Trial.create_universe">[docs]</a>    <span class="k">def</span> <span class="nf">create_universe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates a universe object that simulations will run in. The only asset in this \</span>
+<span class="sd">        simulation for an agent to use is a :class:`food.Food`.</span>
+
+<span class="sd">        :return: the universe</span>
+<span class="sd">        :rtype: universe.Universe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create the universe</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Lunch_Trial</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">create_universe</span><span class="p">()</span>
+
+        <span class="c1"># this allows eating at work</span>
+        <span class="n">cafeteria</span> <span class="o">=</span> <span class="n">food</span><span class="o">.</span><span class="n">Food</span><span class="p">()</span>
+        <span class="n">cafeteria</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">OFF_SITE</span>
+
+        <span class="c1"># allow the appropriate assets</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">assets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;food&#39;</span><span class="p">:</span> <span class="n">food</span><span class="o">.</span><span class="n">Food</span><span class="p">(),</span>
+            <span class="s1">&#39;transport&#39;</span><span class="p">:</span> <span class="n">transport</span><span class="o">.</span><span class="n">Transport</span><span class="p">(),</span>
+            <span class="s1">&#39;workplace&#39;</span><span class="p">:</span> <span class="n">workplace</span><span class="o">.</span><span class="n">Workplace</span><span class="p">(),</span>
+            <span class="s1">&#39;cafeteria&#39;</span><span class="p">:</span> <span class="n">cafeteria</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">u</span></div>
+
+<div class="viewcode-block" id="Eat_Lunch_Trial.initialize"><a class="viewcode-back" href="../eat_lunch_trial.html#eat_lunch_trial.Eat_Lunch_Trial.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function sets up the trial</span>
+
+<span class="sd">        #. gets the CHAD data for eat lunch under the appropriate conditions for means and standard deviations \</span>
+<span class="sd">        for both eat lunch duration and eat lunch start time</span>
+<span class="sd">        #. gets N samples the CHAD data for eat lunch duration and eat lunch start time for the N trials</span>
+<span class="sd">        #. updates the :attr:`params` to reflect the newly assigned eat lunch parameters for the simulation</span>
+
+<span class="sd">        :param str fname_dt: the filename of the duration statistics</span>
+<span class="sd">        :param str fname_start: the filename of the start time statistics</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get samples for the mean and standard deviation for the duration and start time</span>
+        <span class="n">keys</span>    <span class="o">=</span> <span class="p">[</span><span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span><span class="p">]</span>
+
+        <span class="c1"># obtain the CHAD parameters relevant to eating lunch for each person in the household</span>
+        <span class="n">y</span>       <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Lunch_Trial</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+        <span class="c1"># the mean and standard deviations of the start time, end time, and duration</span>
+        <span class="c1"># for eating lunch</span>
+        <span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">end_mean</span><span class="p">,</span> <span class="n">end_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">,</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span><span class="p">]</span>
+
+        <span class="c1"># set the standard deviation to zero</span>
+        <span class="n">start_std</span><span class="p">[:]</span>    <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dt_std</span><span class="p">[:]</span>       <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># adjust the key-word arguments to take account to eat dinner information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjust_params</span><span class="p">(</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="p">,</span> <span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Eat_Lunch_Trial.initialize_person"><a class="viewcode-back" href="../eat_lunch_trial.html#eat_lunch_trial.Eat_Lunch_Trial.initialize_person">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_person</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates and initializes a person with the proper parameters for the Eat Lunch Trial\</span>
+<span class="sd">        simulation.</span>
+
+<span class="sd">        More specifically, the function does</span>
+
+<span class="sd">        #. creates a :class:`singleton.Singleton` person</span>
+<span class="sd">        #. initializes the person&#39;s parameters to the respective values in :attr:`params`</span>
+
+<span class="sd">        :param universe.Universe u: the universe the person will reside in</span>
+<span class="sd">        :param int idx: the index of the person&#39;s parameters in :attr:`params`</span>
+
+<span class="sd">        :return p: the agent to be simulated</span>
+<span class="sd">        :rtype: person.Person</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialize the person</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Eat_Lunch_Trial</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="n">initialize_person</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+
+        <span class="c1"># adjust to have only 1 meal</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">num_meals</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># get the lunch parameters for this person</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">lunches</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># create the meal object</span>
+        <span class="n">the_meal</span> <span class="o">=</span> <span class="n">meal</span><span class="o">.</span><span class="n">Meal</span><span class="p">(</span> <span class="n">meal</span><span class="o">.</span><span class="n">LUNCH</span><span class="p">,</span> <span class="n">start_mean</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">start_mean</span><span class="p">,</span> <span class="n">start_std</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">start_std</span><span class="p">,</span> \
+                              <span class="n">dt_mean</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">dt_mean</span><span class="p">,</span> <span class="n">dt_std</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">dt_std</span> <span class="p">)</span>
+
+        <span class="c1"># reset the meals list</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">socio</span><span class="o">.</span><span class="n">meals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">the_meal</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">p</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -4,7 +4,6 @@
 *Rhistory
 *Thumbs.db
 *.idea
-run/*.ipynb
 docs/_build/latex/
 docs/_build/doctrees/
 

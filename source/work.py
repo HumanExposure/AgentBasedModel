@@ -12,7 +12,7 @@
 # August 14, 2017
 
 """
-This module contains code that governs the :class:`activity.Activity` that gives a Person the ability \
+This module contains code that governs the activity that gives a person the ability \
 to go to work/ school.
 
 This file contains :class:`work.Work`.
@@ -20,23 +20,21 @@ This file contains :class:`work.Work`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-#----------------------------------------------------------
+# ===============================================
 # import
-#----------------------------------------------------------
-
+# ===============================================
 
 # agent-based model modules
 import activity, location, meal, need, occupation, state, temporal
 
-
 # ===============================================
-# class
+# class Work
 # ===============================================
 
 class Work(activity.Activity):
 
     """
-    This class allows a Person to work / go to school in order to satisfy the need \
+    This class allows a person to work / go to school in order to satisfy the need \
     :class:`income.Income`.
     """
 
@@ -58,7 +56,7 @@ class Work(activity.Activity):
     def advertise(self, p):
 
         """
-        This function calculates the score of the advertised work activity to a Person
+        This function calculates the score of the advertised work activity to a person
 
         :param person.Person p: the person of interest
 
@@ -90,7 +88,7 @@ class Work(activity.Activity):
     def end(self,p):
 
         """
-        This function handles the end of an Activity
+        This function handles the end of an activity
 
         :param person.Person p: the person of interest
         :return: None

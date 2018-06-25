@@ -19,9 +19,9 @@ This module contains class :class:`interrupt.Interrupt`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # agent-based model modules
 import activity, need

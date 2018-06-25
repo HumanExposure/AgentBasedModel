@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>home module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>home module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="hunger module" href="hunger.html" />
     <link rel="prev" title="food module" href="food.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -44,28 +34,27 @@
   <div class="section" id="module-home">
 <span id="home-module"></span><h1>home module<a class="headerlink" href="#module-home" title="Permalink to this headline">¶</a></h1>
 <p>This module governs the control of assets used in the simulation. Mainly, the home contains all of the assets used in the simulation for the current version of the code.</p>
-<p>This module contains the following class: <a class="reference internal" href="#home.Home" title="home.Home"><code class="xref py py-class docutils literal"><span class="pre">home.Home</span></code></a></p>
-<p><em>Module author: Dr. Namdi Brandon.</em></p>
+<p>This module contains the following class: <a class="reference internal" href="#home.Home" title="home.Home"><code class="xref py py-class docutils literal notranslate"><span class="pre">home.Home</span></code></a></p>
 <dl class="class">
 <dt id="home.Home">
 <em class="property">class </em><code class="descclassname">home.</code><code class="descname">Home</code><span class="sig-paren">(</span><em>clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home.html#Home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#home.Home" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Contains all of the physical characteristics of a home/ residence. Currently, the home     contains all of the assets within the simulation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – the time</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>assets</strong> (<em>dict</em>) &#8211; contains a list of all of the assets available in the home.</li>
-<li><strong>category</strong> (<em>int</em>) &#8211; the type of home</li>
-<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
-<li><strong>id</strong> (<em>int</em>) &#8211; a unique home identification number</li>
-<li><a class="reference internal" href="location.html#module-location" title="location"><strong>location</strong></a> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) &#8211; the location of the home</li>
-<li><strong>population</strong> (<em>int</em>) &#8211; the number of people who reside in a home</li>
-<li><strong>revenue</strong> (<em>float</em>) &#8211; the household revenue</li>
+<li><strong>assets</strong> (<em>dict</em>) – contains a list of all of the assets available in the home.</li>
+<li><strong>category</strong> (<em>int</em>) – the type of home</li>
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – the time</li>
+<li><strong>id</strong> (<em>int</em>) – a unique home identification number</li>
+<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) – the location of the home</li>
+<li><strong>population</strong> (<em>int</em>) – the number of people who reside in a home</li>
+<li><strong>revenue</strong> (<em>float</em>) – the household revenue</li>
 </ul>
 </td>
 </tr>
@@ -74,12 +63,13 @@
 <dl class="method">
 <dt id="home.Home.advertise">
 <code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em>, <em>do_interruption=False</em>, <em>locale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home.html#Home.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#home.Home.advertise" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function handles all of the Activities&#8217; advertisements to a Person. This occurs by looping         through each asset in the home and collecting a list of advertisements for each activity in each asset.</p>
-<ol class="arabic simple">
-<li>loop through each asset</li>
-<li><dl class="first docutils">
-<dt>if the asset is busy <em>and</em> is in the same location of the person</dt>
-<dd><ul class="first last">
+<dd><p>This function handles all of the activities’ advertisements to a person. This occurs by looping         through each asset in the home and collecting a list of advertisements for each activity in each         asset. Specifically, the function does the following:</p>
+<ol class="arabic">
+<li><p class="first">loop through each asset</p>
+</li>
+<li><p class="first">if the asset is busy <em>and</em> is in the same location of the person</p>
+<blockquote>
+<div><ul class="simple">
 <li><dl class="first docutils">
 <dt>for each activity in the given asset</dt>
 <dd><ol class="first last arabic">
@@ -91,8 +81,7 @@
 </dl>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
@@ -100,13 +89,13 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; a person to whom the assets are advertising</li>
-<li><strong>do_interruption</strong> (<em>bool</em>) &#8211; a flag that indicates whether or not we should advertise for interruptions</li>
-<li><strong>locale</strong> (<em>int</em>) &#8211; a local location identifier</li>
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – a person to whom the assets are advertising</li>
+<li><strong>do_interruption</strong> (<em>bool</em>) – a flag that indicates whether or not we should advertise for interruptions</li>
+<li><strong>locale</strong> (<em>int</em>) – a local location identifier</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the advertisements (score, asset, activity, person) containing the various data for                         each advertisement: (&#8220;score&#8221;, &#8220;asset&#8221;, &#8220;activity&#8221;, &#8220;person&#8221;) coupling</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the advertisements (score, asset, activity, person) containing the various data for                         each advertisement: (“score”, “asset”, “activity”, “person”) coupling of                         data type (float, <a class="reference internal" href="asset.html#asset.Asset" title="asset.Asset"><code class="xref py py-class docutils literal notranslate"><span class="pre">asset.Asset</span></code></a>, <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal notranslate"><span class="pre">activity.Activity</span></code></a>,                         <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal notranslate"><span class="pre">person.Person</span></code></a>)</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
@@ -124,7 +113,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) &#8211; a list of people who reside in the home</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) – a list of people who reside in the home</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -170,7 +159,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) &#8211; the list of people living in the home</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) – the list of people living in the home</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -186,7 +175,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) &#8211; the list of people living in the home</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em>) – the list of people living in the home</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -231,21 +220,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/home.txt"
+      <li><a href="_sources/home.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -253,14 +241,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/home.txt"
+      <a href="_sources/home.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -1,0 +1,243 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>analysis module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="analyzer module" href="analyzer.html" />
+    <link rel="prev" title="singleton module" href="singleton.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-analysis">
+<span id="analysis-module"></span><h1>analysis module<a class="headerlink" href="#module-analysis" title="Permalink to this headline">¶</a></h1>
+<p>This file contains capability for analyzing results from the comparisons between CHAD (Consolidated Human Activity Database) data and the performance of ABMHAP (Agent-Based Model of Human Activity Patterns).</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This modules is old and may or may not be used.</p>
+</div>
+<dl class="function">
+<dt id="analysis.get_error">
+<code class="descclassname">analysis.</code><code class="descname">get_error</code><span class="sig-paren">(</span><em>chad_raw</em>, <em>chad_stats</em>, <em>col_name</em>, <em>abm_all</em>, <em>do_cyclical=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis.html#get_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analysis.get_error" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">I do not think this function is used.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chad_raw</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD activity data being compared to</li>
+<li><strong>chad_stats</strong> (<em>pandas.core.frame.DataFrame</em>) – the relevant statistics for the CHAD activity
+of the person (PID) being modeled</li>
+<li><strong>col_name</strong> (<em>str</em>) – <p>the name of the column of the CHAD data being compared</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">example:</th><td class="field-body">col_name = “dt” would allow access for chad_raw[“dt”]</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><strong>abm_all</strong> – <p>the ABM simulation data for the simulated person’s activity
+with respected to the quantity from col_name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">example:</th><td class="field-body">if col_name = “dt”, then abm_all should contain the duration data</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><strong>do_cyclical</strong> (<em>bool</em>) – indicates when to cast data in a “cyclical” form. As in,
+[0, 24 * HOURS_2_MIN - 1] [minutes]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the L2 (sum of squares) absolute error for each agent,     the L2 (sum of squares) relative error for each agent</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float array, float array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="analysis.get_moments">
+<code class="descclassname">analysis.</code><code class="descname">get_moments</code><span class="sig-paren">(</span><em>abm_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis.html#get_moments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analysis.get_moments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in all of the ABMHAP simulation data [in minutes] for a particular activity and returns     the moments (mean and standard deviation) [hours] for each person in the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>abm_data</strong> (<em>list</em>) – the list of ABMHAP of activity data in minutes per person</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the mean and standard deviation for each person in the simulation</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray, numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="analysis.get_proper_data">
+<code class="descclassname">analysis.</code><code class="descname">get_proper_data</code><span class="sig-paren">(</span><em>df_dt</em>, <em>df_start</em>, <em>df_record</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis.html#get_proper_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analysis.get_proper_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the duration, start time, and record data for a given activity</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function may not be  used.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df_dt</strong> (<em>pandas.core.frame.DataFrame</em>) – the duration statistical data for a given activity</li>
+<li><strong>df_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the start time statistical data for a given activity</li>
+<li><strong>df_record</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD records for the given activity</li>
+<li><strong>x</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit sampling the CHAD data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="analysis.get_verification_info">
+<code class="descclassname">analysis.</code><code class="descname">get_verification_info</code><span class="sig-paren">(</span><em>demo</em>, <em>key_activity</em>, <em>sampling_params</em>, <em>fname_stats=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis.html#get_verification_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analysis.get_verification_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the CHAD parameters for each household</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Sometimes record dataframe can be null. I should remove the sampling of the record code <strong>and</strong>         output</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>demo</strong> (<em>int</em>) – the demographic identifier</li>
+<li><strong>key_activity</strong> (<em>int</em>) – the identifier for the activity (from my_globals)</li>
+<li><strong>sampling_params</strong> (list of <a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><code class="xref py py-class docutils literal notranslate"><span class="pre">chad_params.CHAD_params</span></code></a>) – the parameters that the limit the     sampling of the CHAD data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the activity moments of the start time data from CHAD used to verify the ABMHAP,     the activity moments of the end time data from CHAD used to verify the ABMHAP,     the activity moments of the duration data from CHAD used to verify the ABMHAP,     the activity records data from CHAD used to verify the ABMHAP</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="analysis.save_figures">
+<code class="descclassname">analysis.</code><code class="descname">save_figures</code><span class="sig-paren">(</span><em>figs</em>, <em>fnames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis.html#save_figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analysis.save_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves figures in a python pickle file, so that the data     may be accessed again.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>figs</strong> (<em>list of figures</em>) – figures for duration and start time for an activity</li>
+<li><strong>fnames</strong> (<em>list of str</em>) – file names to save the data in figs</li>
+<li><strong>fdir</strong> (<em>str</em>) – the directory in which to save the files</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="singleton.html" title="previous chapter">singleton module</a></li>
+      <li>Next: <a href="analyzer.html" title="next chapter">analyzer module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/analysis.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/analysis.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

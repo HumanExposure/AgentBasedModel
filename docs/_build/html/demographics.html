@@ -1,0 +1,553 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>demographics notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="demography module" href="demography.html" />
+    <link rel="prev" title="datum module" href="datum.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="demographics-notebook">
+<h1>demographics notebook<a class="headerlink" href="#demographics-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+</pre></div>
+</div>
+<p>This file does the following</p>
+<ol class="arabic simple">
+<li>Goes through the Consolidated Human Activity Database (CHAD) data and
+seprates CHAD into datasets of different demographic groups</li>
+<li>Or loads saved datasets representing different demographic groups for
+CHAD</li>
+<li>Saves data for each demographic group:<ul>
+<li>Saves the demographic data into the ‘data_large’ directory</li>
+<li>Saves the demographic in a compressed form in the ‘data’ directory
+as zip files</li>
+</ul>
+</li>
+<li>For a given demographic group and a given collection of activities<ul>
+<li>prints the amount of individuals found doing each activity given
+by a unique CHAD code</li>
+<li>plots the histogram and/or CDF of distributions of start time, end
+time, and duration for each specific activity given by a CHAD code</li>
+<li>Saves the plots</li>
+</ul>
+</li>
+</ol>
+<p>import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># import</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">run_chad&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># plotting capabilities</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+
+<span class="kn">import</span> <span class="nn">chad</span><span class="o">,</span> <span class="nn">chad_code</span>
+</pre></div>
+</div>
+<p>functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_cdfs</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">do_save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the distribution of activity distrbution of \</span>
+<span class="sd">    start time, end time, and duration as cumulative distribution \</span>
+<span class="sd">    functions (CDFs) from the CHAD data of the given activity.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df:</span>
+<span class="sd">    :param codes: the CHAD activity codes</span>
+<span class="sd">    :type codes: list of list of int</span>
+<span class="sd">    :param int N: the number of points sampled within the empirical CDF</span>
+<span class="sd">    :param int linewidth: the width of the plotted lines</span>
+<span class="sd">    :param bool do_save: a flag indicating whether (if True) to save the \</span>
+<span class="sd">    figures or not(if False)</span>
+<span class="sd">    :param str fpath: the file directory to save the files in</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># codes: chad_codes for each activity</span>
+
+    <span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="c1"># for each activity category within the CHAD codes</span>
+    <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+
+        <span class="c1"># get the data w</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">act</span><span class="p">]</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+        <span class="c1"># get the mean duration data</span>
+        <span class="n">y_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># get the mean start time data</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># get the mean end time data</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_dt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="c1"># create subplots</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># create title</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">chad_code</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">])</span>
+
+            <span class="c1"># plot the start time</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">y_start</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+            <span class="c1"># plot the end time</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">y_end</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+            <span class="c1"># plot the duration</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">y_dt</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+            <span class="c1"># plot axis label and legend</span>
+            <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Hours&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># save</span>
+            <span class="c1">#</span>
+            <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+                <span class="c1"># figure name</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">INT_2_SAVE_FIG_FNAME</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+                <span class="c1"># split the file name into 2 parts from the back</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># create the filename</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+                <span class="c1"># add list of figures and finle names</span>
+                <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+                <span class="n">fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># save the figures</span>
+    <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">fig</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">plot_histograms</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">do_save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the distribution of activity distrbution of \</span>
+<span class="sd">    start time, end time, and duration as histograms from the CHAD \</span>
+<span class="sd">    data of the given activity.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df:</span>
+<span class="sd">    :param codes: the CHAD activity codes</span>
+<span class="sd">    :type codes: list of list of int</span>
+<span class="sd">    :param int num_bins: the number of bins within the histogram</span>
+<span class="sd">    :param bool do_save: a flag indicating whether (if True) to save the \</span>
+<span class="sd">    figures or not(if False)</span>
+<span class="sd">    :param str fpath: the file directory to save the files in</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="c1"># for each activitiy within the CHAD activity codes</span>
+    <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+
+        <span class="c1"># get the data w</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">act</span><span class="p">]</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+
+        <span class="c1"># get the mean duration data</span>
+        <span class="n">y_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># get the mean start time data</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># get the mean end time data</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_dt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># create subplots</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># create title</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">chad_code</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">])</span>
+
+            <span class="c1"># plot the start time</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y_start</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+
+            <span class="c1"># plot the end time</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y_end</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">)</span>
+
+            <span class="c1"># plot the duration</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y_dt</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+
+            <span class="c1"># plot axis label and legend</span>
+            <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Hours&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># save</span>
+            <span class="c1">#</span>
+            <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+
+                <span class="c1"># figure name</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">INT_2_SAVE_FIG_FNAME</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+                <span class="c1"># split the file name into 2 parts from the back</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">histo</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="c1"># add list of figures and finle names</span>
+                <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+                <span class="n">fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># save the figures</span>
+    <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">fig</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves the data for a given demographic.</span>
+
+<span class="sd">    :param chad.CHAD_RAW x: the data to be pickled</span>
+<span class="sd">    :param str fname: the name of the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># first, close the zip file. This is necessary to avoid an pickling error</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># pickle the data</span>
+    <span class="n">mg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>Load data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set flags</span>
+
+<span class="c1"># flag to load pre-saved CHAD data(if True) or (if False) to process the CHAD data, \</span>
+<span class="c1"># which takes substantially more time</span>
+<span class="n">do_load</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># flag to show messages</span>
+<span class="n">do_print</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># load all of the data</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">all_data</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ALL</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">all_data</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># get all of the data for working age adults</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">adult</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">adult</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_adult</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># get data for working adults</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">adult_work</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT_WORK</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">adult_work</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_adult_work</span><span class="p">(</span><span class="n">adult</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># get data for non-working adults</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">adult_non_work</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT_NON_WORK</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">adult_non_work</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_adult_non_work</span><span class="p">(</span><span class="n">adult</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># children school</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">child_school</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_CHILD_SCHOOL</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">child_school</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_child_school</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># pre-school children</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+    <span class="n">child_young</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_CHILD_YOUNG</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">child_young</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">get_child_young</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>save data</p>
+<p>save all the information for the demographics in data_large directory</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save all of the information for the following demographics</span>
+
+<span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_data</span><span class="p">,</span> <span class="n">adult</span><span class="p">,</span> <span class="n">adult_non_work</span><span class="p">,</span> <span class="n">adult_work</span><span class="p">,</span> <span class="n">child_school</span><span class="p">,</span> <span class="n">child_young</span><span class="p">]</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ALL</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT_NON_WORK</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_ADULT_WORK</span><span class="p">,</span> \
+               <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_CHILD_SCHOOL</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_CHILD_YOUNG</span> <span class="p">]</span>
+
+    <span class="c1"># save all of the data</span>
+    <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compress the demographics direcotory information</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># The demographic</span>
+<span class="c1">#</span>
+<span class="n">demos</span> <span class="o">=</span> <span class="p">[</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">,</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># compress the directory in the non-large data directory</span>
+<span class="c1">#</span>
+<span class="n">do_compression</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">chooser_temp</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_ADULT</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_ADULT_LARGE</span><span class="p">),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_ADULT_WORK</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_ADULT_WORK_LARGE</span><span class="p">),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_ADULT_NON_WORK</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_ADULT_NON_WORK_LARGE</span><span class="p">),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_CHILD_SCHOOL</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_CHILD_SCHOOL_LARGE</span><span class="p">),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_CHILD_YOUNG</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_CHILD_YOUNG_LARGE</span><span class="p">),</span>
+          <span class="p">}</span>
+
+<span class="k">if</span> <span class="n">do_compression</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">demos</span><span class="p">:</span>
+        <span class="n">fname_out</span><span class="p">,</span> <span class="n">fdir_src</span> <span class="o">=</span> <span class="n">chooser_temp</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+        <span class="n">mg</span><span class="o">.</span><span class="n">save_zip</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span><span class="n">fname_out</span><span class="p">,</span> <span class="n">source_dir</span><span class="o">=</span><span class="n">fdir_src</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>printing information about the data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># get the data</span>
+<span class="c1">#</span>
+<span class="n">code_groups</span> <span class="o">=</span> <span class="p">[</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">EAT</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">EDUCATION</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">WORK</span><span class="p">,</span> <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE</span><span class="p">,</span> \
+               <span class="n">chad_code</span><span class="o">.</span><span class="n">COMMUTE_EDU</span> <span class="p">]</span>
+
+<span class="c1"># code_groups = [chad_code.SLEEP]</span>
+
+<span class="n">df_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">data</span><span class="o">.</span><span class="n">activity_times</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span> <span class="k">for</span> <span class="n">codes</span> <span class="ow">in</span> <span class="n">code_groups</span> <span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># for each CHAD code, print information about the amount of data that is in the respective demographic group</span>
+<span class="c1">#</span>
+<span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">code_groups</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">do_print</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;data shape&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of individuals: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">act</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="se">\t</span><span class="s1">Individuals:</span><span class="se">\t</span><span class="si">%d</span><span class="se">\t</span><span class="s1">Count:</span><span class="se">\t</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chad_code</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()),</span> \
+                                                         <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>plotting</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chooser_fpath</span> <span class="o">=</span><span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ALL</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_ALL</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_ADULT</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_ADULT_WORK</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_ADULT_NON_WORK</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_CHILD_SCHOOL</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG_CHILD_YOUNG</span><span class="p">,</span>
+               <span class="p">}</span>
+
+<span class="n">chooser_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ALL</span><span class="p">:</span> <span class="n">all_data</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT</span><span class="p">:</span> <span class="n">adult</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">adult_work</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">adult_non_work</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">child_school</span><span class="p">,</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">child_young</span><span class="p">,</span>
+               <span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># get data and fpath for saving</span>
+<span class="c1">#</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">chooser_data</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="n">chooser_fpath</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">chad&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+..my_datafigdemographicadult_workchad
+</pre>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># flags for figures</span>
+
+<span class="c1"># plot the figures</span>
+<span class="n">do_plot</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># save the figure plots</span>
+<span class="n">do_save_fig</span><span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plot the histograms</span>
+<span class="c1">#</span>
+
+<span class="k">if</span> <span class="n">do_plot</span><span class="p">:</span>
+
+    <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">code_groups</span><span class="p">):</span>
+
+        <span class="n">plot_histograms</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">do_save</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plot the CDFs</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">do_plot</span><span class="p">:</span>
+
+    <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">code_groups</span><span class="p">):</span>
+
+        <span class="n">plot_cdfs</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">do_save</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="datum.html" title="previous chapter">datum module</a></li>
+      <li>Next: <a href="demography.html" title="next chapter">demography module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/demographics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/demographics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

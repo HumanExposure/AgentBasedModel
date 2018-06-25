@@ -1,0 +1,443 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>variation &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for variation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. warning::</span>
+<span class="sd">    This file as antiquated and needs to be **REMOVED**.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capability</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># multiprocessing capability</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+
+<span class="c1"># mathematical capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">integrate</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">optimize</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+<span class="kn">import</span> <span class="nn">analysis</span><span class="o">,</span> <span class="nn">driver</span><span class="o">,</span> <span class="nn">driver_result</span><span class="o">,</span> <span class="nn">evaluation</span><span class="o">,</span> <span class="nn">params</span><span class="o">,</span> <span class="nn">trial</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># function</span>
+<span class="c1"># ===========================================</span>
+
+<div class="viewcode-block" id="run_universe_parallel"><a class="viewcode-back" href="../variation.html#variation.run_universe_parallel">[docs]</a><span class="k">def</span> <span class="nf">run_universe_parallel</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+
+    <span class="n">u</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">u</span></div>
+
+<div class="viewcode-block" id="run_trial_parallel"><a class="viewcode-back" href="../variation.html#variation.run_trial_parallel">[docs]</a><span class="k">def</span> <span class="nf">run_trial_parallel</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="run_uni_parallel"><a class="viewcode-back" href="../variation.html#variation.run_uni_parallel">[docs]</a><span class="k">def</span> <span class="nf">run_uni_parallel</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">run_uni</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">u</span></div>
+
+<div class="viewcode-block" id="sweep_parallel"><a class="viewcode-back" href="../variation.html#variation.sweep_parallel">[docs]</a><span class="k">def</span> <span class="nf">sweep_parallel</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="n">v</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">sweep</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">I</span></div>
+
+<div class="viewcode-block" id="run_simulation"><a class="viewcode-back" href="../variation.html#variation.run_simulation">[docs]</a><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">t_0</span><span class="p">,</span> <span class="n">u_list</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">num_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_print</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="c1"># empty trial</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">Trial</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># reset / initialize the runs</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">:</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">t_0</span><span class="p">)</span>
+
+    <span class="c1"># start recording the time</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># this test prints the parameters for each agent in the trial</span>
+    <span class="c1"># need to restart the clock to t_start, need to reiniitalize all parameters to the default state</span>
+    <span class="c1"># before restarting the simulations</span>
+    <span class="k">if</span> <span class="n">num_cpu</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">:</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">u_list</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">run_universe_parallel</span><span class="p">,</span> <span class="n">u_list</span><span class="p">)</span>
+
+    <span class="c1"># record the time</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># time to run the simulation</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+
+    <span class="k">if</span> <span class="n">do_print</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;elapsed time for variation.run_simulation():</span><span class="se">\t</span><span class="si">%.3f</span><span class="s1"> [s]&#39;</span> <span class="o">%</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># this is the list of activity diaries per household</span>
+    <span class="n">diaries</span> <span class="o">=</span> <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">get_diary</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">]</span>
+
+    <span class="c1"># store the results of the simulations in an object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">driver_result</span><span class="o">.</span><span class="n">Driver_Result</span><span class="p">(</span><span class="n">diaries</span><span class="o">=</span><span class="n">diaries</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="run_initial"><a class="viewcode-back" href="../variation.html#variation.run_initial">[docs]</a><span class="k">def</span> <span class="nf">run_initial</span><span class="p">(</span><span class="n">trials</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">do_print</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="c1"># start recording the time</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># this test prints the parameters for each agent in the trial</span>
+    <span class="k">if</span> <span class="n">num_cpu</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">u_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">run_uni</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trials</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">u_list</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span> <span class="n">run_uni_parallel</span><span class="p">,</span> <span class="n">trials</span><span class="p">)</span>
+
+    <span class="c1"># record the time</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># simulation time</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+
+    <span class="k">if</span> <span class="n">do_print</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;elapsed time for variation.run_initial():</span><span class="se">\t</span><span class="si">%.3f</span><span class="s1"> [s]&#39;</span> <span class="o">%</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># this is the list of activity diaries per household</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">diaries</span> <span class="o">=</span> <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">get_diary</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">]</span>
+
+    <span class="c1"># store the results of the simulations in an object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">driver_result</span><span class="o">.</span><span class="n">Driver_Result</span><span class="p">(</span><span class="n">diaries</span><span class="o">=</span><span class="n">diaries</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">u_list</span></div>
+
+
+<div class="viewcode-block" id="integrate_residual"><a class="viewcode-back" href="../variation.html#variation.integrate_residual">[docs]</a><span class="k">def</span> <span class="nf">integrate_residual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">df_obs</span><span class="p">,</span> <span class="n">act_code</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">,</span> <span class="n">do_weekday</span><span class="p">,</span> <span class="n">do_duration</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+    <span class="n">weekend_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_weekend_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">diaries</span><span class="p">]</span>
+    <span class="n">weekday_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_weekday_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">diaries</span><span class="p">]</span>
+
+    <span class="n">chooser_weekday</span> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="n">weekday_list</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="n">weekend_list</span><span class="p">}</span>
+
+    <span class="n">df_list</span> <span class="o">=</span> <span class="n">chooser_weekday</span><span class="p">[</span><span class="n">do_weekday</span><span class="p">]</span>
+
+    <span class="n">df_abm</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">sample_activity_abm</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">act_code</span><span class="p">)</span>
+
+    <span class="c1"># get the duration data</span>
+    <span class="n">x_dt</span><span class="p">,</span> <span class="n">cdf_dt</span><span class="p">,</span> <span class="n">inv_cdf_dt</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">residual_analysis</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">df_abm</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">df_obs</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># get the start time data</span>
+    <span class="n">x_start</span><span class="p">,</span> <span class="n">cdf_start</span><span class="p">,</span> <span class="n">inv_cdf_start</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">residual_analysis</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">df_abm</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> \
+                                                                     <span class="n">obs</span><span class="o">=</span><span class="n">df_obs</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> \
+                                                                     <span class="n">do_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">do_duration</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">inv_cdf_dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">inv_cdf_start</span>
+
+    <span class="c1"># integrate the residual [the expected value of the absolute value of the residual]</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">simps</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">res_scale</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">I</span></div>
+
+<div class="viewcode-block" id="sweep"><a class="viewcode-back" href="../variation.html#variation.sweep">[docs]</a><span class="k">def</span> <span class="nf">sweep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="p">):</span>
+
+    <span class="n">std</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_wd_dt_std</span> <span class="o">=</span> <span class="n">std</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_we_dt_std</span> <span class="o">=</span> <span class="n">std</span>
+
+    <span class="n">u</span>       <span class="o">=</span> <span class="n">u_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">t_0</span>     <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">t_start</span>
+    <span class="n">result</span>  <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">t_0</span><span class="o">=</span><span class="n">t_0</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="o">=</span><span class="n">u_list</span><span class="p">,</span> <span class="n">do_print</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="c1"># the function to minimize</span>
+<span class="c1"># this assumes that u_list was already created, that is to say that run_initial was already run</span>
+<div class="viewcode-block" id="f"><a class="viewcode-back" href="../variation.html#variation.f">[docs]</a><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param numpy.ndarray x: the standard deviation a</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># values must be in minutes (fractional minutes are ok)</span>
+
+    <span class="n">std</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">u_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">people</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_wd_dt_std</span> <span class="o">=</span> <span class="n">std</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">bio</span><span class="o">.</span><span class="n">sleep_we_dt_std</span> <span class="o">=</span> <span class="n">std</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">t_0</span><span class="o">=</span><span class="n">t_0</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="o">=</span><span class="n">u_list</span><span class="p">,</span> <span class="n">num_cpu</span><span class="o">=</span><span class="n">num_cpu</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
+                            <span class="n">do_print</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># integrate the residual curve</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">integrate_residual</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">df_obs</span><span class="o">=</span><span class="n">df_obs</span><span class="p">,</span> <span class="n">act_code</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">,</span> \
+                           <span class="n">do_weekday</span><span class="o">=</span><span class="n">do_weekday</span><span class="p">,</span> <span class="n">do_duration</span><span class="o">=</span><span class="n">do_duration</span><span class="p">)</span>
+
+    <span class="c1">#print(I)</span>
+    <span class="k">return</span> <span class="n">I</span></div>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># run</span>
+<span class="c1"># ===========================================</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># get monte-carlo parameters from command line</span>
+    <span class="n">num_cpu</span><span class="p">,</span> <span class="n">num_hhld</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">get_cmd_line_params</span><span class="p">()</span>
+
+    <span class="c1"># set the parameters for the simulation</span>
+    <span class="n">num_days</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">num_hours</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">num_min</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># set the parameters for the simulation</span>
+    <span class="n">trial_code</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">OMNI</span>
+    <span class="n">demographic</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT</span>
+    <span class="n">chad_activity_params</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">TRIAL_2_CHAD_PARAMS</span><span class="p">[</span><span class="n">trial_code</span><span class="p">]</span>
+
+    <span class="c1"># run the simulation using default parameters</span>
+    <span class="n">param_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">params</span><span class="o">.</span><span class="n">Params</span><span class="p">(</span><span class="n">num_days</span><span class="o">=</span><span class="n">num_days</span><span class="p">,</span> <span class="n">num_hours</span><span class="o">=</span><span class="n">num_hours</span><span class="p">,</span> <span class="n">num_min</span><span class="o">=</span><span class="n">num_min</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_hhld</span><span class="p">)]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># create the conditions for each trial</span>
+    <span class="c1">#</span>
+    <span class="n">trials</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">initialize_trials</span><span class="p">(</span><span class="n">param_list</span><span class="p">,</span> <span class="n">trial_code</span><span class="p">,</span> <span class="n">chad_activity_params</span><span class="p">,</span> <span class="n">demographic</span><span class="p">)</span>
+
+    <span class="c1"># this is the original start time for the simulation</span>
+    <span class="n">t_0</span> <span class="o">=</span> <span class="n">param_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span>
+
+    <span class="n">chad_param_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">sampling_params</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trials</span><span class="p">]</span>
+
+    <span class="c1"># run the initial simulations</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># do the initial run</span>
+    <span class="c1">#</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing the initial run...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_cpu</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">num_cpu</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">u_list</span> <span class="o">=</span> <span class="n">run_initial</span><span class="p">(</span><span class="n">trials</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">)</span>
+
+    <span class="c1"># store the results</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="c1"># grab the observed data</span>
+
+    <span class="n">act</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">do_weekday</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">do_duration</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># get the observed data (df_obs)</span>
+    <span class="n">stats_dt</span><span class="p">,</span> <span class="n">stats_start</span><span class="p">,</span> <span class="n">df_obs</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get_verification_info</span><span class="p">(</span><span class="n">demo</span><span class="o">=</span><span class="n">demographic</span><span class="p">,</span> <span class="n">key_activity</span><span class="o">=</span><span class="n">act</span><span class="p">,</span>
+                                                                 <span class="n">sampling_params</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">,</span> <span class="n">do_weekday</span><span class="o">=</span><span class="n">do_weekday</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># variation</span>
+    <span class="c1">#</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing a sweep of variation...&#39;</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">std_max</span> <span class="o">=</span> <span class="mi">90</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">std_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">num_cpu</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;i: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">sweep</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">u_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span> <span class="n">sweep_parallel</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;elapsed time: </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">integrate_residual</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">df_obs</span><span class="o">=</span><span class="n">df_obs</span><span class="p">,</span> <span class="n">act_code</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">,</span> \
+                                     <span class="n">do_weekday</span><span class="o">=</span><span class="n">do_weekday</span><span class="p">,</span> <span class="n">do_duration</span><span class="o">=</span><span class="n">do_duration</span><span class="p">)</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span> <span class="n">f</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;elapsed time: </span><span class="si">%.2f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># poly fit</span>
+    <span class="n">z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">z3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">fit2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
+    <span class="n">fit3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">z3</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit2</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;deg 2&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit3</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;deg 3&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plot some stuff</span>
+    <span class="c1">#</span>
+    <span class="n">do_plot</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">do_plot</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">uu</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">uu</span><span class="p">)</span>
+
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># minimize</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># initial guess of variation [minutes]</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="mi">22</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------------&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;starting the minimization...&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--------------------------&#39;</span><span class="p">)</span>
+
+    <span class="n">xtol</span> <span class="o">=</span> <span class="mf">1e0</span>
+    <span class="n">ftol</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">do_display</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">do_optimize</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">do_optimize</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;nelder-mead&#39;</span>
+        <span class="n">chooser_opt</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;powell&#39;</span><span class="p">:{</span><span class="s1">&#39;xtol&#39;</span><span class="p">:</span><span class="n">xtol</span><span class="p">,</span> <span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="n">do_display</span><span class="p">,</span> <span class="s1">&#39;ftol&#39;</span><span class="p">:</span> <span class="n">ftol</span><span class="p">},</span>
+                       <span class="s1">&#39;nelder-mead&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span> <span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="n">do_display</span><span class="p">,</span> <span class="s1">&#39;ftol&#39;</span><span class="p">:</span> <span class="n">ftol</span><span class="p">},</span>
+                       <span class="s1">&#39;bfgs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="n">do_display</span><span class="p">},</span> <span class="p">}</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="n">chooser_opt</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="c1">#res = optimize.minimize(f, x0=x0, method=method, options=options)</span>
+
+        <span class="n">minimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;powell&#39;</span><span class="p">}</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">basinhopping</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">minimizer_kwargs</span><span class="o">=</span><span class="n">minimizer_kwargs</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;print the results&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -12,26 +12,26 @@
 # August 14, 2017
 
 """
-This module contains information about the :class:`asset.Asset` that allows a :class:`person.Person` to do \
-the following:
+This module contains information about the asset that allows a person to do \
+the following activities:
 
-#. :class:`commute.Commute_To_Work`
-#. :class:`commute.Commute_From_Work`
+#. commute to work
+#. commute from work
 
-activities. This module contains code for :class:`transport.Transport`.
+This module contains code for :class:`transport.Transport`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # agent-based model modules
 import asset, commute, location, occupation
 
 # ===============================================
-# class
+# class Transport
 # ===============================================
 
 class Transport(asset.Asset):

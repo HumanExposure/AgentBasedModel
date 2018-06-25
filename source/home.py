@@ -20,17 +20,17 @@ This module contains the following class: :class:`home.Home`
 .. moduleauthor:: Dr. Namdi Brandon.
 """
 
-# ----------------------------------------------------------
-# imports
-# ----------------------------------------------------------
+# ===============================================
+# import
+# ===============================================
 
 # agent-based model modules
 import location as loc
 import bed, food, state, transport, workplace
 
-# ----------------------------------------------------------
-# Constants
-# ----------------------------------------------------------
+# ===============================================
+# constants
+# ===============================================
 
 # home categories
 # these are not used in the current version of ABMHAP
@@ -76,6 +76,10 @@ STR_2_INT_PROP = { v: k for k, v in INT_2_STR_PROP.items() }
 N_PROPERTIES = len(INT_2_STR_PROP) 
 N_CATEGORIES = len(INT_2_STR_CAT)
 
+# ===============================================
+# class Home
+# ===============================================
+
 class Home(object):
 
     """
@@ -88,7 +92,7 @@ class Home(object):
     :ivar int category: the type of home
     :ivar temporal.Temporal clock: the time
     :ivar int id: a unique home identification number
-    :ivar location.Location location: the location of the home
+    :ivar location.Location 'location': the location of the home
     :ivar int population: the number of people who reside in a home
     :ivar float revenue: the household revenue
     """
@@ -137,19 +141,18 @@ class Home(object):
         self.revenue = 0.0
 
         return
-    
-    #-----------------------------------------------------
-    # functions
-    #-----------------------------------------------------
+
 
     def advertise(self, p, do_interruption=False, locale=None):
 
         """
-        This function handles all of the Activities' advertisements to a Person. This occurs by looping \
-        through each asset in the home and collecting a list of advertisements for each activity in each asset.
+        This function handles all of the activities' advertisements to a person. This occurs by looping \
+        through each asset in the home and collecting a list of advertisements for each activity in each \
+        asset. Specifically, the function does the following:
 
         #. loop through each asset
         #. if the asset is busy *and* is in the same location of the person
+
             * for each activity in the given asset
                 #. advertise for interrupting activities
                 #. advertise for non interrupting activities
@@ -161,7 +164,9 @@ class Home(object):
         :param int locale: a local location identifier
 
         :return: the advertisements (score, asset, activity, person) containing the various data for \
-                        each advertisement: ("score", "asset", "activity", "person") coupling
+                        each advertisement: ("score", "asset", "activity", "person") coupling of \
+                        data type (float, :class:`asset.Asset`, :class:`activity.Activity`, \
+                        :class:`person.Person`)
         :rtype: dict        
         """
 

@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>&lt;no title&gt; &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+</pre></div>
+</div>
+<p>This notebook is <strong>only used for development</strong>.</p>
+<p>This notebook is in charge of saving data and files in a compressed
+format as .zip files by doing the following:</p>
+<ol class="arabic simple">
+<li>save demographic data originally found in the ‘data_large’ directory
+in the compressed form used by the ABMHAP in the ‘data’ directory</li>
+<li>save the entire directory containing the ABMHAP directory in a
+compressed (.zip) format</li>
+</ol>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+<span class="kn">import</span> <span class="nn">chad</span>
+</pre></div>
+</div>
+<p>Save the files releated to the demographics</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># the demographic</span>
+<span class="c1">#</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of characters to not include: &#39;.zip&#39;</span>
+<span class="n">n_char</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># chooser</span>
+<span class="c1"># (the outfile directory for each demographic with no .zip ending, the source directory to compress)</span>
+<span class="n">chooser_fout_source</span> <span class="o">=</span> <span class="p">{</span> <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_ADULT_WORK</span><span class="p">[:</span><span class="o">-</span><span class="n">n_char</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_ADULT_WORK_LARGE</span><span class="p">),</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_ADULT_NON_WORK</span><span class="p">[:</span><span class="o">-</span><span class="n">n_char</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_ADULT_NON_WORK_LARGE</span><span class="p">),</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_CHILD_SCHOOL</span><span class="p">[:</span><span class="o">-</span><span class="n">n_char</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_CHILD_SCHOOL_LARGE</span><span class="p">),</span>
+                <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="p">(</span><span class="n">chad</span><span class="o">.</span><span class="n">FNAME_CHILD_YOUNG</span><span class="p">[:</span><span class="o">-</span><span class="n">n_char</span><span class="p">],</span> <span class="n">chad</span><span class="o">.</span><span class="n">FDIR_CHILD_YOUNG_LARGE</span><span class="p">),</span>
+               <span class="p">}</span>
+
+<span class="c1"># the outfile name (no .zip ending)</span>
+<span class="n">fname</span><span class="p">,</span> <span class="n">source_dir</span> <span class="o">=</span> <span class="n">chooser_fout_source</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Save (zip) a directory about the demographics</span>
+<span class="c1">#</span>
+<span class="c1"># save flag</span>
+<span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># save the data</span>
+<span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+    <span class="n">mg</span><span class="o">.</span><span class="n">save_zip</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">source_dir</span><span class="o">=</span><span class="n">source_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save (zip) the entire directory for the ABMHAP code as a compressed file</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># saving parameters</span>
+<span class="c1">#</span>
+
+<span class="c1"># save (zip) the entire directory that contains the ABMHAP code</span>
+<span class="c1"># this is the directory to be compressed</span>
+<span class="n">fpath_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="p">)</span>
+
+<span class="c1"># file directory</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+
+<span class="c1"># the file name of the save .zip file with out the .zip extension</span>
+<span class="n">fname_out</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">ABMHAP&#39;</span> <span class="c1"># with no .zip</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># save the directory</span>
+<span class="c1">#</span>
+
+<span class="c1"># save flag</span>
+<span class="n">do_save_abm_dir</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="n">do_save_abm_dir</span><span class="p">:</span>
+    <span class="n">mg</span><span class="o">.</span><span class="n">save_zip</span><span class="p">(</span><span class="n">out_file</span><span class="o">=</span><span class="n">fname_out</span><span class="p">,</span> <span class="n">source_dir</span><span class="o">=</span><span class="n">fpath_src</span><span class="p">)</span>
+</pre></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/full_save.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/full_save.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

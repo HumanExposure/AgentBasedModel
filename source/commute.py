@@ -13,8 +13,8 @@
 
 """
 This module contains about activities associated with commuting to and from work. This class is an \
-:class:`activity.Activity` that gives a :class:`person.Person` the ability to commute to/ from work/ \
-school and satisfy the need Travel :class:`travel.Travel`.
+Activity (:class:`activity.Activity`) that gives a Person (:class:`person.Person`) the ability to \
+commute to/ from work/ school and satisfy the need Travel (:class:`travel.Travel`).
 
 This module contains the following classes:
 
@@ -57,7 +57,7 @@ class Commute(activity.Activity):
     def end(self,p, local):
 
         """
-        This function handles the end of an Activity.
+        This function handles the end of an activity.
 
         :param person.Person p: the person of interest
         :param int local: the local location (work or home)
@@ -93,10 +93,10 @@ class Commute(activity.Activity):
         This handles the start of the commute activity.
 
         * If the current location of person is at home, the person is going to work, so set the \
-        location to :const:`location.OFF_SITE`
+        location to :const:`location.OFF_SITE`.
 
         * If the current location of the person is off site, the person is going back home, so \
-        set the location to :const:`location.HOME`
+        set the location to :const:`location.HOME`.
 
         :param person.Person p: the person of interest
 
@@ -122,7 +122,8 @@ class Commute(activity.Activity):
     def start_commute(self, p):
 
         """
-        This function sets the variables pertaining to starting the commute activity.
+        This function sets the variables pertaining to starting the commute activity by doing \
+        the following:
 
 
         #. set the status of the person to :const:`location.TRANSIT`
@@ -191,18 +192,25 @@ class Commute_From_Work(Commute):
     def advertise(self, p):
 
         """
-        This function calculates the score of an activities advertisement \
-        advertise the score to commute.
+        This function calculates the score of to commute from work. It does this by doing the \
+        following:
 
         #. calculate advertisement only if the person is located at work (off-site)
-        #. calculate the score
+        #. calculate the score :math:`S`
         
             .. math::     
                 S = \\begin{cases}
                 0  & n_{travel}(t) > \\lambda \\\\
                 W( n_{travel}(t) ) - W( n_{travel}(t + \\Delta{t} )) & n_{travel}(t) \\le \\lambda
                 \\end{cases}
-            
+
+            where
+                * :math:`t` is the current time
+                * :math:`\\Delta{t}` is the duration of commuting from work [minutes]
+                * :math:`n_{travel}(t)` is the satiation for Travel at time :math:`t`
+                * :math:`\\lambda` is the threshold value of Travel
+                * :math:`W(n)` is the weight function for Travel
+
         :param person.Person p: the person of interest
 
         :return: the advertised score
@@ -261,7 +269,7 @@ class Commute_From_Work(Commute):
     def end(self, p):
 
         """
-        This function handles the end of an Activity.
+        This function handles the end of an activity.
 
         :param person.Person p: the person of interest
         :return: None
@@ -280,10 +288,10 @@ class Commute_From_Work(Commute):
         """
         This function sets the variables pertaining to ending the commute activity.
 
-        #. Sets the person's state to idle(:const:`state.IDLE`)
+        #. Sets the person's state to idle (:const:`state.IDLE`)
         #. Updates the asset's state and number of users
         #. Sets the travel magnitude
-        #. Sets the work magnitude to :const:`need.MAG_WORK`, to allow for work \
+        #. Sets the work magnitude to :math:`\\eta_{work}` to allow for work \
         to be the next activity, even if commute ends begin the work-start time
         #. Sets the person's state's end time
 
@@ -297,10 +305,10 @@ class Commute_From_Work(Commute):
         p.state.asset.free()
 
         # update the travel need
-        p.travel.magnitude = 1.0
+        p.travel.magnitude  = 1.0
 
         # update the person's status
-        p.state.status = state.IDLE
+        p.state.status      = state.IDLE
 
         # change the location of the Person and the asset
         p.location.local                = location.HOME
@@ -325,10 +333,10 @@ class Commute_From_Work(Commute):
         """
         This handles the start of the commute activity.
 
-        If the current location of person is at home, the person is going to work, so set the \
+        * If the current location of person is at home, the person is going to work, so set the \
         location to :const:`location.OFF_SITE`
 
-        If the current location of the person is off site, the person is going back home, so \
+        * If the current location of the person is off site, the person is going back home, so \
         set the location to :const:`location.HOME`
 
         :param person.Person p: the person of interest
@@ -367,18 +375,24 @@ class Commute_To_Work(Commute):
 
     def advertise(self, p):
         """
-        This function calculates the score of an activities advertisement \
-        advertise the score to commute.
+        This function calculates the score of commuting to work by doing the following:
 
         #. calculate advertisement only if the person is located at work (off-site)
-        #. calculate the score
+        #. calculate the score :math:`S`
         
             .. math::     
                 S = \\begin{cases}
                 0  & n_{travel}(t) > \\lambda \\\\
                 W( n_{travel}(t) ) - W( n_{travel}(t + \\Delta{t} )) & n_{travel}(t) \\le \\lambda
                 \\end{cases}
-                
+
+            where
+                * :math:`t` is the current time
+                * :math:`\\Delta{t}` is the duration of commuting to work [minutes]
+                * :math:`n_{travel}(t)` is the satiation for Travel at time :math:`t`
+                * :math:`\\lambda` is the threshold value of Travel
+                * :math:`W(n)` is the weight function for Travel
+
         :param person.Person p: the person of interest
 
         :return score: the advertisement score
@@ -416,7 +430,7 @@ class Commute_To_Work(Commute):
     def calc_end_time(self, p):
 
         """
-        Given the commute duration, store the end time.
+        Given the commute duration, store the end time. This function does the following:
         
         #. calculate the end time [universal time] of the commute.
         #. store the end time in the person.state 
@@ -434,7 +448,8 @@ class Commute_To_Work(Commute):
     def end_commute(self, p):
 
         """
-        This function handles the logistics concerning ending the commute.
+        This function handles the logistics concerning ending the commute. Specifically,
+        this function does the following:
         
         #. the asset is freed up from use
         #. the magnitude of the travel need is set :math:`n_{travel}=1`
@@ -519,7 +534,8 @@ class Commute_To_Work(Commute):
     def start_commute(self, p):
 
         """
-        This function sets the variables pertaining to starting the commute to work activity.
+        This function sets the variables pertaining to starting the commute to work activity. Specifically, \
+        the function does the following:
         
         #. set the person's status to :const:`state.TRANSIT`
         #. set the asset's location to :const:`location.TRANSIT`

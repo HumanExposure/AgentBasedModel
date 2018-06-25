@@ -1,0 +1,1158 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>analyzer &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for analyzer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">For a given activity, this code compares how well the ABMHAP matches the CHAD data. \</span>
+<span class="sd">This is useful for the quality assurance and quality control (QAQC). This code \</span>
+<span class="sd">compares the distributions of mean activity-start-time and mean activity duration \</span>
+<span class="sd">for the respective activity.</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">    I will need to update this definition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">run&#39;</span><span class="p">)</span>
+
+<span class="c1"># for data compression</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># mathematical capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># dataframe capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># plotting capability</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">driver_params</span> <span class="k">as</span> <span class="nn">dp</span>
+
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">analysis</span><span class="o">,</span> <span class="nn">driver</span><span class="o">,</span> <span class="nn">evaluation</span><span class="o">,</span> <span class="nn">temporal</span><span class="o">,</span> <span class="nn">trial</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># functions</span>
+<span class="c1"># ===========================================</span>
+
+<span class="c1"># def filter_activity(df, value_min, value_max, idx=None):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     .. warning::</span>
+<span class="c1">#         This function is **NOT** used</span>
+<span class="c1">#</span>
+<span class="c1">#     :param df:</span>
+<span class="c1">#     :param value_min:</span>
+<span class="c1">#     :param value_max:</span>
+<span class="c1">#     :param idx:</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # get the values in the correct range</span>
+<span class="c1">#     if idx is None:</span>
+<span class="c1">#         idx = (df &gt;= value_min) &amp; (df &lt;= value_max)</span>
+<span class="c1">#</span>
+<span class="c1">#     # store the values in the correct range. Those values outside the range will be given NaN</span>
+<span class="c1">#     x = df[idx].values</span>
+<span class="c1">#</span>
+<span class="c1">#     # only keep the values in the range</span>
+<span class="c1">#     y = [ u[np.isfinite(u)] for u in x]</span>
+<span class="c1">#</span>
+<span class="c1">#     return y, idx</span>
+
+<span class="c1"># def find_skipped_activty(df):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function returns the indices of people where there was at least 1 skipped activity.</span>
+<span class="c1">#</span>
+<span class="c1">#     :param pandas.core.frame.DataFrame df: the data frame of data for a particular activity</span>
+<span class="c1">#</span>
+<span class="c1">#     :return idx: the indices (boolean) of people where there was a skipped activity</span>
+<span class="c1">#     :rtype: numpy.ndarray</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # the boolean indices of the rows of data with at least 1 NaN</span>
+<span class="c1">#     idx = [np.isnan(x).sum() &gt; 0 for x in df.values]</span>
+<span class="c1">#     idx = np.array(idx)</span>
+<span class="c1">#</span>
+<span class="c1">#     return idx</span>
+
+<div class="viewcode-block" id="get_activity_data"><a class="viewcode-back" href="../analyzer.html#analyzer.get_activity_data">[docs]</a><span class="k">def</span> <span class="nf">get_activity_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">act</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the activity data from an activity diary \</span>
+<span class="sd">    of given respective agent.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity diary</span>
+<span class="sd">    :param int act: ABMHAP activity code</span>
+
+<span class="sd">    :return: an activity diary containing information from the given activity</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of minutes in 1 hour</span>
+    <span class="n">HOUR_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># get all of the data for a certain activity</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">act</span><span class="p">]</span>
+
+    <span class="c1"># Since the work activity occurs as two-events, choose the event to be the start of the first activity-entry \</span>
+    <span class="c1"># and the end of the last-activity entry of the day</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">act</span> <span class="o">==</span> <span class="n">activity</span><span class="o">.</span><span class="n">WORK</span> <span class="p">):</span>
+
+        <span class="c1"># group things by day</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">y</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="n">x</span>       <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+            <span class="n">start</span>   <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">end</span>     <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">dt</span>      <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">HOUR_2_MIN</span>
+            <span class="n">loc</span>     <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># fill on the data for the particular day</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span> <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="n">loc</span><span class="p">}</span>
+
+            <span class="c1"># store the results</span>
+            <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<span class="c1"># def get_chad_stats_data(trial_code):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function obtains the CHAD statistical data about activity and durations and start times about the</span>
+<span class="c1">#     activities done within a particular trial.</span>
+<span class="c1">#</span>
+<span class="c1">#     .. warning::</span>
+<span class="c1">#         This code must be **removed** because it is not used</span>
+<span class="c1">#</span>
+<span class="c1">#     :param int trial_code: the code on what trial to analyze</span>
+<span class="c1">#     :return: a list of pandas data frame pairings for stats for duration and stats, respectively</span>
+<span class="c1">#     :rtype: list</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # get the CHAD data bout the moments</span>
+<span class="c1">#     stats_chooser = {trial.COMMUTE_TRIAL: chad.FNAME_STATS_COMMUTE,</span>
+<span class="c1">#                      #trial.EAT_TRIAL: chad.FNAME_STATS_EAT</span>
+<span class="c1">#                      }</span>
+<span class="c1">#</span>
+<span class="c1">#     zip_chooser = { trial.SLEEP_TRIAL:  chad.FNAME_SLEEP,</span>
+<span class="c1">#                     trial.EAT_BREAKFAST: chad.FNAME_EAT_BREAKFAST,</span>
+<span class="c1">#                     trial.EAT_LUNCH: chad.FNAME_EAT_LUNCH,</span>
+<span class="c1">#                     trial.EAT_DINNER: chad.FNAME_EAT_DINNER,</span>
+<span class="c1">#                     trial.WORK_TRIAL:  chad.FNAME_WORK,</span>
+<span class="c1">#                     }</span>
+<span class="c1">#</span>
+<span class="c1">#     # file names for the stats information</span>
+<span class="c1">#     # floor the trial code to get the general trial</span>
+<span class="c1">#     fname_stats = stats_chooser.get( trial_code, chad.FNAME_STATS_DEFAULT)</span>
+<span class="c1">#</span>
+<span class="c1">#     # the zip file CHAD information for the activity</span>
+<span class="c1">#     fname_zip = zip_chooser[ trial_code ]</span>
+<span class="c1">#</span>
+<span class="c1">#     # create a CHAD object to access the necessary CHAD sleep data</span>
+<span class="c1">#     c = chad.CHAD(fname_zip)</span>
+<span class="c1">#</span>
+<span class="c1">#     # get a list of pandas data frame tuples of stats data for duration and start time, respectively( df_dt, df_start)</span>
+<span class="c1">#     y = [ get_chad_stats_data_PID( c.get_data(x[0]), c.get_data(x[1]) ) for x in fname_stats]</span>
+<span class="c1">#</span>
+<span class="c1">#     return y</span>
+
+<span class="c1"># def get_chad_stats_data_PID(stats_dt, stats_start):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     .. warning::</span>
+<span class="c1">#         This function is **NOT** used</span>
+<span class="c1">#</span>
+<span class="c1">#     This function returns duration and start time data on entries of people that are **both** in the duration</span>
+<span class="c1">#     data **and** start time.</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     :param pandas.core.frame.DataFrame stats_dt: CHAD data on statistical moments for duration</span>
+<span class="c1">#     :param pandas.core.frame.DataFrame stats_start: CHAD data on statistical moments for start time</span>
+<span class="c1">#</span>
+<span class="c1">#     :return df_dt: the moments for the duration</span>
+<span class="c1">#     :return df_start: the moments for the start time</span>
+<span class="c1">#</span>
+<span class="c1">#     :rtype: pandas.core.frame.DataFrame</span>
+<span class="c1">#     :rtype: pandas.core.frame.DataFrame</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # need to get the intersection of CHAD data</span>
+<span class="c1">#     dt      = stats_dt.loc[stats_dt.PID.isin(stats_start.PID)]</span>
+<span class="c1">#     start   = stats_start.loc[stats_start.PID.isin(stats_dt.PID)]</span>
+<span class="c1">#</span>
+<span class="c1">#     # sort both data frames by PID (&quot;person identifier&quot;)</span>
+<span class="c1">#     df_dt       = dt.sort_values([&#39;PID&#39;])</span>
+<span class="c1">#     df_start =   start.sort_values([&#39;PID&#39;])</span>
+<span class="c1">#</span>
+<span class="c1">#     return df_dt, df_start</span>
+
+<div class="viewcode-block" id="get_moments"><a class="viewcode-back" href="../analyzer.html#analyzer.get_moments">[docs]</a><span class="k">def</span> <span class="nf">get_moments</span><span class="p">(</span><span class="n">abm_list</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates both the mean and the standard deviation for start time, end time, and \</span>
+<span class="sd">    duration for a given activity for each agent simulated.</span>
+
+<span class="sd">    :param abm_list: the activity diary for a given activity for each agent</span>
+<span class="sd">    :type abm_list: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    :param bool do_periodic: this flag indicates whether (if True) or not (if False) to do the \</span>
+<span class="sd">    analysis on a time scale that is [-12, 12). This is useful for activities that may occur \</span>
+<span class="sd">    over midnight.</span>
+
+<span class="sd">    :return: information containing the the mean and standard deviation information for start time, \</span>
+<span class="sd">    end time, and duration for the simulated agents for a given activity</span>
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, \</span>
+<span class="sd">    numpy.ndarray, numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># calculate the mean start time and end time for each agent</span>
+    <span class="k">if</span> <span class="n">do_periodic</span><span class="p">:</span>
+        <span class="c1"># convert the start time and end time from [0, 24) time to [-12, 12) hour time if</span>
+        <span class="c1"># needed</span>
+        <span class="n">abm_start_mean</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+        <span class="n">abm_end_mean</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abm_start_mean</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+        <span class="n">abm_end_mean</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+
+    <span class="c1"># calculate the mean duration for each agent</span>
+    <span class="n">abm_dt_mean</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+
+    <span class="c1"># caluclate the standard deviation for start time, end time, and duration for each agent</span>
+    <span class="n">abm_start_std</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+    <span class="n">abm_end_std</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+    <span class="n">abm_dt_std</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">abm_list</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">abm_start_mean</span><span class="p">,</span> <span class="n">abm_start_std</span><span class="p">,</span> <span class="n">abm_end_mean</span><span class="p">,</span> <span class="n">abm_end_std</span><span class="p">,</span> <span class="n">abm_dt_mean</span><span class="p">,</span> <span class="n">abm_dt_std</span></div>
+
+
+<span class="c1"># def get_residuals(abm_dt_mean, abm_start_mean, chad_dt, chad_start, p_min=0.0, p_max=1.0):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function calculates the cumulative density function (CDF) residuals for the ABM simulations with respect</span>
+<span class="c1">#     to the CHAD data</span>
+<span class="c1">#</span>
+<span class="c1">#     :param numpy.ndarray abm_dt_mean: the mean duration times on an activity in the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray abm_start_mean: the mean start times on an activity in the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray chad_dt: the mean duration times on an activity in the CHAD</span>
+<span class="c1">#     :param numpy.ndarray chad_start: the mean start times on an activity in the CHAD</span>
+<span class="c1">#     :param float p_min: the lowest percentile in the cdf to compare</span>
+<span class="c1">#     :param float p_max: the highest percentile in the cdf to compare</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     res_dt      = residual_cdf(abm_dt_mean, chad_dt, p_min, p_max)</span>
+<span class="c1">#     res_start   = residual_cdf(abm_start_mean, chad_start, p_min, p_max)</span>
+<span class="c1">#</span>
+<span class="c1">#     return res_dt, res_start</span>
+
+<div class="viewcode-block" id="get_simulation_data"><a class="viewcode-back" href="../analyzer.html#analyzer.get_simulation_data">[docs]</a><span class="k">def</span> <span class="nf">get_simulation_data</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">act</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function obtains the simulation data for a given activity from each each agent in the</span>
+<span class="sd">    simulation.</span>
+
+<span class="sd">    :param df_list: the activity diaries for each agent in the entire simulation</span>
+<span class="sd">    :type df_list: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    :param int act: the ABMHAP activity code</span>
+
+<span class="sd">    :return: the activity diary containing information for the respective activity \</span>
+<span class="sd">    for each agent simulated</span>
+<span class="sd">    :return: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_activity_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">df_list</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<span class="c1"># def get_test(df_list, act, do_periodic=False):</span>
+<span class="c1">#</span>
+<span class="c1">#     # the data for each household</span>
+<span class="c1">#     abm_list = get_simulation_data(df_list, act)</span>
+<span class="c1">#</span>
+<span class="c1">#     # get the moments</span>
+<span class="c1">#     abm_dt_mean, abm_dt_std, abm_start_mean, abm_start_std = get_moments(abm_list, do_periodic)</span>
+<span class="c1">#</span>
+<span class="c1">#     # the number of times each activity occurred</span>
+<span class="c1">#     counts = [ len(x) for x in abm_list]</span>
+<span class="c1">#</span>
+<span class="c1">#     return abm_dt_mean, abm_dt_std, abm_start_mean, abm_start_std, counts</span>
+
+<span class="c1"># def get_abm_record(abm_list, msg):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function gets a record of events for each person in the abm_list</span>
+<span class="c1">#</span>
+<span class="c1">#     :param abm_list:</span>
+<span class="c1">#     :param msg:</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     df = pd.DataFrame.from_records( [ df[msg].ravel() for df in abm_list ] )</span>
+<span class="c1">#</span>
+<span class="c1">#     return df</span>
+
+<span class="c1"># def get_trial_info(trial_code):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function obtains the relevant parameters specific to the activities used in the respective trial</span>
+<span class="c1">#</span>
+<span class="c1">#     The function returns the following in a tuple:</span>
+<span class="c1">#</span>
+<span class="c1">#     * the activity code</span>
+<span class="c1">#     * the CHAD-activity sampling parameters for &quot;good&quot; data</span>
+<span class="c1">#     * the file name for the CHAD activity data zip file</span>
+<span class="c1">#</span>
+<span class="c1">#     :param int trial_code: the specific trial identifier</span>
+<span class="c1">#     :rtype: tuple</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # get a tuple of (activity code, chad-activity parameters code, and CHAD zip file name )</span>
+<span class="c1">#     chooser = { trial.COMMUTE_FROM_WORK: chad_params.COMMUTE_FROM_WORK,</span>
+<span class="c1">#                 trial.COMMUTE_TO_WORK: chad_params.COMMUTE_TO_WORK,</span>
+<span class="c1">#                 trial.EAT_BREAKFAST: chad_params.EAT_BREAKFAST,</span>
+<span class="c1">#                 trial.EAT_LUNCH: chad_params.EAT_LUNCH,</span>
+<span class="c1">#                 trial.EAT_DINNER: chad_params.EAT_DINNER,</span>
+<span class="c1">#                 trial.SLEEP: chad_params.SLEEP,</span>
+<span class="c1">#                 trial.WORK: chad_params.WORK,</span>
+<span class="c1">#                 trial.OMNI: chad_params.OMNI,</span>
+<span class="c1">#                 }</span>
+<span class="c1">#</span>
+<span class="c1">#     return chooser[trial_code]</span>
+
+<div class="viewcode-block" id="get_verify_fpath"><a class="viewcode-back" href="../analyzer.html#analyzer.get_verify_fpath">[docs]</a><span class="k">def</span> <span class="nf">get_verify_fpath</span><span class="p">(</span><span class="n">fdir</span><span class="p">,</span> <span class="n">act_codes</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the directories corresponding to the specified activity codes \</span>
+<span class="sd">    where figures of activities will be stored for a specific simulation.</span>
+
+<span class="sd">    :param fdir: the file path to the directory of the figure data for a specific simulation.</span>
+
+<span class="sd">    :param str act_codes: the ABMHAP activity codes for a given activity</span>
+<span class="sd">    :type act_codes: list of int</span>
+
+<span class="sd">    :return: the directories corresponding to the specified activity codeds where figures \</span>
+<span class="sd">    of the activities will be stored</span>
+<span class="sd">    :rtype: list of str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fdirs</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">act_codes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fdirs</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">fdir</span> <span class="o">+</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_2_FDIR_SAVE_FIG</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">act_codes</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">fdirs</span></div>
+
+<span class="c1"># def handle_nans(data):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function takes in the activity data of a simulation and returns the activity data without \</span>
+<span class="c1">#     NaNs (which represent &quot;skipped&quot; activities)</span>
+<span class="c1">#</span>
+<span class="c1">#     :param numpy.ndarray data: the activity data of many individuals over various simulations</span>
+<span class="c1">#</span>
+<span class="c1">#     :return new_data: the data without NaNs</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     :rtype: numpy.ndarray, numpy.ndarray</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # take only the non-empty activities that are not NaNs</span>
+<span class="c1">#     y = [ x[ np.isfinite(x) ] for x in data]</span>
+<span class="c1">#</span>
+<span class="c1">#     # do not add empty lists/ cases where all activities are NaN</span>
+<span class="c1">#     new_data = [x for x in y if len(x) != 0]</span>
+<span class="c1">#</span>
+<span class="c1">#     return new_data</span>
+
+<div class="viewcode-block" id="load_plot_data"><a class="viewcode-back" href="../analyzer.html#analyzer.load_plot_data">[docs]</a><span class="k">def</span> <span class="nf">load_plot_data</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function loads the data from pickled (.pkl) figures. This assumes that the figures plotted the</span>
+<span class="sd">    ABM data first and then the CHAD data.</span>
+
+<span class="sd">    :param str fname: the filename of the saved figure (.pkl)</span>
+
+<span class="sd">    :return: the x and y data for the ABM and CHAD data, respectively</span>
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># load the data from the pickled figure</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span>
+
+    <span class="c1"># store the appropriate data from ABM and CHAD, respectively</span>
+    <span class="p">[</span><span class="n">x_abm</span><span class="p">,</span> <span class="n">y_abm</span><span class="p">]</span>      <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="p">[</span><span class="n">x_chad</span><span class="p">,</span> <span class="n">y_chad</span><span class="p">]</span>    <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">x_abm</span><span class="p">,</span> <span class="n">y_abm</span><span class="p">,</span> <span class="n">x_chad</span><span class="p">,</span> <span class="n">y_chad</span></div>
+
+
+<span class="c1"># def plot_abm_chad_histo(x_abm, x_chad, xlabel, title, bins):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function plots a histogram of the ABM data with the respective CHAD data</span>
+<span class="c1">#</span>
+<span class="c1">#     :param numpy.ndarray x_abm: an array containing the ABM values to plot from each simulation</span>
+<span class="c1">#     :param numpy.ndarray x_chad: an array containing the CHAD values to plot</span>
+<span class="c1">#     :param str xlabel: the x-axis label</span>
+<span class="c1">#     :param str title:  the plot title</span>
+<span class="c1">#     :param int fig_id: the figure identifier number</span>
+<span class="c1">#     :param numpy.ndarray bins: an array of bin data needed in plt.hist()</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     :return: None</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # ABM</span>
+<span class="c1">#     plt.hist(x_abm, bins, alpha=0.5, normed=True, label=&#39;abm&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     # chad stats</span>
+<span class="c1">#     plt.hist(x_chad, bins, alpha=0.5, normed=True, label=&#39;CHAD&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.xlabel( xlabel )</span>
+<span class="c1">#     plt.ylabel( &#39;pdf&#39; )</span>
+<span class="c1">#     plt.title( title )</span>
+<span class="c1">#     plt.legend()</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+<span class="c1"># def plot_activity_counts(counts, act, nbins=20):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     :param list counts: the number of times the activity was done for each person in the simulation</span>
+<span class="c1">#     :param float act: the activity code</span>
+<span class="c1">#     :param int nbins: the number of bins for plotting the histogram</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # calculate relative frequencies</span>
+<span class="c1">#     x = np.array(counts)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot the data in a histogram</span>
+<span class="c1">#     # the weights give fractions for relative frequency</span>
+<span class="c1">#     if ( len(x) != 0):</span>
+<span class="c1">#         weights = np.zeros(x.shape) + 1 / x.size</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         x = np.array( [0])</span>
+<span class="c1">#         weights = np.array( [1])</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.hist(x, weights=weights, bins=nbins)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.title( activity.INT_2_STR[act] )</span>
+<span class="c1">#     plt.ylabel(&#39;Relative Frequency&#39;)</span>
+<span class="c1">#     plt.xlabel(&#39;Counts&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+<div class="viewcode-block" id="plot_cdf"><a class="viewcode-back" href="../analyzer.html#analyzer.plot_cdf">[docs]</a><span class="k">def</span> <span class="nf">plot_cdf</span><span class="p">(</span><span class="n">data_abm</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the CDF for data related to the ABM and CHAD</span>
+
+<span class="sd">    :param numpy.ndarray data_abm: the ABM data to be plotted</span>
+<span class="sd">    :param numpy.ndarray data_chad: the CHAD data to be plotted</span>
+<span class="sd">    :param str xlabel: the x-axis label</span>
+<span class="sd">    :param str title: the title of the plot</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x_abm</span><span class="p">,</span> <span class="n">y_abm</span>    <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span>
+    <span class="n">x_chad</span><span class="p">,</span> <span class="n">y_chad</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">data_chad</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_abm</span><span class="p">,</span> <span class="n">y_abm</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ABM&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_chad</span><span class="p">,</span> <span class="n">y_chad</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CHAD&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;probability&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_cdf_new"><a class="viewcode-back" href="../analyzer.html#analyzer.plot_cdf_new">[docs]</a><span class="k">def</span> <span class="nf">plot_cdf_new</span><span class="p">(</span><span class="n">data_abm</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function (CDF) comparing \</span>
+<span class="sd">    the ABM and CHAD data for a given activity</span>
+
+<span class="sd">    :param numpy.ndarray data_abm:</span>
+<span class="sd">    :param numpy.ndarray data_chad:</span>
+<span class="sd">    :param int fid: the figure identifier</span>
+<span class="sd">    :param str title: the title of the figure</span>
+<span class="sd">    :param str xlabel: the label of the x-axis</span>
+<span class="sd">    :param bool do_periodic: this flag indicates whether (if True) or not (if False) to convert \</span>
+<span class="sd">    the data to a time scale that is [-12, 12). This is useful for activities that may occur \</span>
+<span class="sd">    over midnight.</span>
+
+<span class="sd">    :return: the figure of the CDF</span>
+<span class="sd">    :rtype: matplotlib.figure.Figure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># plot duration info</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">fid</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">do_periodic</span><span class="p">:</span>
+        <span class="n">d_abm</span>   <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span>
+        <span class="n">d_chad</span>  <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">data_chad</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d_abm</span>   <span class="o">=</span> <span class="n">data_abm</span>
+        <span class="n">d_chad</span>  <span class="o">=</span> <span class="n">data_chad</span>
+
+    <span class="c1"># plot if the dataset is not empty</span>
+    <span class="k">if</span> <span class="n">data_abm</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">plot_cdf</span><span class="p">(</span><span class="n">d_abm</span><span class="p">,</span> <span class="n">d_chad</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+<span class="c1"># def plot_cdfs(activity_code, abm_dt, abm_start, chad_dt, chad_start, id_dt, id_start):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#      This function plots the CDF comparing the ABM and CHAD data for both activity duration and activity start time</span>
+<span class="c1">#</span>
+<span class="c1">#     :param float activity_code: the activity code</span>
+<span class="c1">#     :param numpy.ndarray abm_dt: the activity mean duration from the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray abm_start: the activity mean start time from the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray chad_dt: the sampled CHAD duration moments</span>
+<span class="c1">#     :param numpy.ndarray chad_start: the sampled CHAD start time moments</span>
+<span class="c1">#     :param int id_dt: the figure identifier of the duration information</span>
+<span class="c1">#     :param int id_start:  the figure identifier of the start time information</span>
+<span class="c1">#     :return: the figures of the cdf of duration and start time respectively</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot duration info</span>
+<span class="c1">#     fig_dt = plt.figure(num=id_dt)</span>
+<span class="c1">#     title = &#39;Mean &#39; + activity.INT_2_STR[activity_code] + &#39; Duration&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     if abm_dt.size != 0:</span>
+<span class="c1">#         plot_cdf(abm_dt, chad_dt, xlabel=&#39;duration [h]&#39;, title=title)</span>
+<span class="c1">#         plt.legend()</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot start time info</span>
+<span class="c1">#     fig_start = plt.figure(num=id_start)</span>
+<span class="c1">#</span>
+<span class="c1">#     # this selects which start time should be written in periodic scale t in (-12, 12] if True</span>
+<span class="c1">#     # the default is False</span>
+<span class="c1">#     chooser = { activity.SLEEP: True}</span>
+<span class="c1">#</span>
+<span class="c1">#     do_periodic = chooser.get( activity_code, False)</span>
+<span class="c1">#</span>
+<span class="c1">#     if do_periodic:</span>
+<span class="c1">#         temp_abm    = mg.to_periodic(abm_start)</span>
+<span class="c1">#         temp_chad   = mg.to_periodic(chad_start)</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         temp_abm    = abm_start</span>
+<span class="c1">#         temp_chad   = chad_start</span>
+<span class="c1">#</span>
+<span class="c1">#     if temp_abm.size != 0:</span>
+<span class="c1">#         plot_cdf(temp_abm, temp_chad, xlabel=&#39;start time [h]&#39;, title=title)</span>
+<span class="c1">#         plt.legend()</span>
+<span class="c1">#</span>
+<span class="c1">#     title = &#39;Mean &#39; + activity.INT_2_STR[activity_code] + &#39; Start Time&#39;</span>
+<span class="c1">#     plt.title(title)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     return fig_dt, fig_start</span>
+
+<span class="c1"># def plot_data(err, x, cdf, title, xlabel, fig1, fig2, col):</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot a histograms for duration. Use the relative error</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.figure(fig1)</span>
+<span class="c1">#     histo = plt.hist(err, bins=30, color=col)</span>
+<span class="c1">#     plt.title(title)</span>
+<span class="c1">#     plt.xlabel(xlabel)</span>
+<span class="c1">#     plt.ylabel(&#39;count&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot the empirical cumulative distribution formulation</span>
+<span class="c1">#     style = col + &#39;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.figure(fig2)</span>
+<span class="c1">#     plt.step(x, cdf, style)</span>
+<span class="c1">#     plt.title(&#39;cdf &#39; + title)</span>
+<span class="c1">#     plt.xlabel(xlabel)</span>
+<span class="c1">#     plt.ylabel(&#39;probability&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.show()</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+<span class="c1"># def plot_histograms(activity_code, abm_dt, abm_start, chad_dt, chad_start, id_dt, id_start):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function plots the histograms comparing the ABM and CHAD data for both activity and duration and \</span>
+<span class="c1">#     activity start time.</span>
+<span class="c1">#</span>
+<span class="c1">#     :param int activity_code: the activity code</span>
+<span class="c1">#     :param numpy.ndarray abm_dt: the activity mean duration from the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray abm_start: the activity mean start time from the ABM simulations</span>
+<span class="c1">#     :param numpy.ndarray chad_dt: the sampled CHAD duration means</span>
+<span class="c1">#     :param numpy.ndarray chad_start: the sampled CHAD start time means</span>
+<span class="c1">#</span>
+<span class="c1">#     :return: the figures of the duration and star ttime and histograms, respectively</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot the mean sleep duration distribution for ABM and CHAD</span>
+<span class="c1">#     bins = np.linspace(0, 24, 48)</span>
+<span class="c1">#     title = &#39;Mean &#39; + activity.INT_2_STR[activity_code] + &#39; Duration Distribution&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     fig_dt = plt.figure(num=id_dt)</span>
+<span class="c1">#     plot_abm_chad_histo(abm_dt, chad_dt, xlabel=&#39;[hours]&#39;, title=title, bins=bins)</span>
+<span class="c1">#</span>
+<span class="c1">#     # this selects which start time should be written in periodic scale t in (-12, 12] if True</span>
+<span class="c1">#     # the default is False</span>
+<span class="c1">#     chooser = {activity.SLEEP: True}</span>
+<span class="c1">#</span>
+<span class="c1">#     # copy the array</span>
+<span class="c1">#     abm_start = np.array(abm_start)</span>
+<span class="c1">#</span>
+<span class="c1">#     if chooser.get(activity_code, False):</span>
+<span class="c1">#         bins = np.linspace(-12, 12, 48)</span>
+<span class="c1">#         abm_start = abm_start + (abm_start &gt; 12) * (-24)</span>
+<span class="c1">#</span>
+<span class="c1">#     title = &#39;Mean &#39; + activity.INT_2_STR[activity_code] + &#39; Start Time Distribution&#39;</span>
+<span class="c1">#     fig_start = plt.figure(num=id_start)</span>
+<span class="c1">#     plot_abm_chad_histo(abm_start, chad_start, xlabel=&#39;[hours]&#39;, title=title, bins=bins)</span>
+<span class="c1">#</span>
+<span class="c1">#     # return the figures</span>
+<span class="c1">#     return fig_dt, fig_start</span>
+
+<span class="c1"># def residual_cdf(data_abm, data_chad, p_min=0, p_max=1.0):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function compares the residual of the cumalative density function (CDF) of the CHAD data with the ABM data.</span>
+<span class="c1">#     The residual is calculated as the difference in area under the CDF curves divided by the area under the</span>
+<span class="c1">#     CHAD cdf curve.</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     :param numpy.ndarray data_abm: the data from the ABM simulation</span>
+<span class="c1">#     :param numpy.ndarray data_chad: the data of the moments from CHAD</span>
+<span class="c1">#     :param float p_min: the lowest percentile in the cdf to compare</span>
+<span class="c1">#     :param float p_max: the highest percentile in the cdf to compare</span>
+<span class="c1">#     :return: the relative error measure</span>
+<span class="c1">#     :rtype: float</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     x_abm, y_abm    = mg.get_ecdf(data_abm)</span>
+<span class="c1">#     x_chad, y_chad  = mg.get_ecdf(data_chad)</span>
+<span class="c1">#</span>
+<span class="c1">#     idx_abm     = (y_abm &gt;= p_min) * (y_abm &lt;= p_max)</span>
+<span class="c1">#     idx_chad    = (y_chad &gt;= p_min) * (y_chad &lt;= p_max)</span>
+<span class="c1">#</span>
+<span class="c1">#     A_abm   = scipy.integrate.simps(y_abm[idx_abm], x_abm[idx_abm])</span>
+<span class="c1">#     A_chad  = scipy.integrate.simps(y_chad[idx_chad], x_chad[idx_chad])</span>
+<span class="c1">#</span>
+<span class="c1">#     res = abs(A_chad - A_abm) / A_chad</span>
+<span class="c1">#</span>
+<span class="c1">#     return res</span>
+
+<span class="c1"># def save_plots_cdf(fig_dt, fig_start, fdir):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function saves the plots (cumulative distribution function )CDF plots for duration and start time) \</span>
+<span class="c1">#     in a python pickle file, so that the data may be accessed again.</span>
+<span class="c1">#</span>
+<span class="c1">#     :param fig_dt: the CDF of the activity duration data</span>
+<span class="c1">#     :param fig_start: the CDF of the activity start time data</span>
+<span class="c1">#     :param str fdir: the directory in which to save the files</span>
+<span class="c1">#</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # the figures</span>
+<span class="c1">#     figs = [ fig_dt, fig_start ]</span>
+<span class="c1">#</span>
+<span class="c1">#     # the file names</span>
+<span class="c1">#     fnames = [&#39;cdf_dt.pickle&#39;, &#39;cdf_start.pickle&#39;]</span>
+<span class="c1">#     fnames = [(fdir + &#39;\\&#39; + x) for x in fnames]</span>
+<span class="c1">#</span>
+<span class="c1">#     # save the plots</span>
+<span class="c1">#     analysis.save_figures(figs, fnames)</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+<span class="c1"># def save_plots_histo(fig_dt, fig_start, fdir):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function saves the plots (histogram for duration and start time) in a python pickle file, \</span>
+<span class="c1">#     so that the data may be accessed again.</span>
+<span class="c1">#</span>
+<span class="c1">#     :param fig_dt: the histogram of the activity duration data</span>
+<span class="c1">#     :param fig_start: the histogram of the activity start time data</span>
+<span class="c1">#     :param str fdir: the directory in which to save the files</span>
+<span class="c1">#</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # the figures</span>
+<span class="c1">#     figs = [fig_dt, fig_start]</span>
+<span class="c1">#</span>
+<span class="c1">#     # the file names</span>
+<span class="c1">#     fnames = [&#39;hist_dt.pickle&#39;, &#39;hist_start.pickle&#39;]</span>
+<span class="c1">#     fnames = [(fdir + &#39;\\&#39; + x) for x in fnames]</span>
+<span class="c1">#</span>
+<span class="c1">#     # save the plots</span>
+<span class="c1">#     analysis.save_figures(figs, fnames)</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+
+
+
+<div class="viewcode-block" id="plot_verify_dt"><a class="viewcode-back" href="../analyzer.html#analyzer.plot_verify_dt">[docs]</a><span class="k">def</span> <span class="nf">plot_verify_dt</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">data_abm</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function (CDFs) in order to compare \</span>
+<span class="sd">    the duration data for the given activity from the ABMHAP simulation to the CHAD data.</span>
+
+<span class="sd">    :param int act: the ABMHAP activity data</span>
+<span class="sd">    :param numpy.ndarray data_abm: the ABMHAP duration data</span>
+<span class="sd">    :param numpy.ndarray data_chad: the CHAD duration data</span>
+<span class="sd">    :param int fid: the figure identifier</span>
+<span class="sd">    :param bool do_save_fig: a flag indicating whether (if True) or not (if False) \</span>
+<span class="sd">    to save the figure</span>
+<span class="sd">    :param str fpath: the file path to the directory in which to save the figure</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># only plot data for start time that exists</span>
+    <span class="n">dt</span>      <span class="o">=</span> <span class="n">data_abm</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># plot the histogram of the distribution</span>
+    <span class="n">title</span>   <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; Duration&#39;</span>
+    <span class="n">xlabel</span>  <span class="o">=</span> <span class="s1">&#39;Hours&#39;</span>
+
+    <span class="c1"># plot the CDFs</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_cdf_new</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># save the figure</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_save_fig</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">dt.pkl&#39;</span>
+        <span class="n">analysis</span><span class="o">.</span><span class="n">save_figures</span><span class="p">([</span><span class="n">fig</span><span class="p">],</span> <span class="p">[</span><span class="n">fname</span><span class="p">])</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_verify_end"><a class="viewcode-back" href="../analyzer.html#analyzer.plot_verify_end">[docs]</a><span class="k">def</span> <span class="nf">plot_verify_end</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">data_abm</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function (CDFs) in order to compare \</span>
+<span class="sd">    the end time data for the given activity from the ABMHAP simulation to the CHAD data.</span>
+
+<span class="sd">    :param int act: the ABMHAP activity data</span>
+<span class="sd">    :param numpy.ndarray data_abm: the ABMHAP end time data</span>
+<span class="sd">    :param numpy.ndarray data_chad: the CHAD end time data</span>
+<span class="sd">    :param int fid: the figure identifier</span>
+<span class="sd">    :param bool do_save_fig: a flag indicating whether (if True) or not (if False) \</span>
+<span class="sd">    to save the figure</span>
+<span class="sd">    :param str fpath: the file path to the directory in which to save the figure</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># only plot data for start time that exists</span>
+    <span class="n">end</span>     <span class="o">=</span> <span class="n">data_abm</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># plot the histogram of the distribution</span>
+    <span class="n">title</span>   <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; End Time&#39;</span>
+    <span class="n">xlabel</span>  <span class="o">=</span> <span class="s1">&#39;Hours&#39;</span>
+
+    <span class="c1"># if the activity occurs over midnight, convert the data into a [-12, 12) hour format</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">act</span> <span class="o">==</span> <span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># plot the CDFs of the end time</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_cdf_new</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># save figure</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_save_fig</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">end.pkl&#39;</span>
+        <span class="n">analysis</span><span class="o">.</span><span class="n">save_figures</span><span class="p">([</span><span class="n">fig</span><span class="p">],</span> <span class="p">[</span><span class="n">fname</span><span class="p">])</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_verify_start"><a class="viewcode-back" href="../analyzer.html#analyzer.plot_verify_start">[docs]</a><span class="k">def</span> <span class="nf">plot_verify_start</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">data_abm</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function (CDFs) in order to compare \</span>
+<span class="sd">    the start time data for the given activity from the ABMHAP simulation to the CHAD data.</span>
+
+<span class="sd">    :param int act: the ABMHAP activity data</span>
+<span class="sd">    :param numpy.ndarray data_abm: the ABMHAP start time data</span>
+<span class="sd">    :param numpy.ndarray data_chad: the CHAD start time data</span>
+<span class="sd">    :param int fid: the figure identifier</span>
+<span class="sd">    :param bool do_save_fig: a flag indicating whether (if True) or not (if False) \</span>
+<span class="sd">    to save the figure</span>
+<span class="sd">    :param str fpath: the file path to the directory in which to save the figure</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># only plot data for start time that exists</span>
+    <span class="n">start</span>   <span class="o">=</span> <span class="n">data_abm</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c1"># plot the histogram of the distribution</span>
+    <span class="n">title</span>   <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; Start Time&#39;</span>
+    <span class="n">xlabel</span>  <span class="o">=</span> <span class="s1">&#39;Hours&#39;</span>
+
+    <span class="c1"># if the activity occurs over midnight, convert the data into a [-12, 12) hour format</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">act</span> <span class="o">==</span> <span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># plot the CDFs</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_cdf_new</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">data_chad</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># save the figure</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_save_fig</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">start.pkl&#39;</span>
+        <span class="n">analysis</span><span class="o">.</span><span class="n">save_figures</span><span class="p">(</span> <span class="p">[</span><span class="n">fig</span><span class="p">],</span> <span class="p">[</span><span class="n">fname</span><span class="p">])</span>
+
+    <span class="k">return</span></div>
+
+<span class="c1"># def plot_verify(act, abm_dt_mean, abm_start_mean, chad_dt, chad_start, counts, do_histogram=False,</span>
+<span class="c1">#                 off=0, do_save_fig=False, fpath=&#39;&#39;):</span>
+<span class="c1">#</span>
+<span class="c1">#     num_plots = 5</span>
+<span class="c1">#</span>
+<span class="c1">#     # the figure identification numbers</span>
+<span class="c1">#     id1, id2, id3, id4, id5 = off + np.array(list(range(num_plots)))</span>
+<span class="c1">#</span>
+<span class="c1">#     dt = np.array(abm_dt_mean)</span>
+<span class="c1">#     start = np.array(abm_start_mean)</span>
+<span class="c1">#</span>
+<span class="c1">#     # if there is no activity data, store the duration as 0</span>
+<span class="c1">#     dt[ np.isnan(dt) ] = 0</span>
+<span class="c1">#</span>
+<span class="c1">#     # only plot data for start time that exists</span>
+<span class="c1">#     start = start[ np.isfinite(start) ]</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot the histogram of the distribution</span>
+<span class="c1">#     if do_histogram:</span>
+<span class="c1">#         histo_dt, histo_start = plot_histograms(act, dt, start, chad_dt[&#39;mu&#39;].values,</span>
+<span class="c1">#                                                 chad_start[&#39;mu&#39;].values, id_dt=id1, id_start=id2)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot the CDFs of the distributions</span>
+<span class="c1">#     cdf_dt, cdf_start = plot_cdfs(act, dt, start, chad_dt[&#39;mu&#39;].values,</span>
+<span class="c1">#                                   chad_start[&#39;mu&#39;].values, id_dt=id3, id_start=id4)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.figure(num=id5)</span>
+<span class="c1">#     plot_activity_counts(counts, act)</span>
+<span class="c1">#</span>
+<span class="c1">#     # update offset</span>
+<span class="c1">#     off = off + num_plots</span>
+<span class="c1">#</span>
+<span class="c1">#     # save the plots</span>
+<span class="c1">#     if (do_save_fig):</span>
+<span class="c1">#</span>
+<span class="c1">#         if do_histogram:</span>
+<span class="c1">#             save_plots_histo(histo_dt, histo_start, fdir=fpath)</span>
+<span class="c1">#</span>
+<span class="c1">#         save_plots_cdf(cdf_dt, cdf_start, fdir=fpath)</span>
+<span class="c1">#</span>
+<span class="c1">#     return off</span>
+
+<span class="c1"># def write_abm_data(activity_code, df_dt, df_start):</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This function writes the ABM data to a file.</span>
+<span class="c1">#</span>
+<span class="c1">#     :param int activity_code: the identifier for an activity</span>
+<span class="c1">#     :param pandas.core.frame.DataFrame df_dt: the activity duration information for the ABM</span>
+<span class="c1">#     :param pandas.core.frame.DataFrame df_start: the activity start time information for the ABM</span>
+<span class="c1">#</span>
+<span class="c1">#     :return:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # activity name</span>
+<span class="c1">#     act_name = activity.INT_2_STR[activity_code]</span>
+<span class="c1">#</span>
+<span class="c1">#     # parent directory</span>
+<span class="c1">#     dir_parent = os.path.dirname(os.getcwd())</span>
+<span class="c1">#</span>
+<span class="c1">#     # write the ABM data into the appropriate directory</span>
+<span class="c1">#     fdir = dir_parent + str(&#39;\\data&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     fname = fdir + &#39;\\abm_&#39; + act_name + &#39;_dt.csv&#39;</span>
+<span class="c1">#     df_dt.to_csv(fname)</span>
+<span class="c1">#</span>
+<span class="c1">#     fname = fdir + &#39;\\abm_&#39; + act_name + &#39;_start.csv&#39;</span>
+<span class="c1">#     df_start.to_csv(fname)</span>
+<span class="c1">#</span>
+<span class="c1">#     return</span>
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../analyzer.html#analyzer.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">num_process</span><span class="p">,</span> <span class="n">num_hhld</span><span class="p">,</span> <span class="n">num_batch</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function runs the simulations.</span>
+
+<span class="sd">    :param int num_process: the number of processors (cores)</span>
+<span class="sd">    :param int num_hhld: the number of households per core per batch</span>
+<span class="sd">    :param int num_batch: the number of batches</span>
+
+<span class="sd">    :return: the results of the simulation</span>
+<span class="sd">    :rtype: driver_result.Driver_Result</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fname_trials</span><span class="p">,</span> <span class="n">fname_data</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">run_everything</span><span class="p">(</span><span class="n">num_process</span><span class="p">,</span> <span class="n">num_hhld</span><span class="p">,</span> <span class="n">num_batch</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fname_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="verify"><a class="viewcode-back" href="../analyzer.html#analyzer.verify">[docs]</a><span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="n">trial_code</span><span class="p">,</span> <span class="n">demo</span><span class="p">,</span> <span class="n">chad_param_list</span><span class="p">,</span> <span class="n">df_list</span><span class="p">,</span> <span class="n">do_plot</span><span class="p">,</span> <span class="n">do_print</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This code compares the results of the ABM to the CHAD data by comparing the cumulative distribution function \</span>
+<span class="sd">    (CDF) of the duration and start times predicted by the ABM and that of respective CDFs from the CHAD data.</span>
+
+<span class="sd">    :param int trial_code: the trial code identifier</span>
+<span class="sd">    :param int demo: the demographic identifier</span>
+<span class="sd">    :param chad_param_list: that limit the CHAD parameters sampling in initializing the households</span>
+<span class="sd">    :type chad_param_list: list of :class:`chad_params.CHAD_params`</span>
+<span class="sd">    :param df_list: contains the activity diaries for each household</span>
+<span class="sd">    :type df_list: list of pandas.core.frame.DataFrame</span>
+
+<span class="sd">    :param bool do_plot: a flag to indicate whether (True) or not (False) to plot</span>
+<span class="sd">    :param bool do_print: a flag to indicate whether (True) or not (False) to print various messages to the screen</span>
+<span class="sd">    :param list fdir: a list of file directories needed to save the figures</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the activity codes for a given trial</span>
+    <span class="n">act_codes</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">TRIAL_2_ACTIVITY</span><span class="p">[</span><span class="n">trial_code</span><span class="p">]</span>
+
+    <span class="c1"># the directories for the respective activities. This is used for saving the figures</span>
+    <span class="n">fdirs</span> <span class="o">=</span> <span class="n">get_verify_fpath</span><span class="p">(</span><span class="n">fdir</span><span class="p">,</span> <span class="n">act_codes</span><span class="p">)</span>
+
+    <span class="c1"># figure identifier</span>
+    <span class="n">fid</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">act</span><span class="p">,</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">act_codes</span><span class="p">,</span> <span class="n">fdirs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_print</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;starting analysis for the &#39;</span> <span class="o">+</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; activity .....&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># this is to see if the analysis of the moments for start time needs to be in [-12, 12)</span>
+        <span class="c1"># instead of [0, 24) format</span>
+        <span class="n">chooser</span>     <span class="o">=</span> <span class="p">{</span><span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="n">chooser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># get the CHAD data</span>
+        <span class="c1"># this is here to access the data frames from t.initialize()</span>
+        <span class="n">chad_start</span><span class="p">,</span> <span class="n">chad_end</span><span class="p">,</span> <span class="n">chad_dt</span><span class="p">,</span> <span class="n">chad_record</span> <span class="o">=</span> \
+            <span class="n">analysis</span><span class="o">.</span><span class="n">get_verification_info</span><span class="p">(</span><span class="n">demo</span><span class="o">=</span><span class="n">demo</span><span class="p">,</span> <span class="n">key_activity</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">sampling_params</span><span class="o">=</span><span class="n">chad_param_list</span><span class="p">)</span>
+
+        <span class="c1"># the sampling parameters for 1 household</span>
+        <span class="n">s_params</span>                <span class="o">=</span> <span class="n">chad_param_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># get the raw ABM data</span>
+        <span class="n">abm_list</span> <span class="o">=</span> <span class="n">get_simulation_data</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+
+        <span class="c1"># the ABM moments</span>
+        <span class="n">abm_start_mean</span><span class="p">,</span> <span class="n">abm_start_std</span><span class="p">,</span> <span class="n">abm_end_mean</span><span class="p">,</span> <span class="n">abm_end_std</span><span class="p">,</span> <span class="n">abm_dt_mean</span><span class="p">,</span> <span class="n">abm_dt_std</span> \
+            <span class="o">=</span> <span class="n">get_moments</span><span class="p">(</span><span class="n">abm_list</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+        <span class="c1"># create the plots</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_plot</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_start</span><span class="p">:</span>
+                <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">plot_verify_start</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_start_mean</span><span class="p">,</span> <span class="n">chad_start</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_end</span><span class="p">:</span>
+                <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">plot_verify_end</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_end_mean</span><span class="p">,</span> <span class="n">chad_end</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_dt</span><span class="p">:</span>
+                <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">plot_verify_dt</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_dt_mean</span><span class="p">,</span> <span class="n">chad_dt</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> <span class="n">do_save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<span class="c1"># ======================================================</span>
+<span class="c1"># RUN</span>
+<span class="c1"># ======================================================</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+
+    <span class="c1"># this flag indicates whether (if True) or not (if False) simulation data will be loaded from a pre-existing file</span>
+    <span class="c1"># or generated</span>
+    <span class="n">do_load</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># get the data</span>
+    <span class="c1">#</span>
+
+    <span class="k">if</span> <span class="n">do_load</span><span class="p">:</span>
+
+        <span class="c1"># load the simulation data</span>
+
+        <span class="c1"># load the simulation data from a pre-existing file</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">2018_03_29</span><span class="se">\\</span><span class="s1">n0004_d007</span><span class="se">\\</span><span class="s1">data_adult_work.pkl&#39;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loaded data from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c1"># create the data</span>
+        <span class="n">condition</span>   <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">do_save</span>
+        <span class="n">msg</span>         <span class="o">=</span> <span class="s1">&#39;The driver_params must have the save flag set to TRUE in order to run!&#39;</span>
+
+        <span class="c1"># assert condition</span>
+        <span class="k">assert</span> <span class="n">condition</span><span class="p">,</span> <span class="n">msg</span>
+
+        <span class="n">num_process</span><span class="p">,</span> <span class="n">num_hhld</span><span class="p">,</span> <span class="n">num_batch</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">get_cmd_line_params</span><span class="p">()</span>
+
+        <span class="c1"># run the simulation</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">num_process</span><span class="p">,</span> <span class="n">num_hhld</span><span class="p">,</span> <span class="n">num_batch</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set up the figures</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the general directory to save figures</span>
+    <span class="n">figure_dir</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG</span>
+
+    <span class="c1"># the directory for the isolated activity and global activity runs, respectively</span>
+    <span class="n">fdir_solo</span> <span class="o">=</span> <span class="n">figure_dir</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">solo&#39;</span>
+    <span class="n">fdir_omni</span> <span class="o">=</span> <span class="n">figure_dir</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">omni&#39;</span>
+
+    <span class="c1"># flags</span>
+    <span class="n">do_plot</span>     <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># choose activity with the corresponding trial to test the data</span>
+    <span class="c1">#</span>
+    <span class="n">trial_code</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">EAT_BREAKFAST</span>
+
+    <span class="c1"># get the appropriate parameters for the given activity (trial code and figure directory)</span>
+    <span class="n">chooser</span> <span class="o">=</span> <span class="p">{</span> <span class="n">trial</span><span class="o">.</span><span class="n">COMMUTE_TO_WORK</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">commute</span><span class="se">\\</span><span class="s1">to_work&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">COMMUTE_FROM_WORK</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">commute</span><span class="se">\\</span><span class="s1">from_work&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">EAT_BREAKFAST</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat</span><span class="se">\\</span><span class="s1">breakfast&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">EAT_DINNER</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat</span><span class="se">\\</span><span class="s1">dinner&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">EAT_LUNCH</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">eat</span><span class="se">\\</span><span class="s1">lunch&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">sleep&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">WORK</span><span class="p">:</span> <span class="n">fdir_solo</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">work&#39;</span><span class="p">,</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">OMNI</span><span class="p">:</span> <span class="n">fdir_omni</span><span class="p">,</span>
+                <span class="p">}</span>
+
+    <span class="c1"># get the trial code and figure directory (used for saving figures)</span>
+    <span class="n">fig_dir</span> <span class="o">=</span> <span class="n">chooser</span><span class="p">[</span><span class="n">trial_code</span><span class="p">]</span>
+
+
+    <span class="c1">#</span>
+    <span class="c1"># Run some analysis</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># obtain data from each simulation</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_all_data</span><span class="p">()</span>
+
+    <span class="n">evaluation</span><span class="o">.</span><span class="n">compare_abm_to_chad</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">demographic</span><span class="p">,</span> <span class="n">df_list</span><span class="p">,</span> <span class="n">trial_code</span><span class="p">)</span>
+
+    <span class="c1"># show the plots</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_plot</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -20,19 +20,20 @@ This module contains information about class :class:`person.Person`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# -------------------------------------
-# import 
-# --------------------------------------
+# ===============================================
+# import
+# ===============================================
 
 # general math capability
 import numpy as np
 
 # agent-based model modules
+import my_globals as mg
 import location as loc
-import activity, bio, home, hunger, income, interruption, need, rest, social, state, temporal, travel
+import activity, diary, bio, home, hunger, income, interruption, need, rest, social, state, temporal, travel
 
 # ===============================================
-# class
+# class Person
 # ===============================================
 
 class Person (object):
@@ -49,13 +50,14 @@ class Person (object):
     * a history of activities and states
 
     * Needs
+
         #. Hunger
         #. Rest
         #. Income
         #. Travel
         #. Interruption
 
-    :param home.Home house: the Home object the Person resides in. (will need to remove this)
+    :param home.Home house: the Home object the person resides in. (will need to remove this)
     :param temporal.Temporal clock: the time
     :param scheduler.Scheduler schedule: the schedule
     
@@ -63,11 +65,11 @@ class Person (object):
     :var temporal.Temporal clock: keeps track of the current time. It is linked to the Universe clock
     :var numpy.ndarray hist_state: the state history [int] for each time step
     :var numpy.ndarray hist_activity: the activity history [int] for each time step
-    :var home.Home 'home': this contains the place where the Person resides
+    :var home.Home 'home': this contains the place where the person resides
     :var int id: unique person identifier
     :var income.Income 'income': the need that concerns itself with working/school
     :var interruption.Interruption 'interruption': the need that concerns itself with interrupting an ongoing activity
-    :var location.Location 'location': the location data of a Person
+    :var location.Location 'location': the location data of a person
     :var dict needs: a dictionary of all of the  needs
     :var rest.Rest 'rest': the need that concerns itself with sleeping
     :var social.Social socio: the social characteristics of a Person
@@ -81,10 +83,6 @@ class Person (object):
     :var numpy.ndarray need_vector: the satiation level for each need at a given time step
 
     """
-
-    # -----------------------------
-    # constructors
-    # -----------------------------
 
     def __init__(self, house, clock, schedule):
 
@@ -144,12 +142,47 @@ class Person (object):
 
         return
 
+    def get_diary(self):
+
+        """
+        This function output the result of the simulation in terms of an activity diary.
+
+        :return: the activity diary describing the behavior of the agent
+        :rtype: diary.Diary
+        """
+
+        # the indices of simulation data
+        idx = self.clock.hist_time != -1
+        idx = idx.flatten()
+
+        # the time
+        t = self.clock.hist_time[idx].flatten()
+
+        # the array of the activities
+        hist_act = self.hist_activity[idx]
+
+        # the array of the locations
+        hist_loc = self.hist_local[idx]
+
+        # make the time continuous
+        t_all = mg.fill_out_time(t)
+
+        # fill out the time in between events to get data that corresponds to contiguous time
+        act_all = mg.fill_out_data(t, hist_act)
+
+        # fill out the location data in between events that corresponds to contiguous time
+        loc_all = mg.fill_out_data(t, hist_loc)
+
+        # create the activity diary
+        d = diary.Diary(t=t_all, act=act_all, local=loc_all)
+
+        return d
+
     def print_basic_info(self):
 
         """
-        This function expresses basic information about the Person as a string.
-        
-        This prints the following:
+        This function expresses basic information about the Person object as a string by \
+        printing the following:
         
         * person identifier
         * home identifier
@@ -270,7 +303,7 @@ class Person (object):
     def update_history(self):
 
         """
-        This function updates the history of the following values with their current values  
+        This function updates the history of the following values with their current values:
         
         * state history
         * location history

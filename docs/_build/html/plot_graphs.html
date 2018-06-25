@@ -1,0 +1,415 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plot_graphs notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="my_debug module" href="my_debug.html" />
+    <link rel="prev" title="longitude_plot notebook" href="longitude_plot.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plot-graphs-notebook">
+<h1>plot_graphs notebook<a class="headerlink" href="#plot-graphs-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 20, 2018</span>
+</pre></div>
+</div>
+<p>This notebook plots graphs comparing results from the Agent-Based Model
+of Human Activity Patterns (ABMHAP) to the data from the Consolidated
+Human Activity Database (CHAD).</p>
+<ol class="arabic simple">
+<li>plots the graphs of a distribution of the mean values of the agent
+and compares it to the distribution of CHAD mean values from the
+longitudinaal data for each activity start time, end time, and
+duration. The plots are the following:</li>
+<li>plots the graphs of a distribution of 1 randomly chosen day from each
+agent and compares it to the distribution of CHAD single-day data for
+each activity start time, end time, and duration. The plots are the
+following:<ol class="loweralpha">
+<li>the CDF plots of the ABMHAP distribution and CHAD distribution</li>
+<li>the inveted CDF plots of the ABMHAP distribution and CHAD
+distribution</li>
+<li>the inverted residual plots of the ABMHAP distribution and CHAD
+distribution</li>
+<li>the scaled inverted residual plots of the ABMHAP distribution and
+CHAD distribution</li>
+</ol>
+</li>
+<li>The results of the figures are saved in a suite of .pkl files</li>
+</ol>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capbailities</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># ABMHAP capabilities</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_non_work</span> <span class="k">as</span> <span class="nn">cdanw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_work</span> <span class="k">as</span> <span class="nn">cdaw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_school</span> <span class="k">as</span> <span class="nn">cdcs</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_young</span> <span class="k">as</span> <span class="nn">cdcy</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+<span class="kn">import</span> <span class="nn">evaluation</span> <span class="k">as</span> <span class="nn">ev</span>
+
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">analysis</span><span class="o">,</span> <span class="nn">analyzer</span><span class="o">,</span> <span class="nn">zipfile</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> auto
+</pre></div>
+</div>
+<p>load the data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># load the data</span>
+<span class="c1">#</span>
+
+<span class="c1">#</span>
+<span class="c1"># Get filename to load the data</span>
+<span class="c1">#</span>
+
+<span class="c1"># get the file name</span>
+<span class="n">f_data_ending</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">12_07_2017</span><span class="se">\\</span><span class="s1">n8192_d364&#39;</span>
+
+<span class="c1"># the file path directory to load the data</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_MY_DATA</span> <span class="o">+</span> <span class="n">f_data_ending</span>
+
+<span class="c1"># the full file name for loading the data</span>
+<span class="n">fname_load_data</span> <span class="o">=</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">data_child_young.pkl&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading data from:</span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fname_load_data</span><span class="p">)</span>
+
+<span class="c1"># clear variables</span>
+<span class="n">fname</span><span class="p">,</span> <span class="n">fpath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+<span class="c1"># load the data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fname_load_data</span><span class="p">)</span>
+
+<span class="c1"># get all of the data frames</span>
+<span class="n">df_list</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_all_data</span><span class="p">()</span>
+
+<span class="c1"># demographic</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">demographic</span>
+</pre></div>
+</div>
+<p>parameters for saving the data</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Get directory to save the figrues in</span>
+<span class="c1">#</span>
+
+<span class="c1"># file directory for saving the data</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG</span> <span class="o">+</span> <span class="n">f_data_ending</span>
+
+<span class="c1"># map the demographic to the correct file directory</span>
+<span class="n">chooser_fout</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_work&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">adult_non_work&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_school&#39;</span><span class="p">,</span>
+       <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">fpath</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_young&#39;</span><span class="p">,</span>
+      <span class="p">}</span>
+
+<span class="c1"># get the file directory to save the data</span>
+<span class="n">fpath_save_fig</span> <span class="o">=</span> <span class="n">chooser_fout</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The directory to save the data:</span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fpath_save_fig</span><span class="p">)</span>
+
+<span class="c1"># clear variables</span>
+<span class="n">fpath</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>the plotting parameters</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plotting flags</span>
+<span class="c1">#</span>
+
+<span class="c1"># calculates the plots</span>
+<span class="n">do_plot</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># save the figures</span>
+<span class="n">do_save_fig</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># show the plots</span>
+<span class="n">do_show</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># show extra print messages</span>
+<span class="n">do_print</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># demography</span>
+<span class="c1">#</span>
+
+<span class="c1"># map the demograph;y identifiyer to the demographics object</span>
+<span class="n">chooser</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">cdaw</span><span class="o">.</span><span class="n">CHAD_demography_adult_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">cdanw</span><span class="o">.</span><span class="n">CHAD_demography_adult_non_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">cdcs</span><span class="o">.</span><span class="n">CHAD_demography_child_school</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">cdcy</span><span class="o">.</span><span class="n">CHAD_demography_child_young</span><span class="p">(),</span>
+          <span class="p">}</span>
+
+<span class="c1"># choose the demography</span>
+<span class="n">chad_demo</span> <span class="o">=</span> <span class="n">chooser</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>plot</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># CHAD parameters</span>
+<span class="n">chad_param_list</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">int_2_param</span>
+
+<span class="c1"># get the activity codes for a given trial</span>
+<span class="n">act_codes</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="c1"># the directories for the respective activities. This is used for saving the figures</span>
+<span class="n">fdirs</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">get_verify_fpath</span><span class="p">(</span><span class="n">fpath_save_fig</span><span class="p">,</span> <span class="n">act_codes</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">fpath_save_fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">do_save_fig</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># offset, used for figure identifiers</span>
+<span class="n">off</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># number of days in the simulation</span>
+<span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">df_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">)</span>
+
+<span class="n">fid</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">act</span><span class="p">,</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">act_codes</span><span class="p">,</span> <span class="n">fdirs</span><span class="p">):</span>
+
+    <span class="nb">print</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_print</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;starting analysis for the &#39;</span> <span class="o">+</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; activity ...&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># this is to see if the analysis of the moments for start time needs to be in [-12, 12)</span>
+    <span class="c1"># instead of [0, 24) format</span>
+    <span class="n">chooser</span>     <span class="o">=</span> <span class="p">{</span><span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">}</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="n">chooser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># get the CHAD data</span>
+    <span class="c1"># this is here to access the data frames from t.initialize()</span>
+    <span class="n">f_stats</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">fname_stats</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+    <span class="c1"># the sampling parameters for 1 household</span>
+    <span class="n">s_params</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">int_2_param</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+    <span class="c1"># get the CHAD data</span>
+    <span class="n">chad_start</span><span class="p">,</span> <span class="n">chad_end</span><span class="p">,</span> <span class="n">chad_dt</span><span class="p">,</span> <span class="n">chad_record</span> <span class="o">=</span> \
+        <span class="n">analysis</span><span class="o">.</span><span class="n">get_verification_info</span><span class="p">(</span><span class="n">demo</span><span class="o">=</span><span class="n">demo</span><span class="p">,</span> <span class="n">key_activity</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">fname_stats</span><span class="o">=</span><span class="n">f_stats</span><span class="p">,</span> \
+                                       <span class="n">sampling_params</span><span class="o">=</span><span class="p">[</span><span class="n">s_params</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># plot the ABMHAP data</span>
+    <span class="n">df_abm</span>         <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">sample_activity_abm</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+    <span class="n">abm_start_mean</span> <span class="o">=</span> <span class="n">df_abm</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">abm_end_mean</span>   <span class="o">=</span> <span class="n">df_abm</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">abm_dt_mean</span>    <span class="o">=</span> <span class="n">df_abm</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># create the plots</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_plot</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+        <span class="c1">#if s_params.do_start:</span>
+        <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">plot_verify_start</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_start_mean</span><span class="p">,</span> <span class="n">chad_start</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> \
+                                   <span class="n">do_save_fig</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath</span><span class="p">)</span>
+
+        <span class="c1">#if s_params.do_end:</span>
+        <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">plot_verify_end</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_end_mean</span><span class="p">,</span> <span class="n">chad_end</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> \
+                                 <span class="n">do_save_fig</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath</span><span class="p">)</span>
+
+        <span class="c1">#if s_params.do_dt:</span>
+        <span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">plot_verify_dt</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">abm_dt_mean</span><span class="p">,</span> <span class="n">chad_dt</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="n">fid</span><span class="p">,</span> \
+                                 <span class="n">do_save_fig</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">do_show</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Validation</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the CHAD sampling parameters for the given demographioc</span>
+<span class="n">chad_param_list</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">chad_param_list</span>
+
+<span class="c1"># get the sampling parameters</span>
+<span class="n">s_params</span> <span class="o">=</span> <span class="n">chad_param_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># get the figure index</span>
+<span class="n">fidx</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># save flag</span>
+<span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">fpath_save_fig</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compare random events</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># the activity codes</span>
+<span class="n">act_codes</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">keys</span>
+<span class="c1">#act_codes = [mg.KEY_WORK]</span>
+
+<span class="c1"># open the data</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">chad_demo</span><span class="o">.</span><span class="n">fname_zip</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="c1"># this flag allows the code to pick a random record from the longitudinal data (if True)</span>
+<span class="c1"># or single-day data (if False)</span>
+<span class="n">do_random_long</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># for each activity, plot the corresponding plots</span>
+<span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">act_codes</span><span class="p">:</span>
+
+    <span class="nb">print</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">act</span><span class="p">]</span> <span class="p">)</span>
+
+
+    <span class="c1"># periodic time flag [-12, 12)</span>
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># if the activity occurs over midnight (if True), set the</span>
+    <span class="c1">#</span>
+    <span class="k">if</span> <span class="n">act</span> <span class="o">==</span> <span class="n">activity</span><span class="o">.</span><span class="n">SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># sample the ABM data</span>
+    <span class="n">df_abm</span>  <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">sample_activity_abm</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+
+    <span class="c1"># get the CHAD data</span>
+    <span class="c1"># this is here to access the data frames from t.initialize()</span>
+    <span class="n">f_stats</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">fname_stats</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+    <span class="c1"># get the file name data of the single name data</span>
+    <span class="k">if</span> <span class="n">do_random_long</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">f_stats</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">f_stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;solo&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the sampling parameters for 1 household</span>
+    <span class="n">s_params</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">int_2_param</span><span class="p">[</span><span class="n">act</span><span class="p">]</span>
+
+    <span class="c1"># get the CHAD data</span>
+    <span class="n">stats_start</span><span class="p">,</span> <span class="n">stats_end</span><span class="p">,</span> <span class="n">stats_dt</span><span class="p">,</span> <span class="n">record</span> <span class="o">=</span> \
+        <span class="n">analysis</span><span class="o">.</span><span class="n">get_verification_info</span><span class="p">(</span><span class="n">demo</span><span class="o">=</span><span class="n">demo</span><span class="p">,</span> <span class="n">key_activity</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">fname_stats</span><span class="o">=</span><span class="n">f_stats</span><span class="p">,</span> \
+                                       <span class="n">sampling_params</span><span class="o">=</span><span class="p">[</span><span class="n">s_params</span><span class="p">])</span>
+
+    <span class="c1"># grouby the CHAD records by identifier</span>
+    <span class="n">gb</span>  <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># return true if x is in pid</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pid</span>
+
+    <span class="c1"># indices of records within &#39;pid&#39;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># get the CHAD observations</span>
+    <span class="n">df_obs</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># get teh CHAD records that satisfy the sampling parameters for the given activity</span>
+    <span class="n">df_obs_new</span> <span class="o">=</span> <span class="n">s_params</span><span class="o">.</span><span class="n">get_record</span><span class="p">(</span><span class="n">df_obs</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># get the single day observations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fpath_save_fig</span><span class="p">)</span>
+    <span class="n">fid_last</span>    <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compare_abm_to_chad_help</span><span class="p">(</span><span class="n">df_abm</span><span class="o">=</span><span class="n">df_abm</span><span class="p">,</span> <span class="n">df_obs</span><span class="o">=</span><span class="n">df_obs_new</span><span class="p">,</span> <span class="n">act_code</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">fidx</span><span class="o">=</span><span class="n">fidx</span><span class="p">,</span> \
+                                              <span class="n">do_save</span><span class="o">=</span><span class="n">do_save</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">fpath_save_fig</span><span class="p">)</span>
+    <span class="n">fidx</span>        <span class="o">=</span> <span class="n">fid_last</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">z</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finished plotting...&#39;</span><span class="p">)</span>
+
+<span class="c1"># show the plots</span>
+<span class="k">if</span> <span class="n">do_show</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># clear all of the plots</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<span class="n">fpath</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="longitude_plot.html" title="previous chapter">longitude_plot notebook</a></li>
+      <li>Next: <a href="my_debug.html" title="next chapter">my_debug module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/plot_graphs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/plot_graphs.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

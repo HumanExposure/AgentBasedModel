@@ -12,16 +12,16 @@
 # August 14, 2017
 
 """
-This file contains information about the need dealing with resting.
+This file contains information about the need dealing with Rest.
 
 This module contains class :class:`rest.Rest`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# -----------------------------
+# ===============================================
 # import
-# -----------------------------
+# ===============================================
 
 # general mathematical capability
 import numpy as np
@@ -31,7 +31,7 @@ import my_globals as mg
 import need, state, temporal
 
 # ===============================================
-# class
+# class Rest
 # ===============================================
 
 class Rest(need.Need):
@@ -43,9 +43,6 @@ class Rest(need.Need):
     :param int num_sample_points: the number of temporal nodes in the simulation
     """
 
-    # -----------------------------
-    # constructor
-    # ---------------------------
     def __init__(self, clock, num_sample_points):
 
         need.Need.__init__(self, clock, num_sample_points)
@@ -65,9 +62,8 @@ class Rest(need.Need):
         .. warning::
             This function is old and antiquated.
             
-        This function decays the Rest magnitude
-
-        Rest only decays if the person is **not** asleep.  The decay in sleep       
+        This function decays the Rest satiation. The satiation only decays if the person is \
+        **not** asleep. The decay in sleep
 
         .. math::
             \\delta &= m_{decay} \\Delta{t} \\\\
@@ -96,22 +92,22 @@ class Rest(need.Need):
     def decay_new(self, status, dt):
 
         """
-        This function decays the Rest magnitude
-
-        Rest only decays if the person is NOT asleep.  The decay in sleep
+        This function decays Rests' satiation. The satiation only decays if the \
+        person is **not** asleep. The decay in sleep is calculated by
 
         .. math::
             \\delta &= m_{decay} \\Delta{t} \\\\
             n(t + \\Delta{t}) &= n(t) + \\delta
             
         where
-            * :math:`m_{decay}` is the decay rate
-            * :math:`\\Delta{t}` is the duration of time in 1 time step of simulation [minutes]
-            * :math:`\\delta` is the amount of decay of Rest
-            * :math:`n(t)` is the satiation at time t
+            * :math:`t` the current time
+            * :math:`\\Delta{t}` is the duration of time to decay the satiation [minutes]
+            * :math:`\\delta` the change in the satiation for Rest
+            * :math:`m_{decay}` is the decay rate for Rest
+            * :math:`n(t)` is the satiation of Rest at time t
     
         :param int status: the current state of a person
-        :param int dt: the duration of time [minutes] used to decay the need
+        :param int dt: the duration of time :math:`\\Delta{t}` [minutes] used to decay the need
         
         :return: None
         """
@@ -165,20 +161,22 @@ class Rest(need.Need):
     def initialize(self, p):
 
         """
-        The purpose of this code is to help initialize the Rest need and whatever activity that goes with \
-        it, depending on any time the simulation begins
+        The purpose of this code is to help initialize Rest's satiation and \
+        whatever activity that goes with it, depending on any time the simulation begins.
 
         .. note::
-            This code is a work in progress
+            This code is a work in progress.
 
         #. update the sleep start and end time
         #. find out if the person should be asleep
-        #. if the Person is asleep, 
+        #. if the Person is asleep,
+
             * sets the appropriate duration of sleep left to do
             * sets the rest magnitude to threshold
             * sets the rest recharge rate
             * sets the schedule to trigger when when the person is scheduled to wake up
-        #. if the Person is not asleep, 
+        #. if the Person is not asleep,
+
             * sets the decay rate
             * set the magnitude
             * sets the schedule to trigger when when the person is scheduled to start sleeping
@@ -188,7 +186,6 @@ class Rest(need.Need):
 
         :return: None
         """
-        do_test = False
 
         DAY_2_MIN = temporal.DAY_2_MIN
 
@@ -255,7 +252,8 @@ class Rest(need.Need):
             \\delta = m_{suggested}\\Delta{t}
 
         where
-            * :math:`m_{suggested}` is the suggested recharge rate
+            * :math:`\\delta` is the amount of change in the satiation for Rest
+            * :math:`m_{suggested}` is the suggested recharge rate for Rest
             * :math:`\\Delta{t}` is the duration of time from now until the future time
                     given by future_clock
 
@@ -295,18 +293,18 @@ class Rest(need.Need):
     def set_decay_rate(self, dt):
 
         """
-        This function sets the decay rate.
+        This function sets the decay rate. The decay rate (:math:`m_{decay}`) is assumed \
+        to be the slope of a linear function.
 
-        The decay rate (:math:`m_{decay}`) is assumed to be the slope of a linear function
+        .. math::
+            m_{decay} = -\\frac{1 - \\lambda}{\\Delta{t}}
 
         where
             * :math:`\\Delta{t}` is the duration of time expected to be awake
-            * :math:`\\lambda` is the rest threshold
+            * :math:`\\lambda` is the Rest threshold
+            * :math:`m_{decay}` is the decay rate for Rest
 
-        .. math::
-            m_{decay} = \\frac{-1 + \\lambda}{\\Delta{t}}
-
-        :param int dt: the duration of sleep [minutes]
+        :param int dt: the duration of sleep :math:`\\Delta{t}` [minutes]
 
         :return: None
         """
@@ -321,18 +319,19 @@ class Rest(need.Need):
     def set_recharge_rate(self, dt):
 
         """
-        This function sets the recharge rate.
-
-        The recharge rate (:math:`m_{recharge}`) is assumed to be the slope of a linear function
-
-        where
-            * :math:`\\Delta{t}` is the duration of sleep
-            * :math:`\\lambda` is the rest need threshold
+        This function sets the recharge rate. The recharge rate (:math:`m_{recharge}`) \
+        is assumed to be the slope of a linear function.
 
         .. math::
             m_{recharge} = \\frac{1 - \\lambda}{ \\Delta{t} }
 
-        :param int dt: the duration of sleep after rounding [minutes]
+        where
+            * :math:`\\Delta{t}` is the duration of sleep
+            * :math:`\\lambda` is the threshold for Rest
+            * :math:`m_{recharge}` is the recharge rate for Rest
+
+
+        :param int dt: the duration of sleep after rounding :math:`\\Delta{t}` [minutes]
 
         :return: None
         """
@@ -361,16 +360,18 @@ class Rest(need.Need):
 
         """
         This function sets the "suggested" recharge rate. That is, the rate of recharge assuming exact \
-        arithmetic (there is no rounding in time, say to the nearest minute)
-
-        where
-            * :math:`\\Delta{t}` is the duration of sleep
-            * :math:`\\lambda` is the rest need threshold
+        arithmetic (there is no rounding in time, say to the nearest minute).
 
         .. math::
             m_{suggested} = \\frac{ 1 - \\lambda }{ \\Delta{t} }
 
-        :param int dt: the duration of sleep [minutes]
+        where
+            * :math:`\\Delta{t}` is the duration of sleep
+            * :math:`\\lambda` is the Rest threshold
+            * :math:`m_{suggested}` is the suggested recharge rate for Rest
+
+
+        :param int dt: the duration of sleep :math:`\\Delta{t}` [minutes]
 
         :return: None
         """
@@ -382,12 +383,13 @@ class Rest(need.Need):
     def should_be_asleep(self, t_start, t_end):
 
         """
-        This function finds out if the person should be asleep for the initialization of the ABM module
+        This function finds out if the person should be asleep for the initialization \
+        of the ABMHAP algorithm.
 
         :param int t_start:  start time of sleep [minutes, time of day]
         :param int t_end: end time of sleep [minutes, time of day]
 
-        :return: a flag indicating whether a Person should be asleep (if True) or awake (if False)
+        :return: a flag indicating whether a person should be asleep (if True) or awake (if False)
         :rtype: bool
         """
 

@@ -12,7 +12,7 @@
 # August 14, 2017
 
 """
-This module contains code for the :class:`need.Need` associated with the desire to move from one \
+This module contains code for the need associated with the desire to move from one \
 environment to another.
 
 This file contains code for :class:`travel.Travel`.
@@ -20,15 +20,15 @@ This file contains code for :class:`travel.Travel`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # agent-based model module
 import income, location, need, occupation, state, temporal
 
 # ===============================================
-# class
+# class Travel
 # ===============================================
 
 class Travel(need.Need):
@@ -74,10 +74,10 @@ class Travel(need.Need):
 
         """
         This decays the satiation level in order to commute to work. For the satiation to decay the \
-        person needs the following
+        person needs the following:
 
-        #. The agent should leave the home to go to work
-        #. The agent should leave work to go home
+        #. the agent should leave the home to go to work
+        #. the agent should leave work to go home
 
         :param person.Person p: the person of interest
 

@@ -1,0 +1,415 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>omni_trial module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sleep_trial module" href="sleep_trial.html" />
+    <link rel="prev" title="my_debug module" href="my_debug.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-omni_trial">
+<span id="omni-trial-module"></span><h1>omni_trial module<a class="headerlink" href="#module-omni_trial" title="Permalink to this headline">¶</a></h1>
+<p>This is the module that is in charge of running simulations comparing the Agent-Based Model of Human Activity Patterns (ABMHAP) with the data from the Consolidated Human Activity Database (CHAD) comparing the performance of ABMHAP with all of the activity data.</p>
+<p>This module contains class <a class="reference internal" href="#omni_trial.Omni_Trial" title="omni_trial.Omni_Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">omni_trial.Omni_Trial</span></code></a>.</p>
+<dl class="class">
+<dt id="omni_trial.Omni_Trial">
+<em class="property">class </em><code class="descclassname">omni_trial.</code><code class="descname">Omni_Trial</code><span class="sig-paren">(</span><em>parameters</em>, <em>sampling_params</em>, <em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a></p>
+<p>This class runs the ABMHAP simulations initialized with all of the activity data from CHAD for     a given demographic. For the respective demographic, the following activity-data from CHAD     are used:</p>
+<blockquote>
+<div><ul class="simple">
+<li>commute from work</li>
+<li>commute to work</li>
+<li>eat breakfast</li>
+<li>eat dinner</li>
+<li>eat lunch</li>
+<li>sleep</li>
+<li>work</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters that describe the household:</li>
+<li><strong>sampling_parameters</strong> (dict of activity code - <a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><code class="xref py py-class docutils literal notranslate"><span class="pre">chad_params.CHAD_params</span></code></a>) – maps an activity code to the sampling parameters     to the CHAD data for the respective activity</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_commute_from_work">
+<code class="descname">adjust_commute_from_work</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_commute_from_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_commute_from_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the commuting from work         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         commuting from work. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_commute_to_work">
+<code class="descname">adjust_commute_to_work</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_commute_to_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_commute_to_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the commuting to work         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         commuting to work. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_eat_breakfast">
+<code class="descname">adjust_eat_breakfast</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_eat_breakfast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_eat_breakfast" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the eating breakfast         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         eating breakfast. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_eat_dinner">
+<code class="descname">adjust_eat_dinner</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_eat_dinner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_eat_dinner" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the eating dinner         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         eating dinner. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_eat_lunch">
+<code class="descname">adjust_eat_lunch</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_eat_lunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_eat_lunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the eating lunch         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         eating lunch. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_params">
+<code class="descname">adjust_params</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for simulating the respective demographic         in ABMHAP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>dict that maps int to a tuple: numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – maps an activity code to the parameterizing CHAD data for each activity,         respectively. The CHAD data are the mean and standard deviation of the start time, end time,         and duration.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_params_adult_non_work">
+<code class="descname">adjust_params_adult_non_work</code><span class="sig-paren">(</span><em>x</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_params_adult_non_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_params_adult_non_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the non-working adult demographic, this function adjusts the         household parameters to reflect the sampled         parameters (mean and standard deviation of the activity start time, end         time, and duration, respectively, for the following activities:</p>
+<ol class="arabic simple">
+<li>eat breakfast</li>
+<li>eat lunch</li>
+<li>eat dinner</li>
+<li>sleep</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>dict that maps int to a tuple: numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – maps an activity code to the parameterizing CHAD data for each activity,         respectively. The CHAD data are the mean and standard deviation of the start time, end time,         and duration.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – off or on intra-individual variation among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_params_adult_work">
+<code class="descname">adjust_params_adult_work</code><span class="sig-paren">(</span><em>x</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_params_adult_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_params_adult_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the working adult demographic, this function adjusts the         household parameters to reflect the sampled         parameters (mean and standard deviation of the activity start time, end         time, and duration, respectively, for the following activities:</p>
+<ol class="arabic simple">
+<li>sleep</li>
+<li>eat breakfast</li>
+<li>eat lunch</li>
+<li>eat dinner</li>
+<li>commute to work</li>
+<li>commute from work</li>
+<li>work</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>dict that maps int to a tuple: numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – maps an activity code to the parameterizing CHAD data for each activity,         respectively. The CHAD data are the mean and standard deviation of the start time, end time,         and duration.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – off or on intra-individual variation among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_params_child_school">
+<code class="descname">adjust_params_child_school</code><span class="sig-paren">(</span><em>x</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_params_child_school"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_params_child_school" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the school-age children demographic, this function adjusts the         household parameters to reflect the sampled         parameters (mean and standard deviation of the activity start time, end         time, and duration, respectively, for the following activities:</p>
+<ol class="arabic simple">
+<li>sleep</li>
+<li>eat breakfast</li>
+<li>eat lunch</li>
+<li>eat dinner</li>
+<li>commute To work</li>
+<li>commute From work</li>
+<li>work</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>dict that maps int to a tuple: numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – maps an activity code to the parameterizing CHAD data for each activity,         respectively. The CHAD data are the mean and standard deviation of the start time, end time,         and duration.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – off or on intra-individual variation among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_params_child_young">
+<code class="descname">adjust_params_child_young</code><span class="sig-paren">(</span><em>x</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_params_child_young"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_params_child_young" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the preschool children demographic, this function adjusts the         household parameters to reflect the sampled         parameters (mean and standard deviation of the activity start time, end         time, and duration, respectively, for the following activities:</p>
+<ol class="arabic simple">
+<li>eat breakfast</li>
+<li>eat lunch</li>
+<li>eat dinner</li>
+<li>sleep</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>dict that maps int to a tuple: numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – maps an activity code to the parameterizing CHAD data for each activity,         respectively. The CHAD data are the mean and standard deviation of the start time, end time,         and duration.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – off or on intra-individual variation among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_sleep">
+<code class="descname">adjust_sleep</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the sleeping         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         sleeping. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.adjust_work">
+<code class="descname">adjust_work</code><span class="sig-paren">(</span><em>data</em>, <em>no_variation=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.adjust_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.adjust_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the household parameters to reflect the sampled parameters         (mean and standard deviation of start time, end time, and         duration, respectively), from the CHAD data for the working         activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>tuple of numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>,         </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>numpy.ndarray</em>) – relevant parameters for each person in the household for         working. The tuple contains the following: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</li>
+<li><strong>no_variation</strong> (<em>bool</em>) – whether (if True) or not (if False) intra-individual         variation is set to zero among the activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="omni_trial.Omni_Trial.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/omni_trial.html#Omni_Trial.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omni_trial.Omni_Trial.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes the parameters for the ABMHAP simulation based on the         CHAD data for the given demographic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="my_debug.html" title="previous chapter">my_debug module</a></li>
+      <li>Next: <a href="sleep_trial.html" title="next chapter">sleep_trial module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/omni_trial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/omni_trial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

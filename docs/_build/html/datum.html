@@ -1,0 +1,800 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>datum module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="demographics notebook" href="demographics.html" />
+    <link rel="prev" title="count_records notebook" href="count_records.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-datum">
+<span id="datum-module"></span><h1>datum module<a class="headerlink" href="#module-datum" title="Permalink to this headline">¶</a></h1>
+<p>This module contains functions that analyze the raw data from the Consolidated Human Activity Database (CHAD) to be processed/ filtered for use by the Agent-Based Model of Human Activity Patterns (ABMHAP).</p>
+<p>This function primarily encapsulates functions to analyze data to be used as an imported module. However, it may also be run as a main file.</p>
+<dl class="function">
+<dt id="datum.analyze_commute">
+<code class="descclassname">datum.</code><code class="descname">analyze_commute</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the commuting data to get information about BOTH     commuting to work, commuting from work, <strong>AND</strong> working. The data are chosen from     entries where a work event is sandwiched between a commuting to work event and a     commuting from work event. The commuting data and working data are processed and     filtered for use for ABMHAP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the raw CHAD commuting data also the data of people with both commute and work data,    statistical data of commuting to work, statistical data of commuting from work,     statistical data of working.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary, dictionary, dictionary, dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_commute_school">
+<code class="descclassname">datum.</code><code class="descname">analyze_commute_school</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_commute_school"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_commute_school" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the commuting to school data to get information     to get data about commuting to school and commuting from school. The     commuting to school data are processed and filtered for use for ABMHAP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the raw CHAD commuting data also the CHAD commuting data modified to handle     over night events, statistical data of commuting to school, statistical data of     commuting from school</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary, dictionary, dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_eat">
+<code class="descclassname">datum.</code><code class="descname">analyze_eat</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_eat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_eat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the CHAD data for eating in order to get information     on eating breakfast, eating lunch, and eating dinner data. The data     are processed and filtered for use for ABMHAP for the respective activities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">statistical data of eating breakfast, statistical data of eating lunch,     statistical data of eating dinner</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary, dictionary, dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_education">
+<code class="descclassname">datum.</code><code class="descname">analyze_education</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_education"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_education" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the CHAD data for schooling in order to get information on     going to school.     The data are processed and filtered for use for ABMHAP for the school activity,     namely school data are only taken if the event is considered “fulltime”,     (i.e., having a long enough duration) in order to avoid part-time school events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the CHAD schooling data for “fulltime” educational data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_moments">
+<code class="descclassname">datum.</code><code class="descname">analyze_moments</code><span class="sig-paren">(</span><em>df</em>, <em>start_periodic=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_moments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_moments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the data for each person by calculating the moments for     duration, start time, and end time for the following three cases.</p>
+<ol class="arabic simple">
+<li>General (weekday and weekend)</li>
+<li>Weekday</li>
+<li>Weekend</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame</em>) – the data in the form of CHAD records to analyze</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the statistical moments data for the following:     general duration, general start time, general end time,     weekday duration, weekday start time, weekday end time,     weekend duration, weekend start time, weekend end time</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DatFrame, pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_sleep">
+<code class="descclassname">datum.</code><code class="descname">analyze_sleep</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the CHAD data for sleeping in order to get information     on sleeping. The data are processed and filtered for use for ABMHAP for the     sleep activity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the statistical data on CHAD sleep data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.analyze_work">
+<code class="descclassname">datum.</code><code class="descname">analyze_work</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#analyze_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.analyze_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the CHAD data for working. The data are processed and     filtered for use for ABMHAP for the work activity. Data in only chosen if the     person surveyed in CHAD is marked as fulltime employed. This function does a statistical     analysis of the following:</p>
+<ol class="arabic simple">
+<li>raw work data</li>
+<li>longitudinal data</li>
+<li>fulltime work data</li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function may be antiquated and not currently used. Instead see <a class="reference internal" href="#datum.analyze_commute" title="datum.analyze_commute"><code class="xref py py-func docutils literal notranslate"><span class="pre">analyze_commute()</span></code></a>         for obtaining work information.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference internal" href="chad.html#chad.CHAD_RAW" title="chad.CHAD_RAW"><em>chad.CHAD_RAW</em></a>) – the raw CHAD data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">statistical data on CHAD work data on the following: raw CHAD data,     raw CHAD data after being processed for overnight activities, raw CHAD data     after being processed for data from people employed fulltime</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary, dictionary, dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.filter_commute">
+<code class="descclassname">datum.</code><code class="descname">filter_commute</code><span class="sig-paren">(</span><em>df</em>, <em>start_min</em>, <em>start_max</em>, <em>end_max</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#filter_commute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.filter_commute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function finds indices of the data that satisfy the filters     placed on the commuting data by limiting the data to be within the start     time range and end time range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the commuting data</li>
+<li><strong>start_min</strong> (<em>float</em>) – the minimum start time [hours]</li>
+<li><strong>start_max</strong> (<em>float</em>) – the maximum start time [hours]</li>
+<li><strong>end_max</strong> (<em>float</em>) – the maximum end time [hours]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">indices of the commuting data that satisfy the filtering</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_commute_data">
+<code class="descclassname">datum.</code><code class="descname">get_commute_data</code><span class="sig-paren">(</span><em>df_all</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_commute_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_commute_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function finds the following commuting data for BOTH commuting to work AND commuting     from work.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df_all</strong> (<em>pandas.core.frame.DataFrame</em>) – the dataframe containing commuting and work data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the commute to work data, the commute from work data, the work activity data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_data_help">
+<code class="descclassname">datum.</code><code class="descname">get_data_help</code><span class="sig-paren">(</span><em>idx</em>, <em>stats_dt</em>, <em>stats_start</em>, <em>stats_end</em>, <em>record</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_data_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_data_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns statistical information from the activity duration,     start time, end time, and the CHAD records from the given indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>idx</strong> (<em>numpy.ndarray</em>) – the indices of the CHAD individuals to     keep in the statistical data</li>
+<li><strong>stats_dt</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for the     activity duration</li>
+<li><strong>stats_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the start time activity duration</li>
+<li><strong>stats_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the end time activity duration</li>
+<li><strong>record</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD records for a given     activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the statistical data on duration, start time, and end time;     the CHAD record data from the chosen individuals given by the indices.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_end_date">
+<code class="descclassname">datum.</code><code class="descname">get_end_date</code><span class="sig-paren">(</span><em>date</em>, <em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_end_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_end_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function finds the date that an activity ends.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> – the date the activities start</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the start time of the activities</li>
+<li><strong>end</strong> (<em>numpy.ndarray</em>) – the end time of activities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">numpy.ndarray of datetime.timedelta</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the end date for an activity</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray of datetime.timedelta</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_fulltime_data">
+<code class="descclassname">datum.</code><code class="descname">get_fulltime_data</code><span class="sig-paren">(</span><em>df</em>, <em>start_min=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_fulltime_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_fulltime_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function finds the data from CHAD that pertain to individuals that     are working fulltime. That is, activities starting with with a minimum     given mean start time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD work data</li>
+<li><strong>start_min</strong> (<em>float</em>) – the minimum start time to be accepted [0, 24)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the data frame of the workers</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_longitude">
+<code class="descclassname">datum.</code><code class="descname">get_longitude</code><span class="sig-paren">(</span><em>stats_dt</em>, <em>stats_start</em>, <em>stats_end</em>, <em>record</em>, <em>N=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_longitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the longitudinal CHAD statistical data for     duration, start time, and end time. This function also gets     the CHAD record data from the respective statistical data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stats_dt</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for the     activity duration</li>
+<li><strong>stats_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the start time activity duration</li>
+<li><strong>stats_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the end time activity duration</li>
+<li><strong>record</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD records for a given     activity</li>
+<li><strong>N</strong> (<em>int</em>) – the minimum number of activities to be considered     longitudinal</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">longitudinal data for statistical moments for activity duration,     start time, and end time also longitudinal CHAD records</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_meals">
+<code class="descclassname">datum.</code><code class="descname">get_meals</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_meals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_meals" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in eating data and separates that data into meals: breakfast,     lunch, and dinner by filtering the data by minimum and maximum start time,     end time, and duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – CHAD data on the eating data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">breakfast data, lunch data, and dinner data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_moments">
+<code class="descclassname">datum.</code><code class="descname">get_moments</code><span class="sig-paren">(</span><em>x</em>, <em>start_periodic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_moments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_moments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates data about the moments of start time, end time, and duration     weekday + weekend data, weekday data, weekend data. Also there are the CHAD records for     the following situations: daily data, weekday data, and weekend data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD data to be analyzed</li>
+<li><strong>start_periodic</strong> (<em>bool</em>) – a flag indicating whether start times should be analyzed     in [-12, 12) if true or [0, 24) if false</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a dictionary of statistical moments for the following data: duration,     start time, end time, weekday duration, weekday start time, weekday end time,     weekend duration, weekend start time, weekend end time. Also there are the following     CHAD records: daily records, weekend records, weekday records.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dictionary of pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_skipped_meals">
+<code class="descclassname">datum.</code><code class="descname">get_skipped_meals</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_skipped_meals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_skipped_meals" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each person identified within CHAD, this function goes through activity     data and finds, on a workday, and finds whether or not the individual     skipped a meal (i.e., skipped breakfast, lunch, and/ or dinner).</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is antiquated and not used.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – CHAD activity data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the activity data of people within CHAD where a meal was skipped</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_solo">
+<code class="descclassname">datum.</code><code class="descname">get_solo</code><span class="sig-paren">(</span><em>stats_dt</em>, <em>stats_start</em>, <em>stats_end</em>, <em>record</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_solo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_solo" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the single-day (i.e. from individuals with only 1 entry)     CHAD statistical data for     duration, start time, and end time. This function also gets     the CHAD record data from the respective statistical data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stats_dt</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for the     activity duration</li>
+<li><strong>stats_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the start time activity duration</li>
+<li><strong>stats_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the end time activity duration</li>
+<li><strong>record</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD records for a given     activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">single-day data for statistical moments for activity duration,     start time, and end time also longitudinal CHAD records</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame,     pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_stats">
+<code class="descclassname">datum.</code><code class="descname">get_stats</code><span class="sig-paren">(</span><em>pid</em>, <em>data</em>, <em>do_periodic=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the statistics about an activity-parameter (start time, end time,     or duration) and stores the following data within a dataframe:</p>
+<ol class="arabic simple">
+<li>person identifier (PID)</li>
+<li>the number of events (N)</li>
+<li>the mean (mu)</li>
+<li>the standard deviation (std)</li>
+<li>the coefficient of variation (cv)</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pid</strong> (<em>numpy.ndarray of str</em>) – the identifiers for the individuals within CHAD for a given activity</li>
+<li><strong>data</strong> (<em>numpy.ndarray</em>) – the CHAD records for a given activity</li>
+<li><strong>do_periodic</strong> (<em>bool</em>) – a flag whether (if True) or not (if False) time of day     should be expressed in [-12, 12)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the statistical results from an activity-parameter (start time, end time,     or duration)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_stats_individual">
+<code class="descclassname">datum.</code><code class="descname">get_stats_individual</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_stats_individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_stats_individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the data from the records and returns the following.</p>
+<ol class="arabic simple">
+<li>the mean (mu)</li>
+<li>the standard deviation (std)</li>
+<li>the coefficient of variation (cv)</li>
+<li>the number of events (N)</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>numpy.ndarray</em>) – the individual records data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the mean, standard deviation, coefficient of variation,     and  number of entries</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray, numpy.ndarray, numpy.ndarray, int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_stats_weekend">
+<code class="descclassname">datum.</code><code class="descname">get_stats_weekend</code><span class="sig-paren">(</span><em>pid</em>, <em>data</em>, <em>date</em>, <em>start</em>, <em>end</em>, <em>do_weekend=True</em>, <em>do_periodic=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_stats_weekend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_stats_weekend" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the stats about the moments of the activity     that occur on a weekends OR weekedays.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pid</strong> (<em>numpy.ndarray of str</em>) – the personal identifiers in the CHAD data</li>
+<li><strong>data</strong> – the CHAD records of the activity data</li>
+<li><strong>date</strong> (<em>numpy.ndarray of datetime.timedelta</em>) – the dates of the activity data</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the start time of the activity data</li>
+<li><strong>end</strong> (<em>numpy.ndarray</em>) – the end time of the activity data</li>
+<li><strong>do_weekend</strong> (<em>bool</em>) – a flag whether (if True) to use data that occurs on the     weekend or (if False) and the weekday</li>
+<li><strong>do_periodic</strong> (<em>bool</em>) – a flag whether (if True) or not (if False) time of day     should be expressed in [-12, 12)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the statistical data for an activity-parameter (i.e. start time,     end time, and duration) that occurs on the weekend or weekday</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_weekend_index">
+<code class="descclassname">datum.</code><code class="descname">get_weekend_index</code><span class="sig-paren">(</span><em>date</em>, <em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_weekend_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_weekend_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the indices of activity information     of the weekend data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<em>numpy.ndarray of datetime.timedelta</em>) – the date of the activity information</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the start time of the activity information</li>
+<li><strong>end</strong> (<em>numpy.ndarray</em>) – the end time of the activity information</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">this function gets the indices of activities that occur     during the weekend</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray of bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.get_weekend_index_df">
+<code class="descclassname">datum.</code><code class="descname">get_weekend_index_df</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#get_weekend_index_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.get_weekend_index_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the boolean indices of weekend data from a dataframe.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – CHAD activity record data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the boolean indices of weekend data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray of bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.histogram">
+<code class="descclassname">datum.</code><code class="descname">histogram</code><span class="sig-paren">(</span><em>ax</em>, <em>x</em>, <em>bins=None</em>, <em>color='b'</em>, <em>label=''</em>, <em>alpha=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots a histogram of the data where the y axis corresponds     to the relative frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib.figure.Figure</em>) – the plotting axis (plt or from axes)</li>
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the data to be plotted</li>
+<li><strong>bins</strong> (<em>numpy.ndarray</em>) – the bins for the histogram</li>
+<li><strong>color</strong> (<em>str</em>) – the color for the histogram</li>
+<li><strong>label</strong> (<em>str</em>) – the label of the data</li>
+<li><strong>alpha</strong> (<em>float</em>) – the alpha for plotting</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.merge">
+<code class="descclassname">datum.</code><code class="descname">merge</code><span class="sig-paren">(</span><em>df_full</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each person in the activity data, the function does the following:</p>
+<ol class="arabic simple">
+<li>groups the contiguous daily activity data</li>
+<li>merges data that occur over midnight into one event</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df_full</strong> (<em>pandas.core.frame.DataFrame</em>) – the full set of the activity data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a data frame that merges activities that occur over midnight</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.merge_end_of_day">
+<code class="descclassname">datum.</code><code class="descname">merge_end_of_day</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#merge_end_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.merge_end_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes longitudinal data and merges the data if the data     starts before midnight and ends after midnight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the activity records data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">activity events that start before midnight and end after midnight</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.periodicity_CHADID">
+<code class="descclassname">datum.</code><code class="descname">periodicity_CHADID</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#periodicity_CHADID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.periodicity_CHADID" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function combines entries for sleep with the periodicity assumption for a     given day (CHADID).</p>
+<p>If there are two events starting at 0:00 and ending in the morning AND     another event starting in the evening and ending at 0:00 on the SAME DAY,     we combine the two events into one event. We assume that the person goes to sleep     on the same start time and wakes up at the same time (periodicity assumption).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – sleep events for 1 CHADID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">return sleep data with the periodicity assumption for 1 CHADID</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.periodicity_PID">
+<code class="descclassname">datum.</code><code class="descname">periodicity_PID</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#periodicity_PID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.periodicity_PID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the periodicity assumption for a given person by its     person identifier (PID).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the sleep data of a person with 1 PID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sleep data with the periodicity assumption</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.periodicity_sleep">
+<code class="descclassname">datum.</code><code class="descname">periodicity_sleep</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#periodicity_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.periodicity_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the periodicity assumption (i.e., expressing time as [-12, 12)) for an     entire dataset of multiple entries.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>pandas.core.frame.DataFrame</em>) – the sleep data over many individuals</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sleep data with the periodicity assumption</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.save">
+<code class="descclassname">datum.</code><code class="descname">save</code><span class="sig-paren">(</span><em>fpath</em>, <em>record</em>, <em>stats_dt</em>, <em>stats_start</em>, <em>stats_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves the following information as a .csv file:</p>
+<ol class="arabic simple">
+<li>the statistical moments data for the activity duration (‘stats_dt.csv’)</li>
+<li>the statistical moments data for the activity start time (‘stats_start.csv’)</li>
+<li>the statistical moments data for the activity end time (‘stats_end.csv’)</li>
+<li>the statistical moments data for the activity records (‘record.csv’)</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fpath</strong> (<em>str</em>) – the file directory in which to save the data</li>
+<li><strong>record</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD records for a given     activity</li>
+<li><strong>stats_dt</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for the     activity duration</li>
+<li><strong>stats_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the start time activity duration</li>
+<li><strong>stats_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the statistical moments for     the end time activity duration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.sequential_data">
+<code class="descclassname">datum.</code><code class="descname">sequential_data</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#sequential_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.sequential_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given PID, this function groups the data in terms of sets of data     for consecutive days. This function     assumes that all the data given is for a given (generalized) activity.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the data, it is not necessarily the case that if there are multiple days of consecutive activity,         that all of them form 1 contiguous period. Ex. It is possible to have entries Jan 1, Jan 2, Jan 3, Feb 10,         Feb 11. This function will group the data into 2 groups when this occurs.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the data of a specific PID for an activity</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of dataframes for sequential longitudinal-data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="datum.sequential_days">
+<code class="descclassname">datum.</code><code class="descname">sequential_days</code><span class="sig-paren">(</span><em>date</em>, <em>start=None</em>, <em>end=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datum.html#sequential_days"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datum.sequential_days" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates label indicating sequential days. This is done by writing a sequence     where each group of consecutive dates have a label starting at 0.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">the following sequence of dates [0, 0, 1,1, 3, 4, 5, 10], would have the         following sequence [0, 0, 0, 0, 1, 1, 1, 2]</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<em>numpy.ndarray datetime.timedelta</em>) – the date of the activity data</li>
+<li><strong>start</strong> (<em>numpy.ndarray</em>) – the start time of the activity data</li>
+<li><strong>end</strong> (<em>numpy.ndarray</em>) – the end time of the activity data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a sequence whose indices indicates sequential dates for an activity</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="count_records.html" title="previous chapter">count_records notebook</a></li>
+      <li>Next: <a href="demographics.html" title="next chapter">demographics notebook</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/datum.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/datum.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

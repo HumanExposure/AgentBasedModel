@@ -12,12 +12,8 @@
 # August 14, 2017
 
 """
-This module contains info needed for the occupation of a Person. In addition, this file also contains functions \
-useful for the module itself.
-
-This module contains class :class:`occupation.Occupation`.
-
-This module contains constants relevant to the occupational information:
+This module contains info needed for the occupation of a person. In addition, this file also contains functions \
+useful for the module itself.This module contains constants relevant to the occupational information:
 
 * job identifiers
 * job categories
@@ -27,12 +23,14 @@ This module contains constants relevant to the occupational information:
 * default commuting from work information
 * default summer vacation (from school) information
 
+This module contains class :class:`occupation.Occupation`.
+
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general math capability
 import numpy as np
@@ -41,9 +39,9 @@ import numpy as np
 import my_globals as mg
 import location, temporal
 
-# ----------------------------------------------------------
+# ===============================================
 # constants
-# ----------------------------------------------------------
+# ===============================================
 
 # job IDs
 NO_JOB          = 0
@@ -89,8 +87,8 @@ COMMUTE_FROM_WORK_DT_TRUNC      = 1
 DT_COMMUTE_MIN = 5
 
 # summer vacation start [weeks]
-SUMMER_VACATION_START   = temporal.SUMMER  * temporal.SEASON_2_WEEK + 2
-SUMMER_VACTION_END      = temporal.FALL * temporal.SEASON_2_WEEK
+SUMMER_VACATION_START   = temporal.SUMMER  * temporal.SEASON_2_WEEK
+SUMMER_VACTION_END      = temporal.FALL * temporal.SEASON_2_WEEK - 2
 
 # This dictionary takes the INTEGER representation of a the job identifier and
 # returns a STRING representation
@@ -118,7 +116,7 @@ INT_2_STR_CAT = {
 STR_2_INT_CAT = { v: k for k, v in INT_2_STR_CAT.items() }
 
 # ===============================================
-# class
+# class Occupation
 # ===============================================
 
 class Occupation(object):
@@ -159,8 +157,8 @@ class Occupation(object):
     :var int work_end_trunc: the number of standard deviations in the work end time distribution
     
 
-    :var bool is_employed: this is a flag saying whether this is a job or not
-    :var bool is_same_day: This is a flag to see whether the start time and end time of a job are \
+    :var bool is_employed: a flag saying whether the agent is employed (True) or not (False)
+    :var bool is_same_day: a flag to see whether the start time and end time of a job are \
                             on the same day. If so, True. Else, False. If a person has :const:`NO_JOB`, the flag \
                             is set to True
                             
@@ -436,9 +434,9 @@ class Occupation(object):
         """
         Sets Occupation to one of the following preset jobs:
         
-        * :const:`NO_JOB`
-        * :const:`STANDARD_JOB`
-        * :const:`STUDENT`
+        * :const:`NO_JOB`, the agent is unemployed
+        * :const:`STANDARD_JOB`, the agent has a job
+        * :const:`STUDENT`, the agent attends school (not including college / university)
 
         :return: None
         """
@@ -522,9 +520,10 @@ class Occupation(object):
     def set_standard_job(self):
 
         """
-        This function sets the Occupation to the standard job.
+        This function sets the Occupation to the default job. The job has the following \
+        characteristics:
 
-        * has fixed shift of 9:00 - 17:00
+        * 9:00 - 17:00
         * Monday through Friday 
         * wage of $40,000 
         * 30 minute commute to work
@@ -535,8 +534,10 @@ class Occupation(object):
         :return: None
         """
 
+        # conversion from 1 day into minutes
         DAY_2_MIN       = temporal.DAY_2_MIN
 
+        # the occupation identifier
         self.id         = STANDARD_JOB
 
         # set the occupation type to a fixed shift
@@ -547,6 +548,7 @@ class Occupation(object):
         self.t_start_std    = START_STD
         self.t_start        = self.t_start_mean
 
+        # the end time of the job [time of day, minutes]
         self.t_end_mean = END_MEAN
         self.t_end_std  = END_STD
         self.t_end      = self.t_end_mean
@@ -554,14 +556,15 @@ class Occupation(object):
         self.f_work_start   = None
         self.f_work_end     = None
 
+        # set the distribution for sampling start time and end time
         self.set_work_distribution()
 
-        # the commute time [minutes]
-        # commute duration to and from work
+        # paramters for commuting to work [minutes]
         self.commute_to_work_dt_mean    = COMMUTE_TO_WORK_DT_MEAN
         self.commute_to_work_dt_std     = COMMUTE_TO_WORK_DT_STD
         self.commute_to_work_dt         = self.commute_to_work_dt_mean
 
+        # paramters for commuting from work [minutes]
         self.commute_from_work_dt_mean  = COMMUTE_FROM_WORK_DT_MEAN
         self.commute_from_work_dt_std   = COMMUTE_FROM_WORK_DT_STD
         self.commute_from_work_dt       = self.commute_from_work_dt_mean
@@ -595,9 +598,10 @@ class Occupation(object):
     def set_student(self):
 
         """
-        This function sets the Occupation to the standard job.
+        This function sets the Occupation to the default schooling behavior. This \
+        has the following characteristics:
 
-        * Fixed shift of 8:00 - 15:00
+        * 8:00 - 15:00
         * Monday through Friday 
         * wage of $0
         * 30 minute commute to school
@@ -608,18 +612,21 @@ class Occupation(object):
         :return: None
         """
 
+        # the conversion of 1 day into minutes
         DAY_2_MIN       = temporal.DAY_2_MIN
 
+        # the identifier
         self.id         = STUDENT
 
         # set the occupation type to a fixed shift
         self.category   = FIXED_SHIFT
 
-        # the start time of the job [time of day, minutes]
+        # the start time of the occupation [time of day, minutes]
         self.t_start_mean   = START_MEAN
         self.t_start_std    = START_STD
         self.t_start        = self.t_start_mean
 
+        # the end time of the occupation
         self.t_end_mean = END_MEAN
         self.t_end_std  = END_STD
         self.t_end      = self.t_end_mean
@@ -627,14 +634,15 @@ class Occupation(object):
         self.f_work_start   = None
         self.f_work_end     = None
 
+        # set the distributions for sampling start time and end time
         self.set_work_distribution()
 
-        # the commute time [minutes]
-        # commute duration to and from work
+        # parameters for commuting to work [minutes]
         self.commute_to_work_dt_mean    = COMMUTE_TO_WORK_DT_MEAN
         self.commute_to_work_dt_std     = COMMUTE_TO_WORK_DT_STD
         self.commute_to_work_dt         = self.commute_to_work_dt_mean
 
+        # parameters for commuting form work [minutes]
         self.commute_from_work_dt_mean  = COMMUTE_FROM_WORK_DT_MEAN
         self.commute_from_work_dt_std   = COMMUTE_FROM_WORK_DT_STD
         self.commute_from_work_dt       = self.commute_from_work_dt_mean
@@ -676,9 +684,11 @@ class Occupation(object):
         :return: None 
         """
 
+        # the start time distribution
         self.f_work_start   = mg.set_distribution(-self.work_start_trunc, self.work_start_trunc, \
                                                   self.t_start_mean, self.t_start_std)
 
+        # the end time distribution
         self.f_work_end     = mg.set_distribution(-self.work_end_trunc, self.work_end_trunc, \
                                                   self.t_end_mean, self.t_end_std)
         return
@@ -940,7 +950,7 @@ def set_grave_shift(job):
     """
     This function sets the Occupation to a grave shift.
 
-    * shift job from  22:00 to 6:00 
+    * from  22:00 to 6:00
     * Monday through Friday
     * 30 minute commute to work
     * 60 minute commute from work
@@ -1051,7 +1061,7 @@ def set_standard_job(job):
     """
     This function sets the Occupation to the standard job.
 
-    * fixed shift of 9:00 - 17:00
+    * 9:00 - 17:00
     * Monday through Friday 
     * wage $40,000 
     * 30 minute commute to work
@@ -1112,7 +1122,7 @@ def set_student(job):
     """
     This function sets a job to the preset values of student occupation.
 
-    * fixed shift of 08:00 - 15:00
+    * 08:00 - 15:00
     * Monday through Friday
     * wage of $0
     * 30 minute commute to school

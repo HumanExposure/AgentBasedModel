@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Welcome to the documentation for the Agent-Based Model of Human Activity Patterns (ABMHAP)! &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>Welcome to the documentation for the Agent-Based Model of Human Activity Patterns (ABMHAP)! &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="activity module" href="activity.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -31,8 +22,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -42,7 +32,7 @@
             
   <div class="section" id="welcome-to-the-documentation-for-the-agent-based-model-of-human-activity-patterns-abmhap">
 <h1>Welcome to the documentation for the Agent-Based Model of Human Activity Patterns (ABMHAP)!<a class="headerlink" href="#welcome-to-the-documentation-for-the-agent-based-model-of-human-activity-patterns-abmhap" title="Permalink to this headline">¶</a></h1>
-<p>The Agent-Based Model of Human Activity Patterns (ABMHAP, pronounced &#8220;ab-map&#8221;) is one of the
+<p>The Agent-Based Model of Human Activity Patterns (ABMHAP, pronounced “ab-map”) is one of the
 modules for the Life Cycle Human Exposure Model (LC-HEM) project as described in the United States Environmental
 Protection Agency (U.S. EPA) research plan, which may be found
 <a class="reference external" href="https://19january2017snapshot.epa.gov/sites/production/files/2016-11/documents/css_fy16-19_strap.pdf">here</a>.
@@ -56,9 +46,15 @@ ABMHAP is able to simulate daily routines for the following behaviors:</p>
 <li>Working</li>
 <li>Commuting to Work</li>
 <li>Commuting from Work</li>
-<li>Being idle (i.e., time spent not doing the above activities)</li>
+<li>Being Idle (i.e., time spent not doing the above activities)</li>
 </ol>
-<p>The current version of ABMHAP requires the user to input parameters that describe the longitudinal variation in behavior of a single individual.</p>
+<p>ABMHAP requires the user to input parameters that describe the longitudinal variation in behavior of a single individual. Information on the design of the model, modeling assumptions, and limitations of the model are described in the publications:</p>
+<ol class="arabic simple">
+<li>Brandon et al. <em>Simulating Exposure-Related Behaviors using Agent-Based Models Embedded with Needs-Based
+Artificial Intelligence</em>, Journal of Exposure Science and Environmental Epidemiology, submitted 2018.</li>
+<li>Brandon, N and Price, P. Simulating <em>Long-Term Patterns in Exposure-Related Behaviors using the Agent-Based
+Model of Human Activity Patterns</em>, Journal of Exposure Science and Environmental Epidemiology, submitted 2018.</li>
+</ol>
 <p>The current version of ABMHAP is written in Python version 3.5.3. More information on the Python programming
 language may be found <a class="reference external" href="https://www.python.org/">here</a>. The Python libraries that must be installed in
 order for ABMHAP to run are listed below.</p>
@@ -71,12 +67,11 @@ order for ABMHAP to run are listed below.</p>
 <li>sphinx</li>
 <li>statsmodels</li>
 </ul>
+<p>Some of the features within ABMHAP also use Jupyter Notebook. More information on Project Jupyter
+may be found <a class="reference external" href="https://jupyter.org">here</a>.</p>
 <p>ABMHAP is written by Dr. Namdi Brandon (ORCID: 0000-0001-7050-1538).</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <dl class="docutils">
-<dt>Disclaimer</dt>
+<dt><strong>Disclaimer</strong></dt>
 <dd>The United States Environmental Protection Agency through its Office of Research and Development has
 developed this software. The code is made publicly available to better communicate the research. All
 input data used for a given application should be reviewed by the researcher so that the model results
@@ -84,18 +79,27 @@ are based on appropriate data for any given application. This model is under con
 model and data included herein do not represent and should not be construed to represent any Agency
 determination or policy.</dd>
 </dl>
-<div class="section" id="how-to-run-the-code">
-<h2>How to Run the Code<a class="headerlink" href="#how-to-run-the-code" title="Permalink to this headline">¶</a></h2>
-<p>The following describes how to run an ABMHAP simulation of one agent. In order to do so, the user must
-do the following:</p>
+</div>
+<div class="section" id="running-the-abmhap-code">
+<h1>Running the ABMHAP Code<a class="headerlink" href="#running-the-abmhap-code" title="Permalink to this headline">¶</a></h1>
+<p>The current version of ABMHAP may be run in two different ways.</p>
 <ol class="arabic simple">
-<li>set the input parameters of the simulation in the file <code class="docutils literal"><span class="pre">\run\main_params.py</span></code></li>
-<li>run the executable using <code class="docutils literal"><span class="pre">\run\main.py</span></code></li>
+<li>ABMHAP may run with user-defined parameters in order to simulate one household</li>
+<li>ABMHAP may run with parameters derived from empirical data as a Monte-Carlo simulation in order
+to simulate multiple households</li>
+</ol>
+<div class="section" id="how-to-run-the-code-using-user-defined-parameters">
+<h2>How to Run the Code Using User-Defined Parameters<a class="headerlink" href="#how-to-run-the-code-using-user-defined-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The following describes how to run an ABMHAP simulation of <strong>one household</strong> (ABMHAP currenlty
+simulates one agent per household). In order to do so, the user must do the following:</p>
+<ol class="arabic simple">
+<li>set the input parameters of the simulation in the file <code class="docutils literal notranslate"><span class="pre">\run\main_params.py</span></code></li>
+<li>run the executable using <code class="docutils literal notranslate"><span class="pre">\run\main.py</span></code></li>
 </ol>
 <div class="section" id="setting-the-input-parameters">
 <h3>Setting the input parameters<a class="headerlink" href="#setting-the-input-parameters" title="Permalink to this headline">¶</a></h3>
 <p>In order to run ABMHAP, the user must set the following types of input parameters in
-<code class="docutils literal"><span class="pre">\run\main_params.py</span></code>:</p>
+<code class="docutils literal notranslate"><span class="pre">\run\main_params.py</span></code>:</p>
 <ol class="arabic simple">
 <li>input parameters that govern the general logistics of the simulation</li>
 <li>input parameters that govern the the length of simulation duration</li>
@@ -107,31 +111,31 @@ do the following:</p>
 <li>informs the algorithm to not print the output to the screen</li>
 <li>informs the algorithm to not plot the output</li>
 <li>informs the algorithm to not save the output to a file</li>
-<li>should the output file be saved, sets the output file to <code class="docutils literal"><span class="pre">\some_directory\outputfile.csv</span></code></li>
+<li>should the output file be saved, sets the output file to <code class="docutils literal notranslate"><span class="pre">\output_directory\outputfile.csv</span></code></li>
 </ul>
 <p>The user must set the input parameters that govern the general logistics of the simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># whether (if True) or not (if False) the output of the simulation should</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># whether (if True) or not (if False) the output of the simulation should</span>
 <span class="c1"># print a message to screen</span>
-<span class="n">do_print</span>    <span class="o">=</span> <span class="bp">False</span>
+<span class="n">do_print</span>    <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># whether (if True) or not (if False) the output of the simulation should</span>
 <span class="c1"># be plotted a message to screen</span>
-<span class="n">do_plot</span>     <span class="o">=</span> <span class="bp">False</span>
+<span class="n">do_plot</span>     <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># whether (if True) or not (if False) the output of the simulation should</span>
 <span class="c1"># be saved in a file</span>
-<span class="n">do_save</span>     <span class="o">=</span> <span class="bp">False</span>
+<span class="n">do_save</span>     <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># the name of the output file should the output be saved. The filename</span>
 <span class="c1"># should have a &quot;.csv&quot; extension</span>
-<span class="n">fname</span>       <span class="o">=</span> <span class="s1">&#39;some_directory</span><span class="se">\\</span><span class="s1">outputfile.csv&#39;</span>
+<span class="n">fname</span>       <span class="o">=</span> <span class="s1">&#39;output_directory</span><span class="se">\\</span><span class="s1">outputfile.csv&#39;</span>
 </pre></div>
 </div>
 <p>The following code shows how to set ABMHAP to run starting on Sunday, Day 0 starting from 16:00
-and ending on Monday, Day 7 at 0:00. It&#8217;s recommended that the user start running the code on a Sunday or Saturday
+and ending on Monday, Day 7 at 0:00. It’s recommended that the user start running the code on a Sunday or Saturday
 at 16:00 in order to minimize potential activity conflicts at initiation.</p>
 <p>The user must set the input parameters dealing with the duration of the simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># the number of days for the simulation</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># the number of days for the simulation</span>
 <span class="n">num_days</span>    <span class="o">=</span> <span class="mi">7</span>
 
 <span class="c1"># the number of additional hours</span>
@@ -142,14 +146,14 @@ at 16:00 in order to minimize potential activity conflicts at initiation.</p>
 </pre></div>
 </div>
 <p>The user must set the input parameters dealing with when in the simulation year the simulation should start:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># start the simulation on Sunday, Day 0 at 16:00</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># start the simulation on Sunday, Day 0 at 16:00</span>
 <span class="n">t_start</span>     <span class="o">=</span> <span class="n">WINTER</span> <span class="o">*</span> <span class="n">SEASON_2_MIN</span> <span class="o">+</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">WEEK_2_MIN</span> \
             <span class="o">+</span> <span class="n">SUNDAY</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span> <span class="o">+</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span>
 </pre></div>
 </div>
 <p>where the following constants are useful in assigning input parameters that define
 the start time of the simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># an agent-based model module with capabilities concerning time</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># an agent-based model module with capabilities concerning time</span>
 <span class="kn">import</span> <span class="nn">temporal</span>
 
 <span class="c1"># the value of Sunday</span>
@@ -165,14 +169,14 @@ the start time of the simulation:</p>
 <span class="n">SEASON_2_MIN</span>   <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">SEASON_2_MIN</span>
 
 <span class="c1"># the number of minutes in one week</span>
-<span class="n">WEEK_2_MIN</span>     <span class="o">=</span> <span class="n">WEEK_2_MIN</span>
+<span class="n">WEEK_2_MIN</span>     <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WEEK_2_MIN</span>
 
 <span class="c1"># the winter season (has the value 0)</span>
 <span class="n">WINTER</span>         <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">WINTER</span>
 </pre></div>
 </div>
 <p>The user must set the input parameters that govern the behavior of the agent. The input parameters will govern
-the agent&#8217;s behavior for the following activities.</p>
+the agent’s behavior for the following activities.</p>
 <ol class="arabic simple">
 <li>sleeping</li>
 <li>eating breakfast</li>
@@ -183,8 +187,8 @@ the agent&#8217;s behavior for the following activities.</p>
 <li>commuting from work</li>
 </ol>
 <p>In order to set the sleeping behavior, the user must set the the mean and standard deviation for the start time
-and end time for the sleep activity. The agent&#8217;s behavior for sleeping is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 22:00</span>
+and end time for the sleep activity. The agent’s behavior for sleeping is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 22:00</span>
 <span class="n">sleep_start_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">22</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation of the start time to be 30 minutes</span>
@@ -198,8 +202,8 @@ and end time for the sleep activity. The agent&#8217;s behavior for sleeping is 
 </pre></div>
 </div>
 <p>In order to set the eat breakfast behavior, the user must set the mean and standard deviation for the start time
-and duration for the eat breakfast activity. The agent&#8217;s behavior for eating breakfast is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 8:00</span>
+and duration for the eat breakfast activity. The agent’s behavior for eating breakfast is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 8:00</span>
 <span class="n">bf_start_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">8</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation of the start time to be 10 minutes</span>
@@ -213,8 +217,8 @@ and duration for the eat breakfast activity. The agent&#8217;s behavior for eati
 </pre></div>
 </div>
 <p>In order to set the eat lunch behavior, the user must set the mean and standard deviation for the start time
-and duration for the eat lunch activity. The agent&#8217;s behavior for eating lunch is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 12:000</span>
+and duration for the eat lunch activity. The agent’s behavior for eating lunch is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 12:000</span>
 <span class="n">lunch_start_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">12</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation of start time to be 15 minutes</span>
@@ -228,8 +232,8 @@ and duration for the eat lunch activity. The agent&#8217;s behavior for eating l
 </pre></div>
 </div>
 <p>In order to set the eat dinner behavior, the user must set the mean and standard deviation for the start time
-and duration for the eat dinner activity. The agent&#8217;s behavior for eating dinner is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 19:00</span>
+and duration for the eat dinner activity. The agent’s behavior for eating dinner is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 19:00</span>
 <span class="n">dinner_start_mean</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">19</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation of start time to be 10 minutes</span>
@@ -243,8 +247,8 @@ and duration for the eat dinner activity. The agent&#8217;s behavior for eating 
 </pre></div>
 </div>
 <p>In order to set the work behavior, the user must set the mean and standard deviation for the start time and
-end time for the work activity. The agent&#8217;s behavior for working is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 9:00</span>
+end time for the work activity. The agent’s behavior for working is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean start time to be 9:00</span>
 <span class="n">work_start_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">9</span> <span class="o">*</span> <span class="n">HOUR_2_MIN</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation of start time to be 15 minutes</span>
@@ -257,8 +261,8 @@ end time for the work activity. The agent&#8217;s behavior for working is set as
 <span class="n">work_end_std</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="p">)</span>
 </pre></div>
 </div>
-<p>The user must set the agent&#8217;s employment status. The agent&#8217;s employment status is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># an agent-based model module for functionality dealing with occupation</span>
+<p>The user must set the agent’s employment status. The agent’s employment status is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># an agent-based model module for functionality dealing with occupation</span>
 <span class="kn">import</span> <span class="nn">occupation</span>
 
 <span class="c1"># set the job identifier (job id) as standard job if the agent</span>
@@ -271,8 +275,8 @@ end time for the work activity. The agent&#8217;s behavior for working is set as
 </pre></div>
 </div>
 <p>In order to set the commute to work behavior, the user must set the mean and standard deviation for the duration
-of the commute to work activity. The agent&#8217;s behavior for commuting to work is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean duration to be 30 minutes</span>
+of the commute to work activity. The agent’s behavior for commuting to work is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean duration to be 30 minutes</span>
 <span class="n">commute_to_work_dt_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation to be 10 minutes</span>
@@ -280,8 +284,8 @@ of the commute to work activity. The agent&#8217;s behavior for commuting to wor
 </pre></div>
 </div>
 <p>In order to set the commute from work behavior, the user must set the mean and standard deviation for the duration
-of the commute from work activity. The agent&#8217;s behavior for commuting from work is set as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the mean duration to be 30 minutes</span>
+of the commute from work activity. The agent’s behavior for commuting from work is set as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the mean duration to be 30 minutes</span>
 <span class="n">commute_from_work_dt_mean</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span> <span class="p">)</span>
 
 <span class="c1"># set the standard deviation to be 10 minutes</span>
@@ -291,11 +295,11 @@ of the commute from work activity. The agent&#8217;s behavior for commuting from
 </div>
 <div class="section" id="running-the-simulation">
 <h3>Running the simulation<a class="headerlink" href="#running-the-simulation" title="Permalink to this headline">¶</a></h3>
-<p>After defining all of the parameters in the file <code class="docutils literal"><span class="pre">\run\main_params.py</span></code>, the code is run by doing
+<p>After defining all of the parameters in the file <code class="docutils literal notranslate"><span class="pre">\run\main_params.py</span></code>, the code is run by doing
 the following:</p>
 <ol class="arabic simple">
-<li>go to the <code class="docutils literal"><span class="pre">\run</span></code> directory.</li>
-<li>enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">main.py</span></code> into the terminal (or command line)</li>
+<li>go to the <code class="docutils literal notranslate"><span class="pre">\run</span></code> directory.</li>
+<li>enter <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code> into the terminal (or command line)</li>
 <li>press enter (or return)</li>
 </ol>
 </div>
@@ -563,69 +567,365 @@ expressed in minutes.</p>
 </tr>
 </tbody>
 </table>
-<p>The activity codes map as the following:</p>
+</div>
+</div>
+<div class="section" id="how-to-run-the-code-using-parameters-derived-from-an-empirical-dataset">
+<h2>How to Run the Code Using Parameters Derived from an Empirical Dataset<a class="headerlink" href="#how-to-run-the-code-using-parameters-derived-from-an-empirical-dataset" title="Permalink to this headline">¶</a></h2>
+<p>ABMHAP may be also used to simulate agents whose parametrization is derived from an empirical dataset, as opposed
+to using user-defined parameters. Specifically, the current version of ABMHAP uses the Consolidated Human
+Activity Database (CHAD) to parametrize the behavior of agents. More information about CHAD may be found
+<a class="reference external" href="https://www.epa.gov/healthresearch/consolidated-human-activity-database-chad-use-human-exposure-and-health-studies-and">here</a>.
+Currently, ABMAHP uses data from CHAD to parametrize agents that simulate the behaviors of people that
+represent the following demographic groups within the general United States population:</p>
+<ol class="arabic simple">
+<li>working adults (ages 18 and above)</li>
+<li>non-working adults (ages 18 and above)</li>
+<li>school-age children (ages 5 through 17)</li>
+<li>preschool children (ages 1 through 4)</li>
+</ol>
+<p>To simulate a demographic, we run ABMHAP via a Monte-Carlo simulation that creates <strong>multiple households</strong>
+(ABMHAP currently simulates one agent per household) and
+randomly parametrizes their behavior based on empirical distributions from CHAD data. In order to decrease
+the runtime of simulating multiple households, ABMHAP has the capability to run the Monte-Carlo simulations
+in <strong>parallel</strong>.</p>
+<p>In order to run the Monte-Carlo simulations, the user must do the following:</p>
+<ol class="arabic simple">
+<li>set the input parameters of the simulation in the file <code class="docutils literal notranslate"><span class="pre">\run_chad\driver_params.py</span></code></li>
+<li>run the executable using <code class="docutils literal notranslate"><span class="pre">\run_chad\driver.py</span></code></li>
+</ol>
+<div class="section" id="id4">
+<h3>Setting the input parameters<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>In order to run ABMHAP, the user must set the following types of input parameters in
+<code class="docutils literal notranslate"><span class="pre">\run_chad\driver_params.py</span></code>:</p>
+<ol class="arabic simple">
+<li>input parameters that govern the general logistics of the simulation</li>
+<li>input parameters that govern the the length of simulation duration</li>
+<li>input parameters that define the demographic of the agents</li>
+</ol>
+<p>For illustrative purposes, what follows is a demonstration of how to parametrize a run for ABMHAP. See,
+the earlier section “Setting the input parameters” in “How to Run the Code Using User-Defined Parameters” to
+understand how to set up the input parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># the number of days for the simulation</span>
+<span class="n">num_days</span>    <span class="o">=</span> <span class="mi">364</span>
+
+<span class="c1"># the number of additional hours</span>
+<span class="n">num_hours</span>   <span class="o">=</span> <span class="mi">8</span>
+
+<span class="c1"># the number of additional minutes</span>
+<span class="n">num_min</span>     <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># should the simulation plot results at the end of the run</span>
+<span class="n">do_plot</span>         <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># should the simulation print messages to the screen</span>
+<span class="n">do_print</span>        <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># should the simulation save the results (both input and output)</span>
+<span class="c1"># of the simulation</span>
+<span class="n">do_save</span>         <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>In addition, the user must define the demographic of the agents
+being simulated. This causes ABMHAP to use the empirical data from the respective demographic in CHAD to
+parametrize the agent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this causes ABMHAP to use empirical data from CHAD corresponding</span>
+<span class="c1"># to the working adult demographic in order to parametrize the agents</span>
+<span class="n">demographic</span>   <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span>
+
+<span class="c1"># the path to the output directory where should the output results</span>
+<span class="c1"># should be saved</span>
+<span class="n">fpath</span>         <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">output_directory&#39;</span>
+
+<span class="c1"># load input data from a previous simulation</span>
+<span class="n">do_load_trials</span>  <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># the file name for &quot;trials&quot; data without the .pkl extension,</span>
+<span class="c1"># which will be used for saving the trial information</span>
+<span class="n">fname_load_trials_base</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Running the simulation<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>After defining all of the parameters in the file <code class="docutils literal notranslate"><span class="pre">\run_chad\driver_params.py</span></code>, the code is run by doing
+the following:</p>
+<ol class="arabic">
+<li><p class="first">go to the <code class="docutils literal notranslate"><span class="pre">\run_chad</span></code> directory.</p>
+</li>
+<li><p class="first">enter the following into the terminal (or command line):</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">num_process</span> <span class="pre">num_hhld</span> <span class="pre">num_batch</span></code></p>
+<p>where</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">num_process</span></code> is the total number of cores (i.e, processing units) used in the simulation</li>
+<li><code class="docutils literal notranslate"><span class="pre">num_hhld</span></code> is the number of housholds to run per batch</li>
+<li><code class="docutils literal notranslate"><span class="pre">num_batch</span></code> is the number of batches used per core</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first">press enter (or return)</p>
+</li>
+</ol>
+<p>To run the code, do the following.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This code may be run in <strong>batches</strong> in order to run many households while conserving memory. That is,
+instead of running 32 households at once (and keeping 32 households in memory), the program can
+run 2 batches of 16 households (for a total of 32 households). This halves the amount of memory
+used in the simulation compared to running the simulation of 1 batch of 32 households. We
+will shown how to run the code using “batches” below.</p>
+</div>
+<div class="section" id="running-in-serial">
+<h4>Running in <strong>serial</strong><a class="headerlink" href="#running-in-serial" title="Permalink to this headline">¶</a></h4>
+<p>The following are examples on how to run the code in serial.</p>
+<p>To run in serial with with 64 households per batch, 1 batch (implied)</p>
+<blockquote>
+<div><p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">64</span> <span class="pre">1</span></code></p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">64</span></code></p>
+</div></blockquote>
+<p>To run in serial using 2 batches with 1 thread with 32 households per batch, 2 batches</p>
+<blockquote>
+<div>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">1</span> <span class="pre">32</span> <span class="pre">2</span></code></div></blockquote>
+</div>
+<div class="section" id="running-in-parallel">
+<h4>Running in <strong>parallel</strong><a class="headerlink" href="#running-in-parallel" title="Permalink to this headline">¶</a></h4>
+<p>The following are examples on how to run the code in parallel.</p>
+<p>To run in parallel using 4 cores with 64 households total (16 household per core per batch), 1 batch (implied)</p>
+<blockquote>
+<div><p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">64</span> <span class="pre">1</span></code></p>
+<p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">64</span></code></p>
+</div></blockquote>
+<p>To run in parallel using 4 cores with 32 households per batch, 2 batches(8 households per core per batch)</p>
+<blockquote>
+<div>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">driver.py</span> <span class="pre">4</span> <span class="pre">32</span> <span class="pre">2</span></code></div></blockquote>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Interpreting the output<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>ABMHAP outputs the record of the activities that <strong>each</strong> agent did during the simulation. Each agent’s
+record is called an <strong>activity diary</strong>. An activity diary is a chronological record contains the following
+information about each activity: day, start time, end time, duration, and location. The output is a combined
+record of every agent simulated where each agent is given a unique integer as an identifier.</p>
+<p>Below is an example of the output of ABMHAP. Recall that ABMHAP saves the activity diary in terms of a .csv file</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="54%" />
-<col width="46%" />
+<col width="29%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="8%" />
+<col width="8%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Activity</th>
-<th class="head">Activity Code</th>
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">day</th>
+<th class="head">start</th>
+<th class="head">end</th>
+<th class="head">dt</th>
+<th class="head">act</th>
+<th class="head">loc</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Idle</td>
-<td>-1</td>
-</tr>
-<tr class="row-odd"><td>Commute from work</td>
-<td>1</td>
-</tr>
-<tr class="row-even"><td>Commute to work</td>
-<td>2</td>
-</tr>
-<tr class="row-odd"><td>Eat breakfast</td>
+<tr class="row-even"><td>0</td>
+<td>0</td>
+<td>16</td>
+<td>19</td>
 <td>3</td>
+<td>-1</td>
+<td>0</td>
 </tr>
-<tr class="row-even"><td>Eat dinner</td>
+<tr class="row-odd"><td>0</td>
+<td>0</td>
+<td>19</td>
+<td>19.75</td>
+<td>0.75</td>
 <td>4</td>
+<td>0</td>
 </tr>
-<tr class="row-odd"><td>Eat lunch</td>
-<td>5</td>
+<tr class="row-even"><td><img class="math" src="_images/math/d4de02b91bf45f9cea101c2103fd07a5e89c698e.png" alt="\vdots"/></td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
-<tr class="row-even"><td>Sleep</td>
+<tr class="row-odd"><td>0</td>
+<td>364</td>
+<td>22</td>
+<td>0</td>
+<td>2</td>
 <td>6</td>
+<td>0</td>
 </tr>
-<tr class="row-odd"><td>Work</td>
-<td>7</td>
+<tr class="row-even"><td>1</td>
+<td>0</td>
+<td>16</td>
+<td>20</td>
+<td>4</td>
+<td>-1</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>0</td>
+<td>20</td>
+<td>20.5</td>
+<td>0.5</td>
+<td>4</td>
+<td>0</td>
+</tr>
+<tr class="row-even"><td><img class="math" src="_images/math/d4de02b91bf45f9cea101c2103fd07a5e89c698e.png" alt="\vdots"/></td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>364</td>
+<td>23</td>
+<td>0</td>
+<td>1</td>
+<td>6</td>
+<td>0</td>
 </tr>
 </tbody>
 </table>
-<p>The location codes map as the following:</p>
+<p>where id, day, start, end, dt, act, and loc represent the agent identifier, the day
+the activity starts, the start time of the activity (in hours), the end time of the
+activity (in hours), the duration of the activity (in hours), the activity identifier,
+and the location identifier, respectively. In the results, the time of day 16:30 is
+represented as 16.5. Each agent in the Mont-Carlo simulation is given a unique
+identifier via “id”.</p>
+<p>The following table is an interpretation of the example output shown above. In the table, the duration is
+expressed in minutes.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="54%" />
-<col width="46%" />
+<col width="19%" />
+<col width="6%" />
+<col width="9%" />
+<col width="9%" />
+<col width="12%" />
+<col width="22%" />
+<col width="22%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Location</th>
+<tr class="row-odd"><th class="head">Identifier</th>
+<th class="head">Day</th>
+<th class="head">Start</th>
+<th class="head">End</th>
+<th class="head">Duration</th>
+<th class="head">Activity Code</th>
 <th class="head">Location Code</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Home</td>
+<tr class="row-even"><td>0</td>
 <td>0</td>
+<td>16:00</td>
+<td>19:00</td>
+<td>180</td>
+<td>Idle</td>
+<td>Home</td>
 </tr>
-<tr class="row-odd"><td>Out of doors</td>
-<td>1</td>
+<tr class="row-odd"><td>0</td>
+<td>0</td>
+<td>19:00</td>
+<td>19:45</td>
+<td>45</td>
+<td>Eat dinner</td>
+<td>Home</td>
 </tr>
-<tr class="row-even"><td>Workplace</td>
-<td>3</td>
+<tr class="row-even"><td><img class="math" src="_images/math/d4de02b91bf45f9cea101c2103fd07a5e89c698e.png" alt="\vdots"/></td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>0</td>
+<td>364</td>
+<td>22:00</td>
+<td>00:00</td>
+<td>120</td>
+<td>Sleep</td>
+<td>Home</td>
+</tr>
+<tr class="row-even"><td>1</td>
+<td>0</td>
+<td>16:00</td>
+<td>20:00</td>
+<td>240</td>
+<td>Idle</td>
+<td>Home</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>0</td>
+<td>20:00</td>
+<td>20:30</td>
+<td>30</td>
+<td>Eat dinner</td>
+<td>Home</td>
+</tr>
+<tr class="row-even"><td><img class="math" src="_images/math/d4de02b91bf45f9cea101c2103fd07a5e89c698e.png" alt="\vdots"/></td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>364</td>
+<td>23:00</td>
+<td>00:00</td>
+<td>60</td>
+<td>Sleep</td>
+<td>Home</td>
 </tr>
 </tbody>
 </table>
+<p>Given that ABMHAP is set to simulate working adults, the results from a ABMHAP
+simulation are saved in the following files:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">\output_directory\data_adult_work.csv</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">\output_directory\trials_adult_work.pkl</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">\output_directory\data_adult_work.pkl</span></code></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file contains the activity diary of all of the simulations. The other files are
+created for the following reason. Because these runs are capable of simulating large numbers
+of agents, in order to save memory space, the results from ABMHAP are saved in a compressed
+file format unique to python called “pickle” file format, which is denoted with a
+<code class="docutils literal notranslate"><span class="pre">.pkl</span></code> extension. The saved python objects correspond to</p>
+<ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">\output_directory\trials_adult_work.pkl</span></code> contains the input data for each household being
+simulated. The file contains a list of <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a> objects.</li>
+<li><code class="docutils literal notranslate"><span class="pre">\output_directory\data_adult_work.pkl</span></code>  contains the output data (i.e., the activity
+diaries) for each household being simulated. The file contains a <a class="reference internal" href="driver_result.html#driver_result.Driver_Result" title="driver_result.Driver_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Driver_Result</span></code></a>
+object</li>
+</ol>
 </div>
 </div>
+</div>
+<div class="section" id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The following is the documentation of all of the files that are within the ABMHAP code. The
+code is divided into the following directories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">\source</span></code>, which handles the key components for ABMHAP</li>
+<li><code class="docutils literal notranslate"><span class="pre">\run</span></code>, which handles code for running ABMHAP with user-defined parameters</li>
+<li><code class="docutils literal notranslate"><span class="pre">\run_chad</span></code>, which handles running ABMHAP as a Monte-Carlo simulation with agents parameterized with empirical data from CHAD</li>
+<li><code class="docutils literal notranslate"><span class="pre">\plotting</span></code>, which handles some plotting capability</li>
+<li><code class="docutils literal notranslate"><span class="pre">\processing</span></code>, which handles parses the data from CHAD</li>
+</ul>
+</div></blockquote>
 <div class="section" id="source-directory">
 <h2>Source Directory<a class="headerlink" href="#source-directory" title="Permalink to this headline">¶</a></h2>
 <p>These files are the key modules that are used to create the ABMHAP algorithm.</p>
@@ -636,6 +936,8 @@ expressed in minutes.</p>
 <li class="toctree-l1"><a class="reference internal" href="asset.html">asset module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bed.html">bed module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bio.html">bio module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad.html">chad module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_code.html">chad_code module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commute.html">commute module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="diary.html">diary module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="eat.html">eat module</a></li>
@@ -680,13 +982,85 @@ expressed in minutes.</p>
 </ul>
 </div>
 </div>
+<div class="section" id="run-chad-directory">
+<h2>Run_chad Directory<a class="headerlink" href="#run-chad-directory" title="Permalink to this headline">¶</a></h2>
+<p>These are the files needed to run an instance of ABMHAP as a monte-carlo simulation consisting of
+multiple households of agents parametrized with the data from the Consolidated Human Activity Database
+(CHAD).</p>
+<p>These simulations may be run in parallel.The driver for these type of runs is driver.py.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">analyzer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_demography.html">chad_demography module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_demography_adult_non_work.html">chad_demography_adult_non_work module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_demography_adult_work.html">chad_demography_adult_work module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_demography_child_school.html">chad_demography_child_school module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_demography_child_young.html">chad_demography_child_young module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_parameter_figures.html">chad_parameter_figures notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chad_params.html">chad_params module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commute_from_work_trial.html">commute_from_work_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commute_to_work_trial.html">commute_to_work_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_counter.html">data_counter notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="driver.html">driver module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="driver_params.html">driver_params module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="driver_result.html">driver_result module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eat_breakfast_trial.html">eat_breakfast_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eat_dinner_trial.html">eat_dinner_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eat_lunch_trial.html">eat_lunch_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">evaluation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fig_driver.html">fig_driver module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="figure_loader.html">figure_loader notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="figure_loader_with_without_variation.html">figure_loader_with_without_variation notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="figure_residuals.html">figure_residuals notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="longitude_plot.html">longitude_plot notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_graphs.html">plot_graphs notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="my_debug.html">my_debug module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="omni_trial.html">omni_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sleep_trial.html">sleep_trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trial.html">trial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variation.html">variation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="work_trial.html">work_trial module</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="plotting-directory">
+<h2>Plotting Directory<a class="headerlink" href="#plotting-directory" title="Permalink to this headline">¶</a></h2>
+<p>These functions handle plotting capabilities.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plot_diary.html">plot_diary notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotter.html">plotter module</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="processing-directory">
+<h2>Processing Directory<a class="headerlink" href="#processing-directory" title="Permalink to this headline">¶</a></h2>
+<p>These functions handle the logistics in dealing with CHAD.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="commute_school.html">commute_school notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commute_work.html">commute_work notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="count_records.html">count_records notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datum.html">datum module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demographics.html">demographics notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demography.html">demography module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eat_new.html">eat_new notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="school_new.html">school_new notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sleep_new.html">sleep_new notebook</a></li>
+</ul>
+</div>
+</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 
@@ -698,15 +1072,32 @@ expressed in minutes.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to the documentation for the Agent-Based Model of Human Activity Patterns (ABMHAP)!</a><ul>
-<li><a class="reference internal" href="#how-to-run-the-code">How to Run the Code</a><ul>
+<li><a class="reference internal" href="#">Welcome to the documentation for the Agent-Based Model of Human Activity Patterns (ABMHAP)!</a></li>
+<li><a class="reference internal" href="#running-the-abmhap-code">Running the ABMHAP Code</a><ul>
+<li><a class="reference internal" href="#how-to-run-the-code-using-user-defined-parameters">How to Run the Code Using User-Defined Parameters</a><ul>
 <li><a class="reference internal" href="#setting-the-input-parameters">Setting the input parameters</a></li>
 <li><a class="reference internal" href="#running-the-simulation">Running the simulation</a></li>
 <li><a class="reference internal" href="#interpreting-the-output">Interpreting the output</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#how-to-run-the-code-using-parameters-derived-from-an-empirical-dataset">How to Run the Code Using Parameters Derived from an Empirical Dataset</a><ul>
+<li><a class="reference internal" href="#id4">Setting the input parameters</a></li>
+<li><a class="reference internal" href="#id5">Running the simulation</a><ul>
+<li><a class="reference internal" href="#running-in-serial">Running in <strong>serial</strong></a></li>
+<li><a class="reference internal" href="#running-in-parallel">Running in <strong>parallel</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">Interpreting the output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#code-documentation">Code Documentation</a><ul>
 <li><a class="reference internal" href="#source-directory">Source Directory</a></li>
 <li><a class="reference internal" href="#run-directory">Run Directory</a></li>
+<li><a class="reference internal" href="#run-chad-directory">Run_chad Directory</a></li>
+<li><a class="reference internal" href="#plotting-directory">Plotting Directory</a></li>
+<li><a class="reference internal" href="#processing-directory">Processing Directory</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
@@ -722,21 +1113,20 @@ expressed in minutes.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/index.txt"
+      <li><a href="_sources/index.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -744,14 +1134,14 @@ expressed in minutes.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/index.txt"
+      <a href="_sources/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

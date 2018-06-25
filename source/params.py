@@ -13,27 +13,31 @@
 
 """
 The purpose of this module is to assign parameters necessary to run the Agent-Based \
-Model of Human Activity Patterns (ABMHAP) initialized with data from the Consolidated \
-Human Activity Database (CHAD). This module also have constants used in default runs.
+Model of Human Activity Patterns (ABMHAP). This module also have constants used in \
+default runs.
 
 This module contains class :class:`params.Params`.
 
  .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ------------------------------
-# Import
-# -----------------------------
+# ===============================================
+# import
+# ===============================================
 
 # for an ordered dictionary
 import collections
 
-# agent-based model modules
-import bio, meal, occupation, social, temporal, transport
+# mathematical capability
+import numpy as np
 
-# ----------------------------------------
-# Constants
-# ---------------------------------------
+# agent-based model modules
+import my_globals as mg
+import activity, bio, meal, occupation, temporal
+
+# ===============================================
+# constants
+# ===============================================
 
 #
 # defaults for household parameters
@@ -48,16 +52,14 @@ NUM_DAYS    = 1
 NUM_HOURS   = 0
 NUM_MIN     = 0
 
-# default start time is Monday, Day 1 at 07:05
-t_monday    = 1 * temporal.DAY_2_MIN
-T_START     = t_monday + 7 * temporal.HOUR_2_MIN + 5
-
+# default start time is Sunday, Day 0 at 06:00
+T_START = (temporal.SUNDAY * temporal.DAY_2_MIN) + 16 * temporal.HOUR_2_MIN
 
 # will need to add meal information
 # make a default mean object in meal
 
 # ===============================================
-# class
+# class Params
 # ===============================================
 
 class Params(object):
@@ -73,7 +75,8 @@ class Params(object):
         * :attr:`do_alarm`
         * :attr:`dt_alarm`
         
-    :param int dt: the step size [in minutes] in the simulation
+    :param int dt: the step size [in minutes] in the simulation. **This is antiquated \
+    and will be removed in future versions.**
     :param int num_people: the number of people in the household
     :param int num_days: the number of days in the simulation
     :param int num_hours: the number of additional hours in the simulation
@@ -94,7 +97,7 @@ class Params(object):
     :param list do_alarm: a flag indicating whether or not a person uses an alarm for each person in the household
     :param list dt_alarm: the duration of time [in minutes] before an alarm goes off before its respective event
     
-    :param numpy.ndarray: bf_start_mean: the mean breakfast start time for each person in the household \
+    :param numpy.ndarray bf_start_mean: the mean breakfast start time for each person in the household \
     [minutes, time of day]
     :param numpy.ndarray bf_start_std: the standard deviation for breakfast start time for each person in the \
     household [minutes] 
@@ -150,7 +153,8 @@ class Params(object):
     :param numpy.ndarray commute_from_work_dt_std: the standard deviation for commuting from work [minutes] for \
     each person in the household
     
-    :var int dt: the step size [in minutes] in the simulation
+    :var int dt: the step size [in minutes] in the simulation **(this is antiquated and will be removed \
+    in future versions)**
     :var int num_people: the number of people in the household
     :var int num_days: the number of days in the simulation
     :var int num_hours: the number of additional hours in the simulation
@@ -192,8 +196,8 @@ class Params(object):
     person in the household
     """
 
-    def __init__(self, dt=DT, num_people=NUM_PEOPLE, num_days=NUM_DAYS, num_hours=NUM_HOURS, num_min=NUM_MIN,
-                 t_start=T_START, gender=None,
+    def __init__(self, num_people, num_days, num_hours, num_min,
+                 do_minute_by_minute, t_start=T_START, dt=1, gender=None,
                  sleep_start_mean=None, sleep_start_std=None,  sleep_end_mean=None, sleep_end_std=None,
                  job_id=None, do_alarm=None,
                  dt_alarm=None,
@@ -212,6 +216,8 @@ class Params(object):
         #
         # timing
         #
+        self.do_minute_by_minute = do_minute_by_minute
+
         self.dt         = dt
         self.num_days   = num_days
         self.num_hours  = num_hours
@@ -270,22 +276,128 @@ class Params(object):
 
         return
 
+    def get_info_mean(self):
+
+        """
+        This function stores information about the mean values of the activity-parameters.
+
+        :return: a message about the the mean values
+        :rtype: str
+        :return: a list of activity codes in the chronological order in time of day
+        :rtype: list
+        """
+
+        # the amount of minutes in 1 hour
+        HOUR_2_MIN = temporal.HOUR_2_MIN
+
+        msg = ''
+
+        msg = msg + 'Mean data [hours] (start\tduration\tend)\n'
+
+        z = zip(self.sleep_start_mean, self.sleep_end_mean, self.breakfasts, self.work_start_mean,
+                self.work_end_mean, self.lunches, self.dinners, self.commute_to_work_dt_mean,
+                self.commute_from_work_dt_mean)
+
+        # the format string (activity name, start time, duration)
+        default_format = '%20s\t%.2f\t%.2f\t%0.2f\n'
+
+        #  or each person in the household, loop through the parameters
+        for sleep_start_mean, sleep_end_mean, breakfast, work_start_mean, work_end_mean, lunch, \
+            dinner, to_work_dt, from_work_dt in z:
+
+            # create a dictionary of terms. Make sure the times in an hours format [0, 24)
+            x = {mg.KEY_SLEEP: (sleep_start_mean / HOUR_2_MIN, sleep_end_mean / HOUR_2_MIN),
+                 mg.KEY_EAT_BREAKFAST: (breakfast.start_mean / HOUR_2_MIN, breakfast.dt_mean / HOUR_2_MIN),
+                 mg.KEY_WORK: (work_start_mean / HOUR_2_MIN, work_end_mean / HOUR_2_MIN),
+                 mg.KEY_EAT_LUNCH: (lunch.start_mean / HOUR_2_MIN, lunch.dt_mean / HOUR_2_MIN),
+                 mg.KEY_EAT_DINNER: (dinner.start_mean / HOUR_2_MIN, dinner.dt_mean / HOUR_2_MIN),
+                 mg.KEY_COMMUTE_TO_WORK: ((work_start_mean - to_work_dt) / HOUR_2_MIN, to_work_dt / HOUR_2_MIN),
+                 mg.KEY_COMMUTE_FROM_WORK: (work_end_mean / HOUR_2_MIN, from_work_dt / HOUR_2_MIN),
+                 }
+
+            # sort the entries by increasing values of start time u = (activity name, (start time, duration) )
+            od = collections.OrderedDict(sorted(x.items(), key=lambda u: u[1][0]))
+
+            # write the (activity, start time, duration) tuple for most activities
+            keys = list()
+            for k, v in od.items():
+                msg = msg + default_format % (activity.INT_2_STR[k], v[0], v[1], (v[0] + v[1]) % 24)
+                keys.append(k)
+
+        return msg, keys
+
+    def get_info_std(self, keys_ordered=None):
+
+        """
+        This function stores information about the standard deviation values of the activity-parameters.
+
+        :param list keys_ordered: this is a list of the names of the activities that are in the \
+        same order as the information about the means
+
+        :return: a message about the the standard deviation values
+        :rtype: str
+        """
+
+        # the amount of minutes in 1 hour
+        HOUR_2_MIN = temporal.HOUR_2_MIN
+
+        msg = ''
+
+        msg = msg + 'Standard deviation data [hours] (start\tduration\tend)\n'
+
+        z = zip(self.sleep_start_std, self.sleep_end_std, self.breakfasts, self.work_start_std,
+                self.work_end_std, self.lunches, self.dinners, self.commute_to_work_dt_std,
+                self.commute_from_work_dt_std)
+
+        # the format string (activity name, start time, duration)
+        default_format = '%20s\t%.2f\t%.2f\t%0.2f\n'
+
+        #  or each person in the household, loop through the parameters
+        for sleep_start_std, sleep_end_std, breakfast, work_start_std, work_end_std, lunch, \
+            dinner, to_work_dt, from_work_dt in z:
+
+            # create a dictionary of terms. Make sure the times in an hours format [0, 24)
+            x = {mg.KEY_SLEEP: (sleep_start_std / HOUR_2_MIN, np.NaN, sleep_end_std / HOUR_2_MIN),
+                 mg.KEY_EAT_BREAKFAST: (breakfast.start_std / HOUR_2_MIN, breakfast.dt_std / HOUR_2_MIN, np.NaN),
+                 mg.KEY_WORK: (work_start_std / HOUR_2_MIN, np.NaN, work_end_std / HOUR_2_MIN),
+                 mg.KEY_EAT_LUNCH: (lunch.start_std / HOUR_2_MIN, lunch.dt_std / HOUR_2_MIN, np.NaN),
+                 mg.KEY_EAT_DINNER: (dinner.start_std / HOUR_2_MIN, dinner.dt_std / HOUR_2_MIN, np.NaN),
+                 mg.KEY_COMMUTE_TO_WORK: (np.NaN, to_work_dt / HOUR_2_MIN, np.NaN),
+                 mg.KEY_COMMUTE_FROM_WORK: (np.NaN, from_work_dt / HOUR_2_MIN, np.NaN),
+                 }
+
+            # sort the entries by increasing values of start time u = (activity name, (start time, duration) )
+            od = collections.OrderedDict(sorted(x.items(), key=lambda u: u[1][0]))
+
+            # write the (activity, start time, duration) tuple for most activities
+            if keys_ordered is None:
+                for k, v in od.items():
+                    msg = msg + default_format % (activity.INT_2_STR[k], v[0], v[1], v[2])
+            else:
+                # the order of the keys in the ordered dictionary
+                keys = [k for k, v in od.items()]
+                vals = [v for k, v in od.items()]
+                for k in keys_ordered:
+                    idx = keys.index(k)
+                    v = vals[idx]
+                    msg = msg + default_format % (activity.INT_2_STR[k], v[0], v[1], v[2])
+
+        return msg
+
     def init_help(self, val, default_val):
 
         """
         This function assigns a default value to an attribute in case it was not assigned already. This is, \
-        function is particularly useful if the value to be assigned is an array depending on :attr:`num_people`
-
+        function is particularly useful if the value to be assigned is an array depending on :attr:`num_people`. \
         More specifically,
         
-        * If val is not None, return val
-        * If val is None, return the default value (default_val)
+        * if val is not None, return val
+        * if val is None, return the default value (default_val)
         
         :param val: the value to be assigned
         :param default_val: the default value to assign in case val is None
 
         :return: the non-None value
-
         """
 
         # if val is none, assign the default value
@@ -298,7 +410,8 @@ class Params(object):
                       dt_std=None, dt_trunc=None):
 
         """
-        This function returns the data for each person in the household for the respective meal given by "m_id"
+        This function returns the data for each person in the household for the respective meal \
+        given by "m_id":
 
         * if specific parameters have been assigned, create meals with the respective parameters
         * if specific parameters have not been assigned, create meals with the default meal parameters for \
@@ -357,7 +470,7 @@ class Params(object):
     def init_meal_old(self, id, start_mean=None, start_std=None, dt_mean=None, dt_std=None):
 
         """
-        This function returns the data for each person in the household for the respective meal given by "id"
+        This function returns the data for each person in the household for the respective meal given by "id".
 
         .. warning::
             This function may be **not** used because it is antiquated.
@@ -394,10 +507,47 @@ class Params(object):
 
         return meals
 
+    def set_no_variation(self):
+
+        """
+        This function sets all of the standard deviations of the activity-parameters to zero for all
+        agents being simulated.
+
+        :return:
+        """
+
+        # zero minutes
+        zero = np.zeros( (self.num_people,), dtype=int )
+
+        # work
+        self.work_start_std = np.array(zero)
+        self.work_end_std   = np.array(zero)
+
+        # commute from work
+        self.commute_from_work_dt_std   = np.array(zero)
+
+        # commute to work
+        self.commute_to_work_dt_std     = np.array(zero)
+
+        # sleep
+        self.sleep_start_std    = np.array(zero)
+        self.sleep_end_std      = np.array(zero)
+
+        # eat meals
+        for meals in zip(self.breakfasts, self.lunches, self.dinners):
+            for m in meals:
+                m.start_std = 0
+                m.dt_std    = 0
+
+        return
+
     def set_num_steps(self):
 
         """
-        This function calculates and sets the number of time steps the ABM will run.        
+        This function calculates and sets the number of time steps ABMHAP will run.
+
+        .. note::
+            This function may be antiquated.
 
         :rtype: None
         """
@@ -451,7 +601,7 @@ class Params(object):
     def toString(self):
 
         """
-        This function represents the :class:`params.Params` object as a string. For now, it prints \
+        This function represents the Params object as a string. For now, it prints \
         the tuple (start time, duration, end time) in hours[0, 24] for the following activities:
 
         #. eat breakfast
@@ -467,38 +617,11 @@ class Params(object):
         :return: the parameter information
         """
 
-        # the amount of minutes in 1 hour
-        HOUR_2_MIN = temporal.HOUR_2_MIN
+        # write information about the mean values
+        msg, keys_ordered   = self.get_info_mean()
 
-        msg = ''
-
-        z = zip(self.sleep_start_mean, self.sleep_end_mean,  self.breakfasts, self.work_start_mean,
-                self.work_end_mean, self.lunches, self.dinners, self.commute_to_work_dt_mean,
-                self.commute_from_work_dt_mean)
-
-        # the format string (activity name, start time, duration)
-        default_format = '%20s\t%.2f\t%.2f\t%0.2f\n'
-
-        #  or each person in the household, loop through the parameters
-        for sleep_start_mean, sleep_end_mean, breakfast, work_start_mean, work_end_mean, lunch, \
-            dinner, to_work_dt, from_work_dt in z:
-
-            # create a dictionary of terms. Make sure the times in an hours format [0, 24)
-            x = { 'sleep': (sleep_start_mean/HOUR_2_MIN, sleep_end_mean/HOUR_2_MIN),
-                  'eat breakfast': (breakfast.t_start/HOUR_2_MIN, breakfast.dt_mean/HOUR_2_MIN),
-                  'work': (work_start_mean/HOUR_2_MIN, work_end_mean/HOUR_2_MIN),
-                  'eat lunch': (lunch.t_start/HOUR_2_MIN, lunch.dt_mean/HOUR_2_MIN),
-                  'eat dinner': (dinner.t_start/HOUR_2_MIN, dinner.dt_mean/HOUR_2_MIN),
-                  'commute to work': ( (work_start_mean -to_work_dt )/HOUR_2_MIN, to_work_dt/HOUR_2_MIN ),
-                  'commute from work': ( work_end_mean/HOUR_2_MIN,  from_work_dt/HOUR_2_MIN),
-                  }
-
-            # sort the entries by increasing values of start time u = (activity name, (start time, duration) )
-            od = collections.OrderedDict( sorted(x.items(), key=lambda u: u[1][0] ) )
-
-            # write the (activity, start time, duration) tuple for most activities
-            for k, v in od.items():
-                msg = msg + default_format % (k, v[0], v[1], (v[0] + v[1]) % 24)
+        # write information about the standard deviation values
+        msg     = msg + '\n' + self.get_info_std(keys_ordered)
 
         return msg
 

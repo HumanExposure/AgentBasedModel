@@ -13,9 +13,8 @@
 
 """
 This module is responsible for containing parameters that main.py uses to control \
-the simulation.
-
-The user should set the parameters in this module **before** running the driver (main.py)
+the simulation. The user should set the parameters in this module **before** \
+running the driver :literal:`main.py`
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
@@ -23,6 +22,7 @@ The user should set the parameters in this module **before** running the driver 
 # ===========================================
 # import
 # ===========================================
+
 import sys
 sys.path.append('..\\source')
 
@@ -31,7 +31,7 @@ import numpy as np
 
 # agent-based model modules
 import my_globals as mg
-import occupation, params, scenario, temporal
+import occupation, params, temporal
 
 # ===========================================
 # constants
@@ -40,9 +40,10 @@ import occupation, params, scenario, temporal
 # the number of minutes in 1 day and the number of minutes in 1 hour, respectively
 DAY_2_MIN, HOUR_2_MIN   = temporal.DAY_2_MIN, temporal.HOUR_2_MIN
 
-# -----------------------------------------------------
+# ===============================================
 # functions
-# -----------------------------------------------------
+# ===============================================
+
 def set_no_variation(num_people):
 
     """
@@ -66,10 +67,11 @@ def set_no_variation(num_people):
 
     return result
 
-# --------------------------------------------
-# Default parameters
-# --------------------------------------------
-# the default number of days in the simulation
+# ===============================================
+# default constants
+# ===============================================
+
+#  the default number of days in the simulation
 NUM_DAYS    = 7
 
 # the default number of additional hours in the simulation
@@ -144,11 +146,14 @@ COMMUTE_FROM_WORK_DT_STD    = COMMUTE_TO_WORK_DT_STD
 TRUNC   = 1
 
 # the default file name to save the data
-FNAME   = mg.FDIR_MY_DATA + '\\example_output.csv'
+FNAME   = mg.FDIR_MY_DATA + '\\main_result.csv'
 
 # ============================================
 # user-defined parameters
 # ============================================
+
+# seed for the random number generator (set to None or a fixed integer for reproducibility)
+seed        = None
 
 #
 # simulation parameters
@@ -158,10 +163,10 @@ FNAME   = mg.FDIR_MY_DATA + '\\example_output.csv'
 do_print    = False
 
 # should the simulation plot results at the end of the run
-do_plot     = False
+do_plot     = True
 
 # should the simulation save the results of the simulation
-do_save     = True
+do_save     = False
 
 # the file name to save the data
 fname       = FNAME
@@ -169,6 +174,13 @@ fname       = FNAME
 # -------------------------------------------
 # time information
 # -------------------------------------------
+
+# control how the simulation moves through time (False, is the default)
+# If True, the simulation uses a strategy to move through time minute by minute, which is slow
+# If False, the simulation uses a strategy to move through time by skipping to time steps in which
+# a potential computation, calculation, or action could be done. This greatly decreases the simulation \
+# by decreasing the total amount of computation.
+do_minute_by_minute = False
 
 # the number of days
 num_days    = NUM_DAYS
@@ -251,6 +263,17 @@ work_end_std        = np.array([WORK_END_STD])
 # activity-parameters
 trunc = np.array([TRUNC])
 
+# ==============================================
+# initialize the random number generator
+# ==============================================
+
+# initialize generator
+mg.initialize_random_number_generator(seed)
+
+# ==============================================
+# set the variation to zero if desired
+# ==============================================
+
 if no_variation:
 
     # set the variation to zero
@@ -261,10 +284,14 @@ if no_variation:
     dinner_start_std, dinner_dt_std, work_start_std, work_end_std, commute_to_work_dt_std, \
     commute_from_work_dt_std = result
 
-# ===========================================
+# ==============================================
 # the household parameters
-# ===========================================
-hhld_param = params.Params(t_start=t_start, num_days=num_days, num_hours=num_hours, num_min=num_min, \
+# ==============================================
+
+# household parameters
+hhld_param = params.Params( do_minute_by_minute=do_minute_by_minute, t_start=t_start,\
+                               num_days=num_days, num_hours=num_hours, num_min=num_min, \
+                               num_people=num_people,
                                sleep_start_mean=sleep_start_mean, sleep_start_std=sleep_start_std, \
                                sleep_end_mean=sleep_end_mean, sleep_end_std=sleep_end_std, \
                                bf_start_mean=bf_start_mean, bf_start_std=bf_start_std, bf_start_trunc=trunc, \

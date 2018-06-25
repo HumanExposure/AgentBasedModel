@@ -12,19 +12,20 @@
 # August 14, 2017
 
 """
-This module contains code that governs information relevant to a Person's state.
+This module contains code that governs information relevant to a person's state.
 
 This module contains class :class:`state.State`.
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 import sys
 
-#----------------------------------------------------------
-# Constants
-#----------------------------------------------------------
+# ===============================================
+# constants
+# ===============================================
+
 IDLE_TEMP   = -1        # the Person is Idle this time step and has gone through
                         # the advertisement stage and ending up without an activity
 IDLE        = 0         # the Person/ Asset is free to do any Action
@@ -54,30 +55,30 @@ INT_2_STR = {
 STR_2_INT = { v: k for k, v in INT_2_STR.items() }
 
 # ===============================================
-# class
+# class State
 # ===============================================
 
 class State (object):
 
     """
-    This class contains information relevant to a Person state
+    This class contains information relevant to a person state
 
-    :param int status: the status of the Person
+    :param int status: the status of the person
 
-    :var activity.Activity 'activity': the particular Activity of the Asset
+    :var activity.Activity 'activity': the particular activity of the asset
     :var list arg_start: the list of arguments for the start() function
     :var list arg_end: the list of arguments for the end() function
     :var asset.Asset 'asset': the Asset that is being used
     :var list asset_list:
-    :var bool is_init: this is a flag indicating whether or not the Agent is in the initialization state. \
+    :var bool is_init: this is a flag indicating whether or not the agent is in the initialization state. \
     This state only occurs during the first step of the simulation.
-    :var int status: the status of a Person
+    :var int status: the status of a person
     :var int t_end: the end time of a state [minutes, universal time]
     :var int t_start: the start time of the current state [minutes, universal time]
     :var int round_dt: the amount of minutes [-1, 0, 1] to round an activity duration
     :var float dt_frac: the fraction of a minutes subtracted from rounding down from the true projected \
     activity duration
-    :var bool do_interruption: a flag indicating whether the Person is interrupting an ongoing activity
+    :var bool do_interruption: a flag indicating whether the person is interrupting an ongoing activity
     """
 
     #
@@ -107,11 +108,7 @@ class State (object):
         self.dt_frac = 0.0
 
         self.do_interruption = False
-        return   
-
-    # ------------------------------------------------------
-    # Functions
-    # ------------------------------------------------------
+        return
 
     def end_activity(self):
 

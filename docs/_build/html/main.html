@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>main module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>main module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="main_params module" href="main_params.html" />
     <link rel="prev" title="workplace module" href="workplace.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -45,92 +35,40 @@
 <span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Permalink to this headline">¶</a></h1>
 <p>This is code is runs the simulation for the Agent-Based Model of Human Activity Patterns (ABMHAP) module of the Life Cycle Human Exposure Model (LC-HEM) project.</p>
 <p>In order to run the code, do the following:</p>
-<ol class="arabic simple">
-<li>set the user-defined parameters of the simulation in main_params.py</li>
-<li><dl class="first docutils">
-<dt>run the code via</dt>
-<dd>&gt; python main.py</dd>
-</dl>
+<ol class="arabic">
+<li><p class="first">set the user-defined parameters of the simulation in <code class="docutils literal notranslate"><span class="pre">main_params.py</span></code></p>
 </li>
+<li><p class="first">run the code via</p>
+<blockquote>
+<div><p>&gt; <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
+</div></blockquote>
+</li>
+</ol>
+<dl class="function">
+<dt id="main.plot">
+<code class="descclassname">main.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>p</em>, <em>d=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots figures related to the results of the simulation. Specifically,     it does the following for the given agent:</p>
+<ol class="arabic simple">
+<li>plots the histograms about the activity data</li>
+<li>plots cumulative distribution functions (CDFs) of the activity data</li>
+<li>plots how the satiation changes over time for the all of the needs</li>
+<li>plots how the weight function values change over time for all of the needs</li>
 </ol>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>In order to run the debugger do the following in windows:</p>
-<p class="last">&gt; python -m pdb main.py</p>
+<p class="last">The satiation and weight function plots will <strong>not</strong> be correct unless the simulation         was set to run minute by minute. That is, main_params.do_minute_by_minute is set to <strong>True</strong>.</p>
 </div>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
-<dl class="function">
-<dt id="main.get_diary">
-<code class="descclassname">main.</code><code class="descname">get_diary</code><span class="sig-paren">(</span><em>u</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#get_diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.get_diary" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function output the result of the simulation in terms of an activity diary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) &#8211; the governing engine of the simulation</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the activity diary describing the behavior of the agent</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary">diary.Diary</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="main.plot_cdfs">
-<code class="descclassname">main.</code><code class="descname">plot_cdfs</code><span class="sig-paren">(</span><em>d</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#plot_cdfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.plot_cdfs" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function plots the cumulative distribution function of start time, end time, and duration for     each activity in the the simulation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>d</strong> (<a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><em>diary.Diary</em></a>) &#8211; the results of the simulation</li>
-<li><strong>keys</strong> (<em>list</em>) &#8211; list of activities to graph</li>
+<li><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the agent whose information is going to be plotted</li>
+<li><strong>d</strong> (<a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><em>diary.Diary</em></a>) – the activity diary of the respected agent</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="main.plot_histograms">
-<code class="descclassname">main.</code><code class="descname">plot_histograms</code><span class="sig-paren">(</span><em>d</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#plot_histograms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.plot_histograms" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function plots the histograms of start time, end time, and duration for each activity in     the the simulation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>d</strong> (<a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><em>diary.Diary</em></a>) &#8211; the results of the simulation</li>
-<li><strong>keys</strong> (<em>list</em>) &#8211; list of activities to graph</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="main.save_output">
-<code class="descclassname">main.</code><code class="descname">save_output</code><span class="sig-paren">(</span><em>df</em>, <em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#save_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.save_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function saves the output of the simulation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) &#8211; the activity-diary output of the simulation</li>
-<li><strong>fname</strong> (<em>str</em>) &#8211; the file name of the saved file. It must end with &#8221;.csv&#8221;</li>
-</ul>
 </td>
 </tr>
 </tbody>
@@ -156,21 +94,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/main.txt"
+      <li><a href="_sources/main.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -178,14 +115,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/main.txt"
+      <a href="_sources/main.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

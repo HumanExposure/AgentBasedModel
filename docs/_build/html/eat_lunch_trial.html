@@ -1,0 +1,207 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>eat_lunch_trial module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="evaluation module" href="evaluation.html" />
+    <link rel="prev" title="eat_dinner_trial module" href="eat_dinner_trial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-eat_lunch_trial">
+<span id="eat-lunch-trial-module"></span><h1>eat_lunch_trial module<a class="headerlink" href="#module-eat_lunch_trial" title="Permalink to this headline">¶</a></h1>
+<p>This module contains code in order to run Monte-Carlo simulations to comparing the Agent-Based Model of Human Activity Patterns (ABMHAP) with the data from the Consolidated Human Activity Database (CHAD) for the <strong>eat lunch</strong> activity.</p>
+<p>This module contains class <a class="reference internal" href="#eat_lunch_trial.Eat_Lunch_Trial" title="eat_lunch_trial.Eat_Lunch_Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">eat_lunch_trial.Eat_Lunch_Trial</span></code></a>.</p>
+<dl class="class">
+<dt id="eat_lunch_trial.Eat_Lunch_Trial">
+<em class="property">class </em><code class="descclassname">eat_lunch_trial.</code><code class="descname">Eat_Lunch_Trial</code><span class="sig-paren">(</span><em>parameters</em>, <em>sampling_params</em>, <em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat_lunch_trial.html#Eat_Lunch_Trial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat_lunch_trial.Eat_Lunch_Trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="trial.html#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a></p>
+<p>This class runs the ABMHAP simulations initialized with eat lunch data from CHAD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>parameters</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters describing each person in the household</li>
+<li><strong>sampling_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the sampling parameters used to filter “good” CHAD     eat lunch data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="eat_lunch_trial.Eat_Lunch_Trial.adjust_params">
+<code class="descname">adjust_params</code><span class="sig-paren">(</span><em>start_mean</em>, <em>start_std</em>, <em>dt_mean</em>, <em>dt_std</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat_lunch_trial.html#Eat_Lunch_Trial.adjust_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat_lunch_trial.Eat_Lunch_Trial.adjust_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adjusts the values for the mean and standard deviation of  eat lunch start time in the         key-word arguments based on the CHAD data that was sampled. These new values will be used in the runs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_mean</strong> (<em>numpy.ndarray</em>) – the mean eat lunch start time [hours] for each person</li>
+<li><strong>start_std</strong> (<em>numpy.ndarray</em>) – the standard deviation of eat lunch start time [hours] for each person</li>
+<li><strong>dt_mean</strong> (<em>numpy.ndarray</em>) – the eat lunch mean duration [hours] for each person</li>
+<li><strong>dt_std</strong> (<em>numpy.ndarray</em>) – the eat lunch standard deviation of duration [hours] for each person</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat_lunch_trial.Eat_Lunch_Trial.create_universe">
+<code class="descname">create_universe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat_lunch_trial.html#Eat_Lunch_Trial.create_universe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat_lunch_trial.Eat_Lunch_Trial.create_universe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates a universe object that simulations will run in. The only asset in this         simulation for an agent to use is a <a class="reference internal" href="food.html#food.Food" title="food.Food"><code class="xref py py-class docutils literal notranslate"><span class="pre">food.Food</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the universe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe">universe.Universe</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat_lunch_trial.Eat_Lunch_Trial.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat_lunch_trial.html#Eat_Lunch_Trial.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat_lunch_trial.Eat_Lunch_Trial.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sets up the trial</p>
+<ol class="arabic simple">
+<li>gets the CHAD data for eat lunch under the appropriate conditions for means and standard deviations         for both eat lunch duration and eat lunch start time</li>
+<li>gets N samples the CHAD data for eat lunch duration and eat lunch start time for the N trials</li>
+<li>updates the <a class="reference internal" href="params.html#module-params" title="params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a> to reflect the newly assigned eat lunch parameters for the simulation</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_dt</strong> (<em>str</em>) – the filename of the duration statistics</li>
+<li><strong>fname_start</strong> (<em>str</em>) – the filename of the start time statistics</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eat_lunch_trial.Eat_Lunch_Trial.initialize_person">
+<code class="descname">initialize_person</code><span class="sig-paren">(</span><em>u</em>, <em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eat_lunch_trial.html#Eat_Lunch_Trial.initialize_person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eat_lunch_trial.Eat_Lunch_Trial.initialize_person" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates and initializes a person with the proper parameters for the Eat Lunch Trial        simulation.</p>
+<p>More specifically, the function does</p>
+<ol class="arabic simple">
+<li>creates a <a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton"><code class="xref py py-class docutils literal notranslate"><span class="pre">singleton.Singleton</span></code></a> person</li>
+<li>initializes the person’s parameters to the respective values in <a class="reference internal" href="params.html#module-params" title="params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a></li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) – the universe the person will reside in</li>
+<li><strong>idx</strong> (<em>int</em>) – the index of the person’s parameters in <a class="reference internal" href="params.html#module-params" title="params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return p:</th><td class="field-body"><p class="first">the agent to be simulated</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="person.html#person.Person" title="person.Person">person.Person</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="eat_dinner_trial.html" title="previous chapter">eat_dinner_trial module</a></li>
+      <li>Next: <a href="evaluation.html" title="next chapter">evaluation module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/eat_lunch_trial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/eat_lunch_trial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

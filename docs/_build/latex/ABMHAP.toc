@@ -1,44 +1,99 @@
-\select@language {english}
-\contentsline {chapter}{\numberline {1}How to Run the Code}{3}{chapter.1}
-\contentsline {section}{\numberline {1.1}Setting the input parameters}{3}{section.1.1}
-\contentsline {section}{\numberline {1.2}Running the simulation}{6}{section.1.2}
-\contentsline {section}{\numberline {1.3}Interpreting the output}{7}{section.1.3}
-\contentsline {chapter}{\numberline {2}Source Directory}{9}{chapter.2}
-\contentsline {section}{\numberline {2.1}activity module}{9}{section.2.1}
-\contentsline {section}{\numberline {2.2}asset module}{11}{section.2.2}
-\contentsline {section}{\numberline {2.3}bed module}{12}{section.2.3}
-\contentsline {section}{\numberline {2.4}bio module}{12}{section.2.4}
-\contentsline {section}{\numberline {2.5}commute module}{14}{section.2.5}
-\contentsline {section}{\numberline {2.6}diary module}{18}{section.2.6}
-\contentsline {section}{\numberline {2.7}eat module}{21}{section.2.7}
-\contentsline {section}{\numberline {2.8}food module}{25}{section.2.8}
-\contentsline {section}{\numberline {2.9}home module}{26}{section.2.9}
-\contentsline {section}{\numberline {2.10}hunger module}{27}{section.2.10}
-\contentsline {section}{\numberline {2.11}income module}{30}{section.2.11}
-\contentsline {section}{\numberline {2.12}interrupt module}{31}{section.2.12}
-\contentsline {section}{\numberline {2.13}interruption module}{32}{section.2.13}
-\contentsline {section}{\numberline {2.14}location module}{33}{section.2.14}
-\contentsline {section}{\numberline {2.15}meal module}{34}{section.2.15}
-\contentsline {section}{\numberline {2.16}my\_globals module}{36}{section.2.16}
-\contentsline {section}{\numberline {2.17}need module}{39}{section.2.17}
-\contentsline {section}{\numberline {2.18}occupation module}{40}{section.2.18}
-\contentsline {section}{\numberline {2.19}params module}{46}{section.2.19}
-\contentsline {section}{\numberline {2.20}person module}{51}{section.2.20}
-\contentsline {section}{\numberline {2.21}rest module}{53}{section.2.21}
-\contentsline {section}{\numberline {2.22}scheduler module}{56}{section.2.22}
-\contentsline {section}{\numberline {2.23}sleep module}{57}{section.2.23}
-\contentsline {section}{\numberline {2.24}social module}{59}{section.2.24}
-\contentsline {section}{\numberline {2.25}state module}{62}{section.2.25}
-\contentsline {section}{\numberline {2.26}temporal module}{64}{section.2.26}
-\contentsline {section}{\numberline {2.27}transport module}{67}{section.2.27}
-\contentsline {section}{\numberline {2.28}travel module}{67}{section.2.28}
-\contentsline {section}{\numberline {2.29}universe module}{68}{section.2.29}
-\contentsline {section}{\numberline {2.30}work module}{72}{section.2.30}
-\contentsline {section}{\numberline {2.31}workplace module}{74}{section.2.31}
-\contentsline {chapter}{\numberline {3}Run Directory}{75}{chapter.3}
-\contentsline {section}{\numberline {3.1}main module}{75}{section.3.1}
-\contentsline {section}{\numberline {3.2}main\_params module}{76}{section.3.2}
-\contentsline {section}{\numberline {3.3}scenario module}{76}{section.3.3}
-\contentsline {section}{\numberline {3.4}singleton module}{78}{section.3.4}
-\contentsline {chapter}{\numberline {4}Indices and tables}{81}{chapter.4}
-\contentsline {chapter}{Python Module Index}{83}{section*.318}
+\babel@toc {english}{}
+\contentsline {chapter}{\numberline {1}Running the ABMHAP Code}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}How to Run the Code Using User-Defined Parameters}{3}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}Setting the input parameters}{3}{subsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1.2}Running the simulation}{7}{subsection.1.1.2}
+\contentsline {subsection}{\numberline {1.1.3}Interpreting the output}{7}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}How to Run the Code Using Parameters Derived from an Empirical Dataset}{8}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Setting the input parameters}{8}{subsection.1.2.1}
+\contentsline {subsection}{\numberline {1.2.2}Running the simulation}{9}{subsection.1.2.2}
+\contentsline {subsubsection}{\numberline {1.2.2.1}Running in \sphinxstylestrong {serial}}{10}{subsubsection.1.2.2.1}
+\contentsline {subsubsection}{\numberline {1.2.2.2}Running in \sphinxstylestrong {parallel}}{10}{subsubsection.1.2.2.2}
+\contentsline {subsection}{\numberline {1.2.3}Interpreting the output}{10}{subsection.1.2.3}
+\contentsline {chapter}{\numberline {2}Code Documentation}{13}{chapter.2}
+\contentsline {section}{\numberline {2.1}Source Directory}{13}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}activity module}{13}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}asset module}{15}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}bed module}{17}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4}bio module}{17}{subsection.2.1.4}
+\contentsline {subsection}{\numberline {2.1.5}chad module}{19}{subsection.2.1.5}
+\contentsline {subsection}{\numberline {2.1.6}chad\_code module}{22}{subsection.2.1.6}
+\contentsline {subsection}{\numberline {2.1.7}commute module}{23}{subsection.2.1.7}
+\contentsline {subsection}{\numberline {2.1.8}diary module}{27}{subsection.2.1.8}
+\contentsline {subsection}{\numberline {2.1.9}eat module}{30}{subsection.2.1.9}
+\contentsline {subsection}{\numberline {2.1.10}food module}{35}{subsection.2.1.10}
+\contentsline {subsection}{\numberline {2.1.11}home module}{35}{subsection.2.1.11}
+\contentsline {subsection}{\numberline {2.1.12}hunger module}{37}{subsection.2.1.12}
+\contentsline {subsection}{\numberline {2.1.13}income module}{40}{subsection.2.1.13}
+\contentsline {subsection}{\numberline {2.1.14}interrupt module}{41}{subsection.2.1.14}
+\contentsline {subsection}{\numberline {2.1.15}interruption module}{41}{subsection.2.1.15}
+\contentsline {subsection}{\numberline {2.1.16}location module}{43}{subsection.2.1.16}
+\contentsline {subsection}{\numberline {2.1.17}meal module}{44}{subsection.2.1.17}
+\contentsline {subsection}{\numberline {2.1.18}my\_globals module}{45}{subsection.2.1.18}
+\contentsline {subsection}{\numberline {2.1.19}need module}{49}{subsection.2.1.19}
+\contentsline {subsection}{\numberline {2.1.20}occupation module}{50}{subsection.2.1.20}
+\contentsline {subsection}{\numberline {2.1.21}params module}{55}{subsection.2.1.21}
+\contentsline {subsection}{\numberline {2.1.22}person module}{61}{subsection.2.1.22}
+\contentsline {subsection}{\numberline {2.1.23}rest module}{64}{subsection.2.1.23}
+\contentsline {subsection}{\numberline {2.1.24}scheduler module}{67}{subsection.2.1.24}
+\contentsline {subsection}{\numberline {2.1.25}sleep module}{68}{subsection.2.1.25}
+\contentsline {subsection}{\numberline {2.1.26}social module}{70}{subsection.2.1.26}
+\contentsline {subsection}{\numberline {2.1.27}state module}{73}{subsection.2.1.27}
+\contentsline {subsection}{\numberline {2.1.28}temporal module}{75}{subsection.2.1.28}
+\contentsline {subsection}{\numberline {2.1.29}transport module}{77}{subsection.2.1.29}
+\contentsline {subsection}{\numberline {2.1.30}travel module}{78}{subsection.2.1.30}
+\contentsline {subsection}{\numberline {2.1.31}universe module}{79}{subsection.2.1.31}
+\contentsline {subsection}{\numberline {2.1.32}work module}{83}{subsection.2.1.32}
+\contentsline {subsection}{\numberline {2.1.33}workplace module}{85}{subsection.2.1.33}
+\contentsline {section}{\numberline {2.2}Run Directory}{85}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}main module}{85}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}main\_params module}{86}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}scenario module}{86}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}singleton module}{88}{subsection.2.2.4}
+\contentsline {section}{\numberline {2.3}Run\_chad Directory}{89}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}analysis module}{89}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}analyzer module}{91}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}chad\_demography module}{94}{subsection.2.3.3}
+\contentsline {subsection}{\numberline {2.3.4}chad\_demography\_adult\_non\_work module}{99}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}chad\_demography\_adult\_work module}{100}{subsection.2.3.5}
+\contentsline {subsection}{\numberline {2.3.6}chad\_demography\_child\_school module}{100}{subsection.2.3.6}
+\contentsline {subsection}{\numberline {2.3.7}chad\_demography\_child\_young module}{101}{subsection.2.3.7}
+\contentsline {subsection}{\numberline {2.3.8}chad\_parameter\_figures notebook}{102}{subsection.2.3.8}
+\contentsline {subsection}{\numberline {2.3.9}chad\_params module}{104}{subsection.2.3.9}
+\contentsline {subsection}{\numberline {2.3.10}commute\_from\_work\_trial module}{107}{subsection.2.3.10}
+\contentsline {subsection}{\numberline {2.3.11}commute\_to\_work\_trial module}{108}{subsection.2.3.11}
+\contentsline {subsection}{\numberline {2.3.12}data\_counter notebook}{109}{subsection.2.3.12}
+\contentsline {subsection}{\numberline {2.3.13}driver module}{115}{subsection.2.3.13}
+\contentsline {subsection}{\numberline {2.3.14}driver\_params module}{122}{subsection.2.3.14}
+\contentsline {subsection}{\numberline {2.3.15}driver\_result module}{123}{subsection.2.3.15}
+\contentsline {subsection}{\numberline {2.3.16}eat\_breakfast\_trial module}{124}{subsection.2.3.16}
+\contentsline {subsection}{\numberline {2.3.17}eat\_dinner\_trial module}{125}{subsection.2.3.17}
+\contentsline {subsection}{\numberline {2.3.18}eat\_lunch\_trial module}{126}{subsection.2.3.18}
+\contentsline {subsection}{\numberline {2.3.19}evaluation module}{128}{subsection.2.3.19}
+\contentsline {subsection}{\numberline {2.3.20}fig\_driver module}{132}{subsection.2.3.20}
+\contentsline {subsection}{\numberline {2.3.21}figure\_loader notebook}{133}{subsection.2.3.21}
+\contentsline {subsection}{\numberline {2.3.22}figure\_loader\_with\_without\_variation notebook}{142}{subsection.2.3.22}
+\contentsline {subsection}{\numberline {2.3.23}figure\_residuals notebook}{149}{subsection.2.3.23}
+\contentsline {subsection}{\numberline {2.3.24}longitude\_plot notebook}{154}{subsection.2.3.24}
+\contentsline {subsection}{\numberline {2.3.25}plot\_graphs notebook}{157}{subsection.2.3.25}
+\contentsline {subsection}{\numberline {2.3.26}my\_debug module}{163}{subsection.2.3.26}
+\contentsline {subsection}{\numberline {2.3.27}omni\_trial module}{163}{subsection.2.3.27}
+\contentsline {subsection}{\numberline {2.3.28}sleep\_trial module}{167}{subsection.2.3.28}
+\contentsline {subsection}{\numberline {2.3.29}trial module}{169}{subsection.2.3.29}
+\contentsline {subsection}{\numberline {2.3.30}variation module}{175}{subsection.2.3.30}
+\contentsline {subsection}{\numberline {2.3.31}work\_trial module}{176}{subsection.2.3.31}
+\contentsline {section}{\numberline {2.4}Plotting Directory}{177}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}plot\_diary notebook}{177}{subsection.2.4.1}
+\contentsline {subsection}{\numberline {2.4.2}plotter module}{183}{subsection.2.4.2}
+\contentsline {section}{\numberline {2.5}Processing Directory}{186}{section.2.5}
+\contentsline {subsection}{\numberline {2.5.1}commute\_school notebook}{186}{subsection.2.5.1}
+\contentsline {subsection}{\numberline {2.5.2}commute\_work notebook}{188}{subsection.2.5.2}
+\contentsline {subsection}{\numberline {2.5.3}count\_records notebook}{190}{subsection.2.5.3}
+\contentsline {subsection}{\numberline {2.5.4}datum module}{194}{subsection.2.5.4}
+\contentsline {subsection}{\numberline {2.5.5}demographics notebook}{202}{subsection.2.5.5}
+\contentsline {subsection}{\numberline {2.5.6}demography module}{210}{subsection.2.5.6}
+\contentsline {subsection}{\numberline {2.5.7}eat\_new notebook}{211}{subsection.2.5.7}
+\contentsline {subsection}{\numberline {2.5.8}school\_new notebook}{214}{subsection.2.5.8}
+\contentsline {subsection}{\numberline {2.5.9}sleep\_new notebook}{215}{subsection.2.5.9}
+\contentsline {chapter}{\numberline {3}Indices and tables}{219}{chapter.3}
+\contentsline {chapter}{Python Module Index}{221}{section*.554}

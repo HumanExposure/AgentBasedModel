@@ -1,0 +1,377 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>analysis &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for analysis</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># February 15, 2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains capability for analyzing results from the comparisons between CHAD \</span>
+<span class="sd">(Consolidated Human Activity Database) data and the performance of ABMHAP (Agent-Based \</span>
+<span class="sd">Model of Human Activity Patterns).</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+
+
+<span class="sd">.. warning::</span>
+<span class="sd">    This modules is old and may or may not be used.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">zipfile</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">run&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+
+<span class="c1"># general math capabilities</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># for dataframe manipulation</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+<span class="kn">import</span> <span class="nn">chad</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># functions</span>
+<span class="c1"># ===========================================</span>
+
+
+<div class="viewcode-block" id="get_error"><a class="viewcode-back" href="../analysis.html#analysis.get_error">[docs]</a><span class="k">def</span> <span class="nf">get_error</span><span class="p">(</span><span class="n">chad_raw</span><span class="p">,</span> <span class="n">chad_stats</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">abm_all</span><span class="p">,</span> <span class="n">do_cyclical</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        I do not think this function is used.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame chad_raw: the CHAD activity data being compared to</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame chad_stats: the relevant statistics for the CHAD activity</span>
+<span class="sd">                                    of the person (PID) being modeled</span>
+
+<span class="sd">    :param str col_name: the name of the column of the CHAD data being compared</span>
+
+<span class="sd">                    :example: col_name = &quot;dt&quot; would allow access for chad_raw[&quot;dt&quot;]</span>
+
+<span class="sd">    :param abm_all: the ABM simulation data for the simulated person&#39;s activity</span>
+<span class="sd">                    with respected to the quantity from col_name.</span>
+
+<span class="sd">                    :example: if col_name = &quot;dt&quot;, then abm_all should contain the duration data</span>
+
+<span class="sd">    :param bool do_cyclical: indicates when to cast data in a &quot;cyclical&quot; form. As in,</span>
+<span class="sd">                            [0, 24 * HOURS_2_MIN - 1] [minutes]</span>
+
+<span class="sd">    :return: the L2 (sum of squares) absolute error for each agent, \</span>
+<span class="sd">    the L2 (sum of squares) relative error for each agent</span>
+<span class="sd">    :rtype: float array, float array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of sampled CHAD people being modeled</span>
+    <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">abm_all</span><span class="p">)</span>
+    
+    <span class="c1"># absolute and relative error vectors</span>
+    <span class="n">aerr_abm</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">rerr_abm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">aerr_abm</span> <span class="p">)</span> 
+
+    <span class="c1"># do the error analysis for dt</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">num_samples</span> <span class="p">):</span>
+    
+        <span class="c1"># the abm activity duration [min]</span>
+        <span class="n">data_abm</span> <span class="o">=</span> <span class="n">abm_all</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_cyclical</span><span class="p">):</span>
+            <span class="c1"># put the ABM time in terms of time of day [min]</span>
+            <span class="n">data_abm</span> <span class="o">=</span> <span class="n">data_abm</span> <span class="o">%</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+    
+        <span class="c1"># number of data points per sample</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span>
+    
+        <span class="c1"># CHAD activity duration [hours]</span>
+        <span class="n">chad_data</span> <span class="o">=</span> <span class="n">chad_raw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span> <span class="n">chad_raw</span><span class="o">.</span><span class="n">PID</span> <span class="o">==</span> <span class="n">chad_stats</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span>
+    
+        <span class="c1"># convert CHAD data to minutes</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">chad_data</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span> <span class="p">)</span>
+    
+        <span class="c1"># It is possible that the ABM simulation starts with the Agent </span>
+        <span class="c1"># in a non-IDLE state. Thus the ABM may have an additional </span>
+        <span class="c1"># partially executed event.</span>
+        <span class="c1"># If so, ignore that data point</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_abm</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">data_abm</span> <span class="o">=</span> <span class="n">data_abm</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        
+        <span class="c1"># flatten the abm data for analysis</span>
+        <span class="n">data_abm</span> <span class="o">=</span> <span class="n">data_abm</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="c1"># error vectors (absolute error is in minutes)        </span>
+        <span class="n">aerr</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span> <span class="n">data</span> <span class="o">-</span> <span class="n">data_abm</span> <span class="p">)</span>
+        <span class="n">rerr</span> <span class="o">=</span> <span class="n">aerr</span> <span class="o">/</span> <span class="n">data</span>
+    
+        <span class="c1"># get the L2 error</span>
+        <span class="n">aerr_abm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">aerr</span><span class="p">,</span> <span class="n">aerr</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+        <span class="n">rerr_abm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rerr</span><span class="p">,</span> <span class="n">rerr</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+        
+    <span class="k">return</span> <span class="n">aerr_abm</span><span class="p">,</span> <span class="n">rerr_abm</span></div>
+
+
+<div class="viewcode-block" id="get_moments"><a class="viewcode-back" href="../analysis.html#analysis.get_moments">[docs]</a><span class="k">def</span> <span class="nf">get_moments</span><span class="p">(</span><span class="n">abm_data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes in all of the ABMHAP simulation data [in minutes] for a particular activity and returns \</span>
+<span class="sd">    the moments (mean and standard deviation) [hours] for each person in the simulation.</span>
+
+<span class="sd">    :param list abm_data: the list of ABMHAP of activity data in minutes per person</span>
+
+<span class="sd">    :return: the mean and standard deviation for each person in the simulation</span>
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOUR_2_MIN</span>  <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># store the data as hours</span>
+    <span class="n">mu</span>  <span class="o">=</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">HOUR_2_MIN</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">abm_data</span> <span class="p">]</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">HOUR_2_MIN</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">abm_data</span> <span class="p">]</span>
+
+    <span class="n">mu</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">std</span></div>
+
+<div class="viewcode-block" id="get_proper_data"><a class="viewcode-back" href="../analysis.html#analysis.get_proper_data">[docs]</a><span class="k">def</span> <span class="nf">get_proper_data</span><span class="p">(</span><span class="n">df_dt</span><span class="p">,</span> <span class="n">df_start</span><span class="p">,</span> <span class="n">df_record</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the duration, start time, and record data for a given activity</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function may not be  used.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df_dt: the duration statistical data for a given activity</span>
+<span class="sd">    :param pandas.core.frame.DataFrame df_start: the start time statistical data for a given activity</span>
+<span class="sd">    :param pandas.core.frame.DataFrame df_record: the CHAD records for the given activity</span>
+<span class="sd">    :param chad_params.CHAD_params x: the parameters that limit sampling the CHAD data</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the boolean indices for the data that lies within the sampling parameters</span>
+    <span class="n">b1</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_start</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">start_mean_min</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">b2</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_start</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">start_mean_max</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">b3</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_start</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">start_std_max</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># should I add filtering for the standard deviation?</span>
+
+    <span class="c1"># only true at indices if both b1 and b2 are true</span>
+    <span class="n">b</span>       <span class="o">=</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">b3</span>
+    <span class="n">start</span>   <span class="o">=</span> <span class="n">df_start</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+    <span class="c1"># get the boolean indices for the data that lies within the sampling parameters</span>
+    <span class="n">b1</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_dt</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">dt_mean_min</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">b2</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_dt</span><span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">dt_mean_max</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">b3</span>  <span class="o">=</span> <span class="p">(</span><span class="n">df_dt</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">dt_std_max</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># only true at indices if both b1 and b2 are true</span>
+    <span class="n">b</span>   <span class="o">=</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">b3</span>
+    <span class="n">dt</span>  <span class="o">=</span> <span class="n">df_dt</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+    <span class="c1"># get persons identifiers that correspond to the sampling parameters for start time and duration</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="nb">set</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="p">)</span>
+
+    <span class="c1"># get the records of people who are used in the empirical distribution of BOTH start times AND durations</span>
+    <span class="n">f</span>       <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pid</span>
+    <span class="n">idx</span>     <span class="o">=</span> <span class="n">df_record</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">record</span>  <span class="o">=</span> <span class="n">df_record</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">record</span>
+
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="get_verification_info"><a class="viewcode-back" href="../analysis.html#analysis.get_verification_info">[docs]</a><span class="k">def</span> <span class="nf">get_verification_info</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="n">key_activity</span><span class="p">,</span> <span class="n">sampling_params</span><span class="p">,</span> <span class="n">fname_stats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets the CHAD parameters for each household</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Sometimes record dataframe can be null. I should remove the sampling of the record code **and** \</span>
+<span class="sd">        output</span>
+
+<span class="sd">    :param int demo: the demographic identifier</span>
+<span class="sd">    :param int key_activity: the identifier for the activity (from my_globals)</span>
+<span class="sd">    :param list sampling_params: the parameters that the limit the \</span>
+<span class="sd">    sampling of the CHAD data</span>
+<span class="sd">    :type sampling_params: list of :class:`chad_params.CHAD_params`</span>
+
+<span class="sd">    :return: the activity moments of the start time data from CHAD used to verify the ABMHAP, \</span>
+<span class="sd">    the activity moments of the end time data from CHAD used to verify the ABMHAP, \</span>
+<span class="sd">    the activity moments of the duration data from CHAD used to verify the ABMHAP, \</span>
+<span class="sd">    the activity records data from CHAD used to verify the ABMHAP</span>
+
+<span class="sd">    :rtype: pandas.core.frame.DataFrame, pandas.core.frame.DataFrame, \</span>
+<span class="sd">    pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the zipfile name of the demographic</span>
+    <span class="n">fname_zip</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">FNAME_DEMOGRAPHY</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+
+    <span class="c1"># open zip file of demographic data</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">fname_zip</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get the verification file names</span>
+    <span class="k">if</span> <span class="n">fname_stats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fname_stats</span>     <span class="o">=</span> <span class="n">chad</span><span class="o">.</span><span class="n">FNAME_STATS_OMNI</span><span class="p">[</span><span class="n">key_activity</span><span class="p">]</span>
+        <span class="n">fname_record</span>    <span class="o">=</span> <span class="n">chad</span><span class="o">.</span><span class="n">FNAME_RECORD_OMNI</span><span class="p">[</span><span class="n">key_activity</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fname_record</span>    <span class="o">=</span> <span class="n">fname_stats</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">RECORD</span><span class="p">]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># load the the data</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># get the CHAD file names</span>
+    <span class="n">fname_start</span><span class="p">,</span> <span class="n">fname_end</span> <span class="p">,</span> <span class="n">fname_dt</span> <span class="o">=</span> <span class="n">fname_stats</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">START</span><span class="p">],</span> <span class="n">fname_stats</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">END</span><span class="p">],</span> <span class="n">fname_stats</span><span class="p">[</span><span class="n">chad</span><span class="o">.</span><span class="n">DT</span><span class="p">]</span>
+
+    <span class="c1"># load the data</span>
+    <span class="n">df_start</span>    <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname_start</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">df_end</span>      <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname_end</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">df_dt</span>       <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname_dt</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">df_record</span>   <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname_record</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># close zip file</span>
+    <span class="n">z</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># sample by df_dt, df_start</span>
+    <span class="c1"># sampling parameters from the first household</span>
+    <span class="n">s_params</span> <span class="o">=</span> <span class="n">sampling_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># if doing a trial containing multiple activities (aka, contains a list instead of a \</span>
+    <span class="c1"># chad_param.CHAD_params object)</span>
+    <span class="k">if</span>  <span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">s_params</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">s_params</span>    <span class="o">=</span> <span class="n">s_params</span><span class="p">[</span><span class="n">key_activity</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_start</span><span class="p">:</span>
+        <span class="n">df_start</span>    <span class="o">=</span> <span class="n">s_params</span><span class="o">.</span><span class="n">get_start</span><span class="p">(</span><span class="n">df_start</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_end</span><span class="p">:</span>
+        <span class="n">df_end</span>      <span class="o">=</span> <span class="n">s_params</span><span class="o">.</span><span class="n">get_end</span><span class="p">(</span><span class="n">df_end</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">s_params</span><span class="o">.</span><span class="n">do_dt</span><span class="p">:</span>
+        <span class="n">df_dt</span>       <span class="o">=</span> <span class="n">s_params</span><span class="o">.</span><span class="n">get_dt</span><span class="p">(</span><span class="n">df_dt</span><span class="p">)</span>
+
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">key_activity</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># get the CHAD records</span>
+    <span class="n">df_record</span> <span class="o">=</span> <span class="n">s_params</span><span class="o">.</span><span class="n">get_record</span><span class="p">(</span><span class="n">df_record</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_start</span><span class="p">,</span> <span class="n">df_end</span><span class="p">,</span> <span class="n">df_dt</span><span class="p">,</span> <span class="n">df_record</span></div>
+
+<div class="viewcode-block" id="save_figures"><a class="viewcode-back" href="../analysis.html#analysis.save_figures">[docs]</a><span class="k">def</span> <span class="nf">save_figures</span><span class="p">(</span><span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves figures in a python pickle file, so that the data \</span>
+<span class="sd">    may be accessed again.</span>
+
+<span class="sd">    :param list figs: figures for duration and start time for an activity</span>
+<span class="sd">    :type figs: list of figures</span>
+<span class="sd">    :param list fnames: file names to save the data in figs</span>
+<span class="sd">    :type fnames: list of str</span>
+<span class="sd">    :param str fdir: the directory in which to save the files</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># save the files</span>
+    <span class="k">for</span> <span class="n">fig</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figs</span><span class="p">,</span> <span class="n">fnames</span><span class="p">):</span>
+
+        <span class="c1"># create the save file directory if it does not exist</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># save the figure</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

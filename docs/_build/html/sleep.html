@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>sleep module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>sleep module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="social module" href="social.html" />
     <link rel="prev" title="scheduler module" href="scheduler.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -43,14 +33,13 @@
             
   <div class="section" id="module-sleep">
 <span id="sleep-module"></span><h1>sleep module<a class="headerlink" href="#module-sleep" title="Permalink to this headline">¶</a></h1>
-<p>This module contains information about the activity dealing with sleeping. This class is <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a> that gives a <a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a> the ability to eat and satisfy the need <a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal"><span class="pre">rest.Rest</span></code></a>.</p>
-<p>This file contains class <a class="reference internal" href="#sleep.Sleep" title="sleep.Sleep"><code class="xref py py-class docutils literal"><span class="pre">sleep.Sleep</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This module contains information about the activity dealing with sleeping. This class is an Activity (<a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal notranslate"><span class="pre">activity.Activity</span></code></a>) that gives a person (<a class="reference internal" href="person.html#person.Person" title="person.Person"><code class="xref py py-class docutils literal notranslate"><span class="pre">person.Person</span></code></a>) the ability to eat and satisfy the need Rest (<a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal notranslate"><span class="pre">rest.Rest</span></code></a>).</p>
+<p>This file contains class <a class="reference internal" href="#sleep.Sleep" title="sleep.Sleep"><code class="xref py py-class docutils literal notranslate"><span class="pre">sleep.Sleep</span></code></a>.</p>
 <dl class="class">
 <dt id="sleep.Sleep">
 <em class="property">class </em><code class="descclassname">sleep.</code><code class="descname">Sleep</code><a class="reference internal" href="_modules/sleep.html#Sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sleep.Sleep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a></p>
-<p>This class is responsible for the act of sleeping, which satisfies the need <a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal"><span class="pre">rest.Rest</span></code></a>.</p>
+<dd><p>Bases: <a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal notranslate"><span class="pre">activity.Activity</span></code></a></p>
+<p>This class is responsible for the act of sleeping, which satisfies the need <a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal notranslate"><span class="pre">rest.Rest</span></code></a>.</p>
 <dl class="method">
 <dt id="sleep.Sleep.advertise">
 <code class="descname">advertise</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sleep.html#Sleep.advertise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sleep.Sleep.advertise" title="Permalink to this definition">¶</a></dt>
@@ -59,7 +48,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person being advertised to</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person being advertised to</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the value of the advertisement</td>
 </tr>
@@ -77,7 +66,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -88,10 +77,10 @@
 <dl class="method">
 <dt id="sleep.Sleep.end_sleep">
 <code class="descname">end_sleep</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sleep.html#Sleep.end_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sleep.Sleep.end_sleep" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function addresses logistics with a person waking up from sleep</p>
+<dd><p>This function addresses logistics with a person waking up from sleep. More         specifically, the function does the following:</p>
 <ol class="arabic simple">
 <li>free the asset from use</li>
-<li>set the state of the person to idle (<code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code>)</li>
+<li>set the state of the person to idle (<code class="xref py py-const docutils literal notranslate"><span class="pre">state.IDLE</span></code>)</li>
 <li>update the satiation</li>
 <li>update the start time and end time</li>
 <li>set the decay rate</li>
@@ -101,7 +90,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -117,7 +106,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True, if the sleep event resembles a workday. False, otherwise.</td>
 </tr>
@@ -128,10 +117,9 @@
 <dl class="method">
 <dt id="sleep.Sleep.set_end_time">
 <code class="descname">set_end_time</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sleep.html#Sleep.set_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sleep.Sleep.set_end_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns the end time of sleeping</p>
-<p>The end time <img class="math" src="_images/math/fc6a8866375e20237dfd41cc00bfea3de1c56543.png" alt="t_{end}"/> is set as follows</p>
+<dd><p>This function returns the end time of sleeping. The end time <img class="math" src="_images/math/b6db61e6244639bf22cc372a5bdead9695d8e288.png" alt="t_{end}"/>         is set as follows:</p>
 <div class="math">
-<p><img src="_images/math/5e136281ba3b91f9f269d5760fbaa294a8b174f3.png" alt="\[
+<p><img src="_images/math/e0303ed6987b432bfc52983272bc5ae803864271.png" alt="\[
 \begin{cases}
     \Delta{t} &amp;= \frac{ 1 - n(t) }{ m_{suggested} } \\
     t_{end} &amp;= t + \Delta{t}
@@ -140,9 +128,10 @@
 </div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of sleep</li>
-<li><img class="math" src="_images/math/3c21aae8dfc822a9282263144067ec4fa497fd21.png" alt="m_{suggested}"/> is the suggested recharge rate</li>
-<li><img class="math" src="_images/math/e284dae85a953a6609ab238a166b6bde62c1de89.png" alt="n(t)"/> is the magnitude of sleep at time t</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of sleep [minutes]</li>
+<li><img class="math" src="_images/math/b6db61e6244639bf22cc372a5bdead9695d8e288.png" alt="t_{end}"/> is the end time of the sleep activity [universal time, minutes]</li>
+<li><img class="math" src="_images/math/708e1d8b6fd15b731aab0d5d72a65bbe4ab7359f.png" alt="m_{suggested}"/> is the suggested recharge rate for Rest</li>
+<li><img class="math" src="_images/math/a7fab7f8a2758d2cb887e67af0da614cb6ec9486.png" alt="n(t)"/> is the satiation of Rest at time t</li>
 </ul>
 </dd>
 </dl>
@@ -150,7 +139,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return t_end:</th><td class="field-body">the end time of the sleep event [minutes, universal time]</td>
 </tr>
@@ -168,7 +157,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -179,18 +168,18 @@
 <dl class="method">
 <dt id="sleep.Sleep.start_sleep">
 <code class="descname">start_sleep</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sleep.html#Sleep.start_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sleep.Sleep.start_sleep" title="Permalink to this definition">¶</a></dt>
-<dd><p>This handles what happens when a Person goes to sleep.</p>
+<dd><p>This handles what happens when a person goes to sleep. Specifically, this function does the         following:</p>
 <ol class="arabic simple">
-<li>The asset&#8217;s status is updated.</li>
-<li>The Person&#8217;s state is set to the sleep state (<code class="xref py py-const docutils literal"><span class="pre">state.SLEEP</span></code>)</li>
-<li>The end time is calculated</li>
-<li>The recharge rate is set (according to whether or not it is a workday / non-workday)</li>
+<li>the asset’s status is updated.</li>
+<li>the person’s state is set to the sleep state (<code class="xref py py-const docutils literal notranslate"><span class="pre">state.SLEEP</span></code>)</li>
+<li>the end time is calculated</li>
+<li>the recharge rate is set (according to whether or not it is a workday / non-workday)</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -235,21 +224,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/sleep.txt"
+      <li><a href="_sources/sleep.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -257,14 +245,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/sleep.txt"
+      <a href="_sources/sleep.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -1,0 +1,789 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plotter &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plotter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains information and functions for plotting various data related to the algorithm. In short,</span>
+<span class="sd">this module is a plotting library for the algorithm.</span>
+
+<span class="sd">.. moduleauthor:: Dr. Namdi Brandon</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">pickle</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capabilities</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># mathematical capabilities</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># data frame capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">need</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="c1"># ===========================================</span>
+<span class="c1"># import</span>
+<span class="c1"># ===========================================</span>
+<div class="viewcode-block" id="calc_weight"><a class="viewcode-back" href="../plotter.html#plotter.calc_weight">[docs]</a><span class="k">def</span> <span class="nf">calc_weight</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">need</span><span class="o">.</span><span class="n">THRESHOLD</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the weight value corresponding to a given value \</span>
+<span class="sd">    of satiation and threshold value.</span>
+
+<span class="sd">    :param numpy.ndarray x: the satiation values from an agent</span>
+<span class="sd">    :param float threshold: the threshold value for a need</span>
+
+<span class="sd">    :return: an array of the weight values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the weights</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># the index of non-zero value weights</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">threshold</span> <span class="o">+</span> <span class="n">need</span><span class="o">.</span><span class="n">EPS_THRESHOLD</span><span class="p">)</span>
+
+    <span class="c1">#  calculate the non-zero value weights</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">need</span><span class="o">.</span><span class="n">EPS</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">w</span></div>
+
+<div class="viewcode-block" id="calc_log_weight"><a class="viewcode-back" href="../plotter.html#plotter.calc_log_weight">[docs]</a><span class="k">def</span> <span class="nf">calc_log_weight</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the log10 of the weights. To avoid the possibility of getting an \</span>
+<span class="sd">    error due to taking log10(w=0), we zero-valued weight values to None.</span>
+
+<span class="sd">    :param numpy.ndarray w: the values of the weights of a corresponding need</span>
+
+<span class="sd">    :return: the log10 for the non-zero values of the weights</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># copy the value of the weights of a corresponding need</span>
+    <span class="n">y</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1"># indices of zero values of weights</span>
+    <span class="n">i</span>   <span class="o">=</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="c1"># set zero-valued weights to None in order to avoid taking log10(0)</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>    <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># take the log10 of the weights</span>
+    <span class="n">y</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="get_figure_data"><a class="viewcode-back" href="../plotter.html#plotter.get_figure_data">[docs]</a><span class="k">def</span> <span class="nf">get_figure_data</span><span class="p">(</span><span class="n">fpaths</span><span class="p">,</span> <span class="n">fpath_figure_save</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fnames_load</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_single_day</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function gets figure data from the subplots of cumulative distribution functions (CDFs)</span>
+<span class="sd">    of activity-parameters (start time, end time, and duration).</span>
+
+<span class="sd">    :param fpaths: a list of file paths of the figure data for each activity to load</span>
+<span class="sd">    :type fpaths: list of str</span>
+<span class="sd">    :param str fpath_figure_save: the file path to save the figure</span>
+<span class="sd">    :param str fname: the file name (no file path) to save the data</span>
+<span class="sd">    :param fnames_load: the ending of the file names of the figure files to load (start time, end time, duration)</span>
+<span class="sd">    :type fnames_load: list of str</span>
+<span class="sd">    :param bool do_single_day: a flag indicating whether to load single-day (if True) or \</span>
+<span class="sd">    longitudinal(if False) figure data</span>
+
+<span class="sd">    :return: the x and y values of the lines in the figure for start time, end time, and duration plots</span>
+<span class="sd">    :rtype: list, str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># file names load</span>
+    <span class="k">if</span> <span class="n">fnames_load</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fname_start</span><span class="p">,</span> <span class="n">fname_end</span><span class="p">,</span> <span class="n">fname_dt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">start.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">end.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">dt.pkl&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fname_start</span><span class="p">,</span> <span class="n">fname_end</span><span class="p">,</span> <span class="n">fname_dt</span> <span class="o">=</span> <span class="n">fnames_load</span>
+
+    <span class="c1"># change the file path to reflect whether or not to load single-day data</span>
+    <span class="k">if</span> <span class="n">do_single_day</span><span class="p">:</span>
+        <span class="n">fpaths_temp</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">random_day&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fpaths</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fpaths_temp</span> <span class="o">=</span> <span class="n">fpaths</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># store the file names</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the file names to load the start time data</span>
+    <span class="n">fnames_start</span>    <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">+</span> <span class="n">fname_start</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fpaths_temp</span><span class="p">]</span>
+
+    <span class="c1"># the file names to load the end time data</span>
+    <span class="n">fnames_end</span>      <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">+</span> <span class="n">fname_end</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fpaths_temp</span><span class="p">]</span>
+
+    <span class="c1"># the file names to load the duration data</span>
+    <span class="n">fnames_dt</span>       <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">+</span> <span class="n">fname_dt</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fpaths_temp</span><span class="p">]</span>
+
+    <span class="c1"># the file name for saving the combined subplot</span>
+    <span class="n">fname_subplot</span>   <span class="o">=</span> <span class="n">fpath_figure_save</span> <span class="o">+</span> <span class="n">fname</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># load the figure data</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># load the figure data for start time data</span>
+    <span class="n">data_list_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">load_fig_data</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fnames_start</span><span class="p">]</span>
+
+    <span class="c1"># load the figure data for end time data</span>
+    <span class="n">data_list_end</span>   <span class="o">=</span> <span class="p">[</span><span class="n">load_fig_data</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fnames_end</span><span class="p">]</span>
+
+    <span class="c1"># load the figure data for duration data</span>
+    <span class="n">data_list_dt</span>    <span class="o">=</span> <span class="p">[</span><span class="n">load_fig_data</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fnames_dt</span><span class="p">]</span>
+
+    <span class="c1"># store the data about the figures: start time, end time, and duration</span>
+    <span class="n">data_list_all</span>   <span class="o">=</span> <span class="p">[</span><span class="n">data_list_start</span><span class="p">,</span> <span class="n">data_list_end</span><span class="p">,</span> <span class="n">data_list_dt</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data_list_all</span><span class="p">,</span> <span class="n">fname_subplot</span></div>
+
+<div class="viewcode-block" id="get_satiation_and_weight"><a class="viewcode-back" href="../plotter.html#plotter.get_satiation_and_weight">[docs]</a><span class="k">def</span> <span class="nf">get_satiation_and_weight</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">start_day</span><span class="p">,</span> <span class="n">end_day</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function obtains the satiation values and weight values for the agent during the simulation over the</span>
+<span class="sd">    range of the selected days.</span>
+
+<span class="sd">    :param person.Person p: the agent whose satiation and weight values are to be plotted</span>
+<span class="sd">    :param int start_day: the day to start plotting</span>
+<span class="sd">    :param int end_day: the day to end plotting</span>
+
+<span class="sd">    :return: a tuple of an array of the selected time (in hours), a list of the satiation values, and \</span>
+<span class="sd">    a list of the weights for the respective times</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the amount of minutes in 1 day</span>
+    <span class="n">DAY_2_MIN</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">DAY_2_MIN</span>
+
+    <span class="c1"># get the indices that have data</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># the times during the simulation</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">hist_time</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># convert the start and end times from days into minutes</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">start_day</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">end_day</span> <span class="o">*</span> <span class="n">DAY_2_MIN</span>
+
+    <span class="c1"># the indices between the selected times</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="c1"># the times shown in a 24 hour scale</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">/</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span><span class="p">)</span>
+
+    <span class="c1"># the satiation values for the selected times</span>
+    <span class="n">n_rest</span>      <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">REST</span><span class="p">]</span>
+    <span class="n">n_hunger</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">HUNGER</span><span class="p">]</span>
+    <span class="n">n_income</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">INCOME</span><span class="p">]</span>
+    <span class="n">n_travel</span>    <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">need</span><span class="o">.</span><span class="n">TRAVEL</span><span class="p">]</span>
+
+    <span class="c1"># store the satiation values and weights</span>
+    <span class="n">n_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">n</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="n">n_rest</span><span class="p">,</span> <span class="n">n_hunger</span><span class="p">,</span> <span class="n">n_income</span><span class="p">,</span> <span class="n">n_travel</span><span class="p">)</span> <span class="p">]</span>
+    <span class="n">w_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">calc_weight</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">n_list</span> <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">tau</span><span class="p">,</span> <span class="n">n_list</span><span class="p">,</span> <span class="n">w_list</span></div>
+
+<div class="viewcode-block" id="load_fig_data"><a class="viewcode-back" href="../plotter.html#plotter.load_fig_data">[docs]</a><span class="k">def</span> <span class="nf">load_fig_data</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load figure data.</span>
+<span class="sd">    :param str fname: the file name of the figure to load. The file must be a .pkl file.</span>
+
+<span class="sd">    :return: the x and y values of the lines in the figure</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># load the data from the pickled figure</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+    <span class="c1"># close the plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="c1"># the lines of the plot data</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span>
+
+    <span class="c1"># the figure data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="plot_activity_cdfs"><a class="viewcode-back" href="../plotter.html#plotter.plot_activity_cdfs">[docs]</a><span class="k">def</span> <span class="nf">plot_activity_cdfs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the cumulative distribution function of start time, end time, and duration for \</span>
+<span class="sd">    each activity in the the simulation.</span>
+
+<span class="sd">    :param diary.Diary d: the results of the simulation</span>
+<span class="sd">    :param list keys: list of activities to graph</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># for each activity (key)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="c1"># get diary information for the given activity</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># create subplots</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># title</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="c1"># number of samples for empirical cumulative distribution function (CDF)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="mf">1e3</span>
+
+        <span class="c1"># the labels for the subplots</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+
+        <span class="c1"># the colors for the subplots</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
+
+        <span class="c1"># the axes for the subplots</span>
+        <span class="n">ax_list</span> <span class="o">=</span> <span class="p">(</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># the data for the subplots</span>
+        <span class="n">data_list</span> <span class="o">=</span> <span class="p">(</span> <span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># plot each subplot</span>
+        <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax_list</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+
+            <span class="c1"># use periodic time if start time can span over midnight</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># calculate the empirical CDF</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">get_ecdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+            <span class="c1"># plot the values, set the x-axis label, set the legend</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+            <span class="c1"># set the x-axis label</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+
+            <span class="c1"># set the legend</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_activity_histograms"><a class="viewcode-back" href="../plotter.html#plotter.plot_activity_histograms">[docs]</a><span class="k">def</span> <span class="nf">plot_activity_histograms</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the histograms of start time, end time, and duration for each activity in \</span>
+<span class="sd">    the the simulation.</span>
+
+<span class="sd">    :param diary.Diary d: the results of the simulation</span>
+<span class="sd">    :param list keys: list of activities to graph</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="c1"># get diary information about the given activity</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># the number of bins (set to 24 to reflect 24 hours in a day)</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">24</span>
+
+        <span class="c1"># create subplots</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># title</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="c1"># the labels for the subplots</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">)</span>
+
+        <span class="c1"># the colors for the subplots</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
+
+        <span class="c1"># the axes for the subplots</span>
+        <span class="n">ax_list</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># the data for subplots</span>
+        <span class="n">data_list</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># for each subplot, plot the data</span>
+        <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax_list</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+
+            <span class="c1"># use periodic time if the start time can span over midnight</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># plot the values</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+            <span class="c1"># set the x-axis label</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;hours&#39;</span><span class="p">)</span>
+
+            <span class="c1"># set the legend</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_count"><a class="viewcode-back" href="../plotter.html#plotter.plot_count">[docs]</a><span class="k">def</span> <span class="nf">plot_count</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">do_abs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots a histogram showing the amount of times each activity was done \</span>
+<span class="sd">    in an ABMHAP simulation.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame data: the activity diary</span>
+<span class="sd">    :param list keys: the activity codes</span>
+<span class="sd">    :param bool do_abs: whether (if True) to plot a histogram of the number \</span>
+<span class="sd">    of agents or (if False) to plot a histogram of percentage of agents</span>
+<span class="sd">    :param str title: the title of the plot</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># number of activities</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="c1"># set the rows and columns</span>
+    <span class="n">nrows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="n">nrows</span>
+
+    <span class="c1"># create the subplot</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="n">nrows</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="n">ncols</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">diaries</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">diaries</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">df</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_WORK</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+            <span class="n">total</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span>
+
+        <span class="k">if</span> <span class="n">do_abs</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">total</span><span class="o">.</span><span class="n">size</span>
+
+            <span class="c1"># plot the histogram for the activity</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_COLOR</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">do_abs</span><span class="p">:</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Number of Agents&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Percentage of Agents&#39;</span>
+
+        <span class="c1"># set the x-axis limits</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">total</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">total</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Activity Distribution&#39;</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="plot_history"><a class="viewcode-back" href="../plotter.html#plotter.plot_history">[docs]</a><span class="k">def</span> <span class="nf">plot_history</span><span class="p">(</span><span class="n">t</span><span class="p">,</span>  <span class="n">y_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">linestyles</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots information related to data related to needs (such as satiation and \</span>
+<span class="sd">    weight function values) over time.</span>
+
+<span class="sd">    :param numpy.ndarray t: the time values [hours] of interest</span>
+<span class="sd">    :param list y_list: the satiation values for each need over time</span>
+<span class="sd">    :param list labels: the labels that corresponds to the respective need</span>
+<span class="sd">    :param list colors: the colors that corresponds to the respective need</span>
+<span class="sd">    :param list linestyles: the line styles that corresponds to the respective need</span>
+<span class="sd">    :param str ylabel: the y-axis label</span>
+<span class="sd">    :param int linewidth: the line width for each line</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># plot the satiation</span>
+    <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">linestyles</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="n">linestyle</span><span class="p">)</span>
+
+    <span class="c1"># the days within the specified times</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="mi">24</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># plot a vertical line to separate the days</span>
+    <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">days</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">day</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+    <span class="c1"># plot a vertical line after the last day</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">((</span><span class="n">days</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+    <span class="c1"># set the x-axis label, y-axis label, and the legend</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Hour&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_longitude"><a class="viewcode-back" href="../plotter.html#plotter.plot_longitude">[docs]</a><span class="k">def</span> <span class="nf">plot_longitude</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">titles</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the day-to-day variation of activity duration for each activity \</span>
+<span class="sd">    over time from an ABMHAP simulation. This is done for each demographic in order \</span>
+<span class="sd">    to compare their differences and daily behavior. Within each subplot, an agent \</span>
+<span class="sd">    representing a respective demographic has its activity behavior is plotted</span>
+<span class="sd">    in a log10 scale over time.</span>
+
+<span class="sd">    :param data: the activity diaries of the agents to plot. Each agent represents \</span>
+<span class="sd">    a different demograhic.</span>
+<span class="sd">    :type data: list of pandas.core.frame.DataFrame</span>
+<span class="sd">    :param titles: the names of the demographics that are being plot</span>
+<span class="sd">    :type titles: list of str</span>
+<span class="sd">    :param float linewidth: the line width of the plot lines</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of rows and columns in the subplots</span>
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># create axes</span>
+    <span class="c1">#</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plot</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># plot the subplots for each demographic</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="p">[</span><span class="n">plot_longitude_help</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">separate_activities_into_days</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">linewidth</span><span class="p">)</span> \
+         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">)]</span>
+
+    <span class="c1"># the activities</span>
+    <span class="n">K0</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># choose the activities</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">K0</span><span class="p">]</span>
+
+    <span class="c1"># show the legend</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="c1"># set the subplot titles</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">ticksize</span> <span class="o">=</span> <span class="mi">14</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">ticksize</span><span class="p">)</span>
+
+    <span class="c1"># set the main title</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Daily Activity Duration&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+
+    <span class="c1"># write axes for x and y</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration [minutes]&#39;</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set the x and y axes for each subplot</span>
+    <span class="c1">#</span>
+    <span class="n">fontsize_label</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="plot_longitude_help"><a class="viewcode-back" href="../plotter.html#plotter.plot_longitude_help">[docs]</a><span class="k">def</span> <span class="nf">plot_longitude_help</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the day-to-day variation of activity duration for each activity \</span>
+<span class="sd">    over time from an ABMHAP simulation. Within each subplot, an agent has its activity \</span>
+<span class="sd">    behavior is plotted in a log10 scale over time.</span>
+
+<span class="sd">    :param matplotlib.figure.Figure ax: the subplot object</span>
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity diary of an agent</span>
+<span class="sd">    :param float linewidth: the line width of the plot lines</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    :rtype: list of int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># colors for plotting</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_COLOR</span>
+
+    <span class="c1"># the days in the simulation</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># the activities that were done by the person in the simulation</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span>
+
+    <span class="c1"># group activities by day</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">)</span>
+
+    <span class="c1"># loop through each activity and plot the duration over time</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="c1"># the duration data</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">days</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">days</span><span class="p">):</span>
+
+            <span class="c1"># get the daily activity data</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+
+            <span class="c1"># if there the respective activity does not happen that day, return NaN</span>
+            <span class="c1"># this allows python to avoid plotting the activity on that specific day</span>
+            <span class="k">if</span> <span class="n">temp</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+            <span class="c1"># the duration is counted as work end - work start, like in the ABM</span>
+            <span class="c1"># perhaps this should change to summing the durations themselves</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_WORK</span><span class="p">):</span>
+                <span class="c1"># dt = temp.end.values[-1] - temp.start.values[0] # original</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># convert the time into minutes (not hours)</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># plot the data for the kth activity</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;-*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+        <span class="c1"># ax.plot(days, y, &#39;-&#39;, label=activity.INT_2_STR[k], color=colors[k], linewidth=linewidth)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e0</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">keys</span></div>
+
+<div class="viewcode-block" id="plot_satiation_and_weight"><a class="viewcode-back" href="../plotter.html#plotter.plot_satiation_and_weight">[docs]</a><span class="k">def</span> <span class="nf">plot_satiation_and_weight</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">start_day</span><span class="p">,</span> <span class="n">end_day</span><span class="p">,</span> <span class="n">fid_satiation</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">fid_weight</span><span class="o">=</span><span class="mi">101</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the satiation values and weight values for the agent during the simulation.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function is best used when the simulation moves through time minute by minute. If not,</span>
+<span class="sd">        the slopes in both the satiation and weight plots will **not** be accurate.</span>
+
+<span class="sd">    :param person.Person p: the agent whose satiation and weight values are to be plotted</span>
+<span class="sd">    :param int start_day: the day to start plotting</span>
+<span class="sd">    :param int end_day: the day to end plotting</span>
+<span class="sd">    :param int fid_satiation: the figure identifier for the satiation plot</span>
+<span class="sd">    :param int fid_weight: the figure identifier for the weights plot</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the times, satiation values, and weight function values from the agent</span>
+    <span class="n">t</span><span class="p">,</span> <span class="n">n_list</span><span class="p">,</span> <span class="n">w_list</span> <span class="o">=</span> <span class="n">get_satiation_and_weight</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">start_day</span><span class="p">,</span> <span class="n">end_day</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plotting parameters</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># line width for each line in the plot</span>
+    <span class="n">linewidth</span>   <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="c1"># the labels</span>
+    <span class="n">labels</span>      <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Rest&#39;</span><span class="p">,</span> <span class="s1">&#39;Hunger&#39;</span><span class="p">,</span> <span class="s1">&#39;Income&#39;</span><span class="p">,</span> <span class="s1">&#39;Travel&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the colors</span>
+    <span class="n">colors</span>      <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;darkorange&#39;</span><span class="p">,</span> <span class="s1">&#39;darkviolet&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">)</span>
+
+    <span class="c1"># the line styles</span>
+    <span class="n">linestyles</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plot the satiation value over time</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># create the figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">fid_satiation</span><span class="p">)</span>
+
+    <span class="c1"># plot the satiation history</span>
+    <span class="n">plot_history</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">n_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">linestyles</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Satiation&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plot the value of the weight function over time</span>
+    <span class="c1">#</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">fid_weight</span><span class="p">)</span>
+
+    <span class="c1"># calculate the log10 of the weights</span>
+    <span class="n">log_w_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">calc_log_weight</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">w_list</span> <span class="p">]</span>
+
+    <span class="c1"># plot the weight history</span>
+    <span class="n">plot_history</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">log_w_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">linestyles</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="separate_activities_into_days"><a class="viewcode-back" href="../plotter.html#plotter.separate_activities_into_days">[docs]</a><span class="k">def</span> <span class="nf">separate_activities_into_days</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finds the activities tha occur over midnight and breaks down \</span>
+<span class="sd">    creates a new activity diary in which an activity occurring over midnight \</span>
+<span class="sd">    is split into two activities: one activity entry ending at midnight, and \</span>
+<span class="sd">    one activity entry starting at midnight.</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame data: the activity diary of an agent</span>
+
+<span class="sd">    :return: the new activity diary</span>
+<span class="sd">    :rtype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># one minute in hours</span>
+    <span class="n">one_min</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span>
+
+    <span class="c1"># copy the data frame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># convert start time and duration to periodic time [-12, 12)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">start</span>    <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">end</span>      <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">to_periodic</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># index for rollover of activities from one day to the next</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># when an activity starts and ends on the same day</span>
+    <span class="n">df_same_day</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># when an activity starts on one day and ends the next day</span>
+    <span class="n">df_next_day</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># the column labels</span>
+    <span class="c1"># columns = df_next_day.columns</span>
+
+    <span class="n">x_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_next_day</span><span class="p">)):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">df_next_day</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">day</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">day</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">end</span><span class="p">]),</span> \
+                                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">act</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]])</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="n">one_min</span><span class="p">],</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="n">one_min</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="n">one_min</span><span class="p">),</span> \
+              <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="n">loc</span><span class="p">}</span>
+
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="mi">0</span> <span class="o">+</span> <span class="n">one_min</span><span class="p">),</span> <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="n">act</span><span class="p">,</span> <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="n">loc</span><span class="p">}</span>
+
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d2</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="n">x_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="n">x_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+
+    <span class="c1"># create the dataframe with multiple days</span>
+    <span class="n">df_two_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">x_list</span><span class="p">)</span>
+
+    <span class="c1"># concatenate arrays</span>
+    <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_same_day</span><span class="p">,</span> <span class="n">df_two_day</span><span class="p">])</span>
+
+    <span class="c1"># sort values</span>
+    <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">df_new</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

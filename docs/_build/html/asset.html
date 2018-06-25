@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>asset module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>asset module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="bed module" href="bed.html" />
     <link rel="prev" title="activity module" href="activity.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -43,26 +33,25 @@
             
   <div class="section" id="module-asset">
 <span id="asset-module"></span><h1>asset module<a class="headerlink" href="#module-asset" title="Permalink to this headline">¶</a></h1>
-<p>This module contains code that governs objects that enable access to activities (<a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal"><span class="pre">activity.Activity</span></code></a>) that an agent may use in order to address a need.</p>
-<p>This module contains the following class: <a class="reference internal" href="#asset.Asset" title="asset.Asset"><code class="xref py py-class docutils literal"><span class="pre">asset.Asset</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This module contains code that governs objects that enable access to activities (<a class="reference internal" href="activity.html#activity.Activity" title="activity.Activity"><code class="xref py py-class docutils literal notranslate"><span class="pre">activity.Activity</span></code></a>) that an agent may use in order to address a need.</p>
+<p>This module contains the following class: <a class="reference internal" href="#asset.Asset" title="asset.Asset"><code class="xref py py-class docutils literal notranslate"><span class="pre">asset.Asset</span></code></a>.</p>
 <dl class="class">
 <dt id="asset.Asset">
 <em class="property">class </em><code class="descclassname">asset.</code><code class="descname">Asset</code><a class="reference internal" href="_modules/asset.html#Asset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset.Asset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>An asset is an object that allows the agent to perform an activity. Each asset     contains a list Activities that an agent can use to perform actions.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An asset is an object that allows the agent to perform an activity. Each asset     contains a list of activities that an agent can use to perform actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>activities</strong> (<em>dict</em>) &#8211; This is a dictionary of all the activities associated with this asset.</li>
-<li><strong>category</strong> (<em>int</em>) &#8211; This indicates the type of asset.</li>
-<li><strong>id</strong> (<em>int</em>) &#8211; This is an identifier number for the asset.</li>
-<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) &#8211; This is the location of the asset.</li>
-<li><strong>max_users</strong> (<em>int</em>) &#8211; This indicates the maximum number of users that can simultaneously access the asset.</li>
-<li><strong>num_users</strong> (<em>int</em>) &#8211; This is the current number of users for the asset.</li>
-<li><strong>status</strong> (<em>int</em>) &#8211; This is the state of the asset.</li>
+<li><strong>activities</strong> (<em>dict</em>) – a dictionary of all the activities associated with this asset</li>
+<li><strong>category</strong> (<em>int</em>) – a code that indicates the category type of asset</li>
+<li><strong>id</strong> (<em>int</em>) – an identifier number for the asset</li>
+<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) – the location of the asset</li>
+<li><strong>max_users</strong> (<em>int</em>) – the maximum number of users that can simultaneously access the asset</li>
+<li><strong>num_users</strong> (<em>int</em>) – the current number of users for the asset</li>
+<li><strong>status</strong> (<em>int</em>) – the state of the asset</li>
 </ul>
 </td>
 </tr>
@@ -73,8 +62,8 @@
 <code class="descname">free</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asset.html#Asset.free"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset.Asset.free" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function changes the state of an asset once it is freed by a Person by doing the following:</p>
 <ol class="arabic simple">
-<li>Decreases the number of users of the asset by 1</li>
-<li>If the number of users is zero, the status of the asset is set to idle (<code class="xref py py-const docutils literal"><span class="pre">state.IDLE</span></code>)</li>
+<li>decreases the number of users of the asset by 1</li>
+<li>if the number of users is zero, the status of the asset is set to idle (<code class="xref py py-const docutils literal notranslate"><span class="pre">state.IDLE</span></code>)</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -98,7 +87,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list[ person.Person ]</em>) &#8211; the Person objects who could be using the asset.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>people</strong> (<em>list</em><em>[ </em><a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a><em> ]</em>) – the Person objects who could be using the asset.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -126,10 +115,10 @@
 <dl class="method">
 <dt id="asset.Asset.reset">
 <code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asset.html#Asset.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset.Asset.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function does the following.</p>
+<dd><p>This function does the following:</p>
 <ol class="arabic simple">
-<li>Sets the number of users to zero</li>
-<li>Sets the asset&#8217;s status to idle</li>
+<li>sets the number of users to zero</li>
+<li>sets the asset’s status to idle</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -161,11 +150,11 @@
 <dl class="method">
 <dt id="asset.Asset.update">
 <code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asset.html#Asset.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset.Asset.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function changes the state of the asset once it is used by a Person.</p>
+<dd><p>This function changes the state of the asset once it is used by a person. The update does         the following:</p>
 <ol class="arabic simple">
-<li>Increases the number of people by 1</li>
-<li>If the number of users is at the maximum number, set the asset&#8217;s status to busy</li>
-<li>If the number of users is less than the maximum number, set the assets&#8217; status to busy but         able to be used by another agent</li>
+<li>increases the number of people by 1</li>
+<li>if the number of users is at the maximum number, set the asset’s status to busy</li>
+<li>if the number of users is less than the maximum number, set the asset’s status to busy but         able to be used by another agent</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -198,21 +187,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/asset.txt"
+      <li><a href="_sources/asset.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -220,14 +208,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/asset.txt"
+      <a href="_sources/asset.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

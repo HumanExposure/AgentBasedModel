@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>meal module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>meal module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="my_globals module" href="my_globals.html" />
     <link rel="prev" title="location module" href="location.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -44,31 +34,30 @@
   <div class="section" id="module-meal">
 <span id="meal-module"></span><h1>meal module<a class="headerlink" href="#module-meal" title="Permalink to this headline">¶</a></h1>
 <p>This module contains contains information about various meals that an agent  would eat in.</p>
-<p>This module contains code for class <a class="reference internal" href="#meal.Meal" title="meal.Meal"><code class="xref py py-class docutils literal"><span class="pre">meal.Meal</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This module contains code for class <a class="reference internal" href="#meal.Meal" title="meal.Meal"><code class="xref py py-class docutils literal notranslate"><span class="pre">meal.Meal</span></code></a>.</p>
 <dl class="class">
 <dt id="meal.Meal">
 <em class="property">class </em><code class="descclassname">meal.</code><code class="descname">Meal</code><span class="sig-paren">(</span><em>id=0</em>, <em>start_mean=390</em>, <em>start_std=10</em>, <em>start_trunc=1</em>, <em>dt_mean=15</em>, <em>dt_std=5</em>, <em>dt_trunc=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/meal.html#Meal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meal.Meal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is class contains information about meals (breakfast, dinner, and lunch)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>id</strong> (<em>int</em>) &#8211; the meal type (breakfast, lunch, or dinner)</li>
-<li><strong>dt</strong> (<em>int</em>) &#8211; the duration of a meal [minutes]</li>
-<li><strong>dt_mean</strong> (<em>int</em>) &#8211; the mean duration of a meal [minutes]</li>
-<li><strong>dt_std</strong> (<em>int</em>) &#8211; the standard deviation of meal duration [minutes]</li>
-<li><strong>dt_trunc</strong> (<em>int</em>) &#8211; the number of standard deviation in the duration distribution</li>
-<li><strong>t_start</strong> (<em>int</em>) &#8211; the start time of a meal [minutes, time of day]</li>
-<li><strong>t_start_univ</strong> (<em>int</em>) &#8211; the start time of a meals [minutes, universal time]</li>
-<li><strong>start_mean</strong> (<em>int</em>) &#8211; the mean start time of a meal [minutes, time of day]</li>
-<li><strong>start_std</strong> (<em>int</em>) &#8211; the standard deviation of start time of a meal [minutes]</li>
-<li><strong>start_trunc</strong> (<em>int</em>) &#8211; the number of standard deviation of in the start time distribution</li>
-<li><strong>f_start</strong> &#8211; the start time distribution function</li>
-<li><strong>f_dt</strong> &#8211; the duration distribution function</li>
-<li><strong>day</strong> (<em>int</em>) &#8211; the day the meal should occur</li>
+<li><strong>id</strong> (<em>int</em>) – the meal type (breakfast, lunch, or dinner)</li>
+<li><strong>dt</strong> (<em>int</em>) – the duration of a meal [minutes]</li>
+<li><strong>dt_mean</strong> (<em>int</em>) – the mean duration of a meal [minutes]</li>
+<li><strong>dt_std</strong> (<em>int</em>) – the standard deviation of meal duration [minutes]</li>
+<li><strong>dt_trunc</strong> (<em>int</em>) – the number of standard deviation in the duration distribution</li>
+<li><strong>t_start</strong> (<em>int</em>) – the start time of a meal [minutes, time of day]</li>
+<li><strong>t_start_univ</strong> (<em>int</em>) – the start time of a meals [minutes, universal time]</li>
+<li><strong>start_mean</strong> (<em>int</em>) – the mean start time of a meal [minutes, time of day]</li>
+<li><strong>start_std</strong> (<em>int</em>) – the standard deviation of start time of a meal [minutes]</li>
+<li><strong>start_trunc</strong> (<em>int</em>) – the number of standard deviation of in the start time distribution</li>
+<li><strong>f_start</strong> – the start time distribution function</li>
+<li><strong>f_dt</strong> – the duration distribution function</li>
+<li><strong>day</strong> (<em>int</em>) – the day the meal should occur</li>
 </ul>
 </td>
 </tr>
@@ -77,12 +66,12 @@
 <dl class="method">
 <dt id="meal.Meal.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>t_univ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/meal.html#Meal.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meal.Meal.initialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>At the beginning of the simulation, make sure that the meals are initialized to the proper times         (<code class="xref py py-mod docutils literal"><span class="pre">t_start_univ</span></code>) so that they relate to the simulation time (t_univ)</p>
+<dd><p>At the beginning of the simulation, make sure that the meals are initialized to the proper times         (<code class="xref py py-mod docutils literal notranslate"><span class="pre">t_start_univ</span></code>) so that they relate to the simulation time (t_univ)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t_univ</strong> (<em>int</em>) &#8211; the simulation time [minutes, universal time]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t_univ</strong> (<em>int</em>) – the simulation time [minutes, universal time]</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -115,13 +104,13 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>id</strong> (<em>int</em>) &#8211; the meal type (breakfast, lunch, or dinner)</li>
-<li><strong>start_mean</strong> (<em>int</em>) &#8211; the mean start time of the meal [minutes, time of day]</li>
-<li><strong>start_std</strong> (<em>int</em>) &#8211; the standard deviation of start time [minutes]</li>
-<li><strong>start_turnc</strong> (<em>int</em>) &#8211; the number of standard deviations in the start time distribution</li>
-<li><strong>dt_mean</strong> (<em>int</em>) &#8211; the mean duration of a meal [minutes]</li>
-<li><strong>dt_std</strong> (<em>int</em>) &#8211; the standard deviation of meal duration [minutes]</li>
-<li><strong>dt_trunc</strong> (<em>int</em>) &#8211; the number of standard deviations in the duration distribution</li>
+<li><strong>id</strong> (<em>int</em>) – the meal type (breakfast, lunch, or dinner)</li>
+<li><strong>start_mean</strong> (<em>int</em>) – the mean start time of the meal [minutes, time of day]</li>
+<li><strong>start_std</strong> (<em>int</em>) – the standard deviation of start time [minutes]</li>
+<li><strong>start_turnc</strong> (<em>int</em>) – the number of standard deviations in the start time distribution</li>
+<li><strong>dt_mean</strong> (<em>int</em>) – the mean duration of a meal [minutes]</li>
+<li><strong>dt_std</strong> (<em>int</em>) – the standard deviation of meal duration [minutes]</li>
+<li><strong>dt_trunc</strong> (<em>int</em>) – the number of standard deviations in the duration distribution</li>
 </ul>
 </td>
 </tr>
@@ -161,7 +150,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>int</em>) &#8211; the day for the meal to occur</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>int</em>) – the day for the meal to occur</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -172,7 +161,7 @@
 <dl class="method">
 <dt id="meal.Meal.update_day">
 <code class="descname">update_day</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/meal.html#Meal.update_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meal.Meal.update_day" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the day for the next meal, given the universal start time for the meal (<code class="xref py py-mod docutils literal"><span class="pre">t_start_univ</span></code>).</p>
+<dd><p>Update the day for the next meal, given the universal start time for the meal (<code class="xref py py-mod docutils literal notranslate"><span class="pre">t_start_univ</span></code>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -219,7 +208,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>int</em>) &#8211; the day for the meal</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> (<em>int</em>) – the day for the meal</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -248,21 +237,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/meal.txt"
+      <li><a href="_sources/meal.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -270,14 +258,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/meal.txt"
+      <a href="_sources/meal.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

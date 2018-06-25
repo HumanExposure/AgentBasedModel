@@ -1,350 +1,615 @@
-\indexentry{activity (module)|hyperpage}{9}
-\indexentry{Activity (class in activity)|hyperpage}{9}
-\indexentry{advertise() (activity.Activity method)|hyperpage}{9}
-\indexentry{advertise\_interruption() (activity.Activity method)|hyperpage}{10}
-\indexentry{end() (activity.Activity method)|hyperpage}{10}
-\indexentry{halt() (activity.Activity method)|hyperpage}{10}
-\indexentry{print\_id() (activity.Activity method)|hyperpage}{10}
-\indexentry{start() (activity.Activity method)|hyperpage}{10}
-\indexentry{toString() (activity.Activity method)|hyperpage}{10}
-\indexentry{asset (module)|hyperpage}{11}
-\indexentry{Asset (class in asset)|hyperpage}{11}
-\indexentry{free() (asset.Asset method)|hyperpage}{11}
-\indexentry{initialize() (asset.Asset method)|hyperpage}{11}
-\indexentry{print\_category() (asset.Asset method)|hyperpage}{11}
-\indexentry{reset() (asset.Asset method)|hyperpage}{11}
-\indexentry{toString() (asset.Asset method)|hyperpage}{12}
-\indexentry{update() (asset.Asset method)|hyperpage}{12}
-\indexentry{bed (module)|hyperpage}{12}
-\indexentry{Bed (class in bed)|hyperpage}{12}
-\indexentry{bio (module)|hyperpage}{12}
-\indexentry{Bio (class in bio)|hyperpage}{12}
-\indexentry{calc\_awake\_duration() (bio.Bio method)|hyperpage}{13}
-\indexentry{print\_gender() (bio.Bio method)|hyperpage}{13}
-\indexentry{set\_sleep\_params() (bio.Bio method)|hyperpage}{13}
-\indexentry{toString() (bio.Bio method)|hyperpage}{13}
-\indexentry{update\_sleep\_dt() (bio.Bio method)|hyperpage}{14}
-\indexentry{update\_sleep\_end() (bio.Bio method)|hyperpage}{14}
-\indexentry{update\_sleep\_end\_univ() (bio.Bio method)|hyperpage}{14}
-\indexentry{update\_sleep\_start() (bio.Bio method)|hyperpage}{14}
-\indexentry{update\_sleep\_start\_univ() (bio.Bio method)|hyperpage}{14}
-\indexentry{update\_time\_univ() (bio.Bio method)|hyperpage}{14}
-\indexentry{commute (module)|hyperpage}{14}
-\indexentry{Commute (class in commute)|hyperpage}{15}
-\indexentry{end() (commute.Commute method)|hyperpage}{15}
-\indexentry{end\_commute() (commute.Commute method)|hyperpage}{15}
-\indexentry{start() (commute.Commute method)|hyperpage}{15}
-\indexentry{start\_commute() (commute.Commute method)|hyperpage}{15}
-\indexentry{Commute\_From\_Work (class in commute)|hyperpage}{16}
-\indexentry{advertise() (commute.Commute\_From\_Work method)|hyperpage}{16}
-\indexentry{calc\_end\_time() (commute.Commute\_From\_Work method)|hyperpage}{16}
-\indexentry{end() (commute.Commute\_From\_Work method)|hyperpage}{16}
-\indexentry{end\_commute() (commute.Commute\_From\_Work method)|hyperpage}{16}
-\indexentry{start() (commute.Commute\_From\_Work method)|hyperpage}{16}
-\indexentry{Commute\_To\_Work (class in commute)|hyperpage}{17}
-\indexentry{advertise() (commute.Commute\_To\_Work method)|hyperpage}{17}
-\indexentry{calc\_end\_time() (commute.Commute\_To\_Work method)|hyperpage}{17}
-\indexentry{end() (commute.Commute\_To\_Work method)|hyperpage}{17}
-\indexentry{end\_commute() (commute.Commute\_To\_Work method)|hyperpage}{17}
-\indexentry{start() (commute.Commute\_To\_Work method)|hyperpage}{18}
-\indexentry{start\_commute() (commute.Commute\_To\_Work method)|hyperpage}{18}
-\indexentry{diary (module)|hyperpage}{18}
-\indexentry{Diary (class in diary)|hyperpage}{18}
-\indexentry{create\_activity\_diary() (diary.Diary method)|hyperpage}{19}
-\indexentry{get\_day\_end() (diary.Diary method)|hyperpage}{19}
-\indexentry{get\_weekday\_data() (diary.Diary method)|hyperpage}{19}
-\indexentry{get\_weekday\_idx() (diary.Diary method)|hyperpage}{19}
-\indexentry{get\_weekend\_data() (diary.Diary method)|hyperpage}{20}
-\indexentry{get\_weekend\_idx() (diary.Diary method)|hyperpage}{20}
-\indexentry{group\_activity() (diary.Diary method)|hyperpage}{20}
-\indexentry{group\_activity\_indices() (diary.Diary method)|hyperpage}{20}
-\indexentry{group\_activity\_key() (diary.Diary method)|hyperpage}{20}
-\indexentry{is\_weekend() (diary.Diary method)|hyperpage}{20}
-\indexentry{same\_day() (diary.Diary method)|hyperpage}{20}
-\indexentry{toString() (diary.Diary method)|hyperpage}{21}
-\indexentry{eat (module)|hyperpage}{21}
-\indexentry{Eat (class in eat)|hyperpage}{21}
-\indexentry{advertise() (eat.Eat method)|hyperpage}{21}
-\indexentry{advertise\_help() (eat.Eat method)|hyperpage}{21}
-\indexentry{advertise\_interruption() (eat.Eat method)|hyperpage}{22}
-\indexentry{end() (eat.Eat method)|hyperpage}{22}
-\indexentry{end\_meal() (eat.Eat method)|hyperpage}{22}
-\indexentry{set\_end\_time() (eat.Eat method)|hyperpage}{22}
-\indexentry{start() (eat.Eat method)|hyperpage}{22}
-\indexentry{start\_meal() (eat.Eat method)|hyperpage}{23}
-\indexentry{test\_func() (eat.Eat method)|hyperpage}{23}
-\indexentry{Eat\_Breakfast (class in eat)|hyperpage}{23}
-\indexentry{advertise() (eat.Eat\_Breakfast method)|hyperpage}{23}
-\indexentry{end\_meal() (eat.Eat\_Breakfast method)|hyperpage}{23}
-\indexentry{start\_meal() (eat.Eat\_Breakfast method)|hyperpage}{23}
-\indexentry{Eat\_Dinner (class in eat)|hyperpage}{24}
-\indexentry{advertise() (eat.Eat\_Dinner method)|hyperpage}{24}
-\indexentry{end\_meal() (eat.Eat\_Dinner method)|hyperpage}{24}
-\indexentry{start\_meal() (eat.Eat\_Dinner method)|hyperpage}{24}
-\indexentry{Eat\_Lunch (class in eat)|hyperpage}{24}
-\indexentry{advertise() (eat.Eat\_Lunch method)|hyperpage}{24}
-\indexentry{end\_meal() (eat.Eat\_Lunch method)|hyperpage}{25}
-\indexentry{start\_meal() (eat.Eat\_Lunch method)|hyperpage}{25}
-\indexentry{food (module)|hyperpage}{25}
-\indexentry{Food (class in food)|hyperpage}{25}
-\indexentry{home (module)|hyperpage}{26}
-\indexentry{Home (class in home)|hyperpage}{26}
-\indexentry{advertise() (home.Home method)|hyperpage}{26}
-\indexentry{initialize() (home.Home method)|hyperpage}{27}
-\indexentry{print\_category() (home.Home method)|hyperpage}{27}
-\indexentry{reset() (home.Home method)|hyperpage}{27}
-\indexentry{set\_population() (home.Home method)|hyperpage}{27}
-\indexentry{set\_revenue() (home.Home method)|hyperpage}{27}
-\indexentry{toString() (home.Home method)|hyperpage}{27}
-\indexentry{hunger (module)|hyperpage}{27}
-\indexentry{Hunger (class in hunger)|hyperpage}{27}
-\indexentry{decay() (hunger.Hunger method)|hyperpage}{28}
-\indexentry{decay\_new() (hunger.Hunger method)|hyperpage}{28}
-\indexentry{initialize() (hunger.Hunger method)|hyperpage}{28}
-\indexentry{is\_meal\_time() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{is\_meal\_time\_all() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{perceive() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{reset() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{set\_decay\_rate() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{set\_decay\_rate\_new() (hunger.Hunger method)|hyperpage}{29}
-\indexentry{set\_recharge\_rate() (hunger.Hunger method)|hyperpage}{30}
-\indexentry{set\_suggested\_recharge\_rate() (hunger.Hunger method)|hyperpage}{30}
-\indexentry{toString() (hunger.Hunger method)|hyperpage}{30}
-\indexentry{income (module)|hyperpage}{30}
-\indexentry{Income (class in income)|hyperpage}{30}
-\indexentry{decay() (income.Income method)|hyperpage}{30}
-\indexentry{initialize() (income.Income method)|hyperpage}{30}
-\indexentry{perceive() (income.Income method)|hyperpage}{31}
-\indexentry{interrupt (module)|hyperpage}{31}
-\indexentry{Interrupt (class in interrupt)|hyperpage}{31}
-\indexentry{advertise() (interrupt.Interrupt method)|hyperpage}{31}
-\indexentry{start() (interrupt.Interrupt method)|hyperpage}{32}
-\indexentry{interruption (module)|hyperpage}{32}
-\indexentry{Interruption (class in interruption)|hyperpage}{32}
-\indexentry{decay() (interruption.Interruption method)|hyperpage}{32}
-\indexentry{get\_time\_to\_next\_work\_lunch() (interruption.Interruption method)|hyperpage}{32}
-\indexentry{initialize() (interruption.Interruption method)|hyperpage}{32}
-\indexentry{is\_lunch\_time() (interruption.Interruption method)|hyperpage}{33}
-\indexentry{perceive() (interruption.Interruption method)|hyperpage}{33}
-\indexentry{reset() (interruption.Interruption method)|hyperpage}{33}
-\indexentry{reset\_minor() (interruption.Interruption method)|hyperpage}{33}
-\indexentry{stop\_work\_to\_eat() (interruption.Interruption method)|hyperpage}{33}
-\indexentry{location (module)|hyperpage}{33}
-\indexentry{Location (class in location)|hyperpage}{33}
-\indexentry{print\_geo() (location.Location method)|hyperpage}{34}
-\indexentry{print\_local() (location.Location method)|hyperpage}{34}
-\indexentry{reset() (location.Location method)|hyperpage}{34}
-\indexentry{toString() (location.Location method)|hyperpage}{34}
-\indexentry{meal (module)|hyperpage}{34}
-\indexentry{Meal (class in meal)|hyperpage}{34}
-\indexentry{initialize() (meal.Meal method)|hyperpage}{35}
-\indexentry{print\_id() (meal.Meal method)|hyperpage}{35}
-\indexentry{set\_meal() (meal.Meal method)|hyperpage}{35}
-\indexentry{toString() (meal.Meal method)|hyperpage}{35}
-\indexentry{update() (meal.Meal method)|hyperpage}{35}
-\indexentry{update\_day() (meal.Meal method)|hyperpage}{36}
-\indexentry{update\_dt() (meal.Meal method)|hyperpage}{36}
-\indexentry{update\_start() (meal.Meal method)|hyperpage}{36}
-\indexentry{update\_start\_univ() (meal.Meal method)|hyperpage}{36}
-\indexentry{my\_globals (module)|hyperpage}{36}
-\indexentry{fill\_out\_data() (in module my\_globals)|hyperpage}{36}
-\indexentry{fill\_out\_time() (in module my\_globals)|hyperpage}{36}
-\indexentry{from\_periodic() (in module my\_globals)|hyperpage}{36}
-\indexentry{get\_ecdf() (in module my\_globals)|hyperpage}{37}
-\indexentry{group\_time() (in module my\_globals)|hyperpage}{37}
-\indexentry{hours\_to\_minutes() (in module my\_globals)|hyperpage}{37}
-\indexentry{load() (in module my\_globals)|hyperpage}{37}
-\indexentry{sample\_normal() (in module my\_globals)|hyperpage}{37}
-\indexentry{save() (in module my\_globals)|hyperpage}{37}
-\indexentry{save\_zip() (in module my\_globals)|hyperpage}{38}
-\indexentry{set\_distribution() (in module my\_globals)|hyperpage}{38}
-\indexentry{set\_distribution\_dt() (in module my\_globals)|hyperpage}{38}
-\indexentry{to\_periodic() (in module my\_globals)|hyperpage}{38}
-\indexentry{need (module)|hyperpage}{39}
-\indexentry{Need (class in need)|hyperpage}{39}
-\indexentry{decay() (need.Need method)|hyperpage}{39}
-\indexentry{initialize() (need.Need method)|hyperpage}{39}
-\indexentry{print\_category() (need.Need method)|hyperpage}{39}
-\indexentry{reset() (need.Need method)|hyperpage}{39}
-\indexentry{toString() (need.Need method)|hyperpage}{40}
-\indexentry{under\_threshold() (need.Need method)|hyperpage}{40}
-\indexentry{weight() (need.Need method)|hyperpage}{40}
-\indexentry{occupation (module)|hyperpage}{40}
-\indexentry{Occupation (class in occupation)|hyperpage}{40}
-\indexentry{is\_summer\_vacation() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{print\_category() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{print\_id() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{set\_commute\_distribution() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{set\_is\_job() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{set\_is\_same\_day() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{set\_job\_params() (occupation.Occupation method)|hyperpage}{42}
-\indexentry{set\_job\_preset() (occupation.Occupation method)|hyperpage}{43}
-\indexentry{set\_no\_job() (occupation.Occupation method)|hyperpage}{43}
-\indexentry{set\_standard\_job() (occupation.Occupation method)|hyperpage}{43}
-\indexentry{set\_student() (occupation.Occupation method)|hyperpage}{43}
-\indexentry{set\_work\_distribution() (occupation.Occupation method)|hyperpage}{43}
-\indexentry{toString() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_commute\_from\_work\_dt() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_commute\_to\_work\_dt() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_commute\_to\_work\_start() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_work\_dt() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_work\_end() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{update\_work\_start() (occupation.Occupation method)|hyperpage}{44}
-\indexentry{is\_work\_time() (in module occupation)|hyperpage}{44}
-\indexentry{is\_work\_time\_help() (in module occupation)|hyperpage}{44}
-\indexentry{set\_grave\_shift() (in module occupation)|hyperpage}{45}
-\indexentry{set\_no\_job() (in module occupation)|hyperpage}{45}
-\indexentry{set\_standard\_job() (in module occupation)|hyperpage}{45}
-\indexentry{set\_student() (in module occupation)|hyperpage}{45}
-\indexentry{params (module)|hyperpage}{46}
-\indexentry{Params (class in params)|hyperpage}{46}
-\indexentry{init\_help() (params.Params method)|hyperpage}{49}
-\indexentry{init\_meal() (params.Params method)|hyperpage}{49}
-\indexentry{init\_meal\_old() (params.Params method)|hyperpage}{50}
-\indexentry{set\_num\_steps() (params.Params method)|hyperpage}{50}
-\indexentry{tester() (params.Params method)|hyperpage}{50}
-\indexentry{toString() (params.Params method)|hyperpage}{50}
-\indexentry{person (module)|hyperpage}{51}
-\indexentry{Person (class in person)|hyperpage}{51}
-\indexentry{print\_basic\_info() (person.Person method)|hyperpage}{52}
-\indexentry{reset() (person.Person method)|hyperpage}{52}
-\indexentry{reset\_history() (person.Person method)|hyperpage}{52}
-\indexentry{reset\_needs() (person.Person method)|hyperpage}{52}
-\indexentry{toString() (person.Person method)|hyperpage}{53}
-\indexentry{update\_history() (person.Person method)|hyperpage}{53}
-\indexentry{update\_history\_activity() (person.Person method)|hyperpage}{53}
-\indexentry{update\_history\_needs() (person.Person method)|hyperpage}{53}
-\indexentry{rest (module)|hyperpage}{53}
-\indexentry{Rest (class in rest)|hyperpage}{53}
-\indexentry{decay() (rest.Rest method)|hyperpage}{53}
-\indexentry{decay\_new() (rest.Rest method)|hyperpage}{54}
-\indexentry{initialize() (rest.Rest method)|hyperpage}{54}
-\indexentry{is\_workday() (rest.Rest method)|hyperpage}{55}
-\indexentry{perceive() (rest.Rest method)|hyperpage}{55}
-\indexentry{reset() (rest.Rest method)|hyperpage}{55}
-\indexentry{set\_decay\_rate() (rest.Rest method)|hyperpage}{55}
-\indexentry{set\_recharge\_rate() (rest.Rest method)|hyperpage}{55}
-\indexentry{set\_suggested\_recharge\_rate() (rest.Rest method)|hyperpage}{56}
-\indexentry{should\_be\_asleep() (rest.Rest method)|hyperpage}{56}
-\indexentry{toString() (rest.Rest method)|hyperpage}{56}
-\indexentry{scheduler (module)|hyperpage}{56}
-\indexentry{Scheduler (class in scheduler)|hyperpage}{56}
-\indexentry{get\_next\_event\_time() (scheduler.Scheduler method)|hyperpage}{57}
-\indexentry{toString() (scheduler.Scheduler method)|hyperpage}{57}
-\indexentry{update() (scheduler.Scheduler method)|hyperpage}{57}
-\indexentry{sleep (module)|hyperpage}{57}
-\indexentry{Sleep (class in sleep)|hyperpage}{57}
-\indexentry{advertise() (sleep.Sleep method)|hyperpage}{58}
-\indexentry{end() (sleep.Sleep method)|hyperpage}{58}
-\indexentry{end\_sleep() (sleep.Sleep method)|hyperpage}{58}
-\indexentry{is\_workday() (sleep.Sleep method)|hyperpage}{58}
-\indexentry{set\_end\_time() (sleep.Sleep method)|hyperpage}{58}
-\indexentry{start() (sleep.Sleep method)|hyperpage}{59}
-\indexentry{start\_sleep() (sleep.Sleep method)|hyperpage}{59}
-\indexentry{toString() (sleep.Sleep method)|hyperpage}{59}
-\indexentry{social (module)|hyperpage}{59}
-\indexentry{Social (class in social)|hyperpage}{59}
-\indexentry{duration\_to\_next\_commute\_event() (social.Social method)|hyperpage}{60}
-\indexentry{duration\_to\_next\_meal() (social.Social method)|hyperpage}{60}
-\indexentry{duration\_to\_work\_event() (social.Social method)|hyperpage}{60}
-\indexentry{get\_current\_meal() (social.Social method)|hyperpage}{61}
-\indexentry{get\_meal() (social.Social method)|hyperpage}{61}
-\indexentry{get\_next\_meal() (social.Social method)|hyperpage}{61}
-\indexentry{print\_child\_status() (social.Social method)|hyperpage}{61}
-\indexentry{set\_child\_flag() (social.Social method)|hyperpage}{61}
-\indexentry{set\_job() (social.Social method)|hyperpage}{61}
-\indexentry{set\_work\_alarm() (social.Social method)|hyperpage}{61}
-\indexentry{test\_func() (social.Social method)|hyperpage}{61}
-\indexentry{toString() (social.Social method)|hyperpage}{62}
-\indexentry{state (module)|hyperpage}{62}
-\indexentry{State (class in state)|hyperpage}{62}
-\indexentry{end\_activity() (state.State method)|hyperpage}{62}
-\indexentry{halt\_activity() (state.State method)|hyperpage}{63}
-\indexentry{print\_activity() (state.State method)|hyperpage}{63}
-\indexentry{print\_asset() (state.State method)|hyperpage}{63}
-\indexentry{print\_status() (state.State method)|hyperpage}{63}
-\indexentry{reset() (state.State method)|hyperpage}{63}
-\indexentry{reset\_rounding\_parameters() (state.State method)|hyperpage}{63}
-\indexentry{reset\_time\_status() (state.State method)|hyperpage}{63}
-\indexentry{run\_activity() (state.State method)|hyperpage}{63}
-\indexentry{start\_activity() (state.State method)|hyperpage}{64}
-\indexentry{toString() (state.State method)|hyperpage}{64}
-\indexentry{temporal (module)|hyperpage}{64}
-\indexentry{Temporal (class in temporal)|hyperpage}{64}
-\indexentry{print\_day\_night() (temporal.Temporal method)|hyperpage}{64}
-\indexentry{print\_day\_of\_week() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{print\_season() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{print\_time\_of\_day\_to\_military() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{reset() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{set\_day\_of\_week() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{set\_season() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{set\_time() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{set\_time\_of\_day() (temporal.Temporal method)|hyperpage}{65}
-\indexentry{toString() (temporal.Temporal method)|hyperpage}{66}
-\indexentry{update\_time() (temporal.Temporal method)|hyperpage}{66}
-\indexentry{convert\_cyclical\_to\_decimal() (in module temporal)|hyperpage}{66}
-\indexentry{convert\_cylical\_to\_universal() (in module temporal)|hyperpage}{66}
-\indexentry{convert\_decimal\_to\_min() (in module temporal)|hyperpage}{66}
-\indexentry{convert\_universal\_to\_decimal() (in module temporal)|hyperpage}{66}
-\indexentry{print\_military\_time() (in module temporal)|hyperpage}{66}
-\indexentry{transport (module)|hyperpage}{67}
-\indexentry{Transport (class in transport)|hyperpage}{67}
-\indexentry{initialize() (transport.Transport method)|hyperpage}{67}
-\indexentry{travel (module)|hyperpage}{67}
-\indexentry{Travel (class in travel)|hyperpage}{67}
-\indexentry{decay() (travel.Travel method)|hyperpage}{67}
-\indexentry{decay\_work\_commute() (travel.Travel method)|hyperpage}{67}
-\indexentry{initialize() (travel.Travel method)|hyperpage}{68}
-\indexentry{perceive() (travel.Travel method)|hyperpage}{68}
-\indexentry{universe (module)|hyperpage}{68}
-\indexentry{Universe (class in universe)|hyperpage}{68}
-\indexentry{address\_needs() (universe.Universe method)|hyperpage}{68}
-\indexentry{advertise() (universe.Universe method)|hyperpage}{69}
-\indexentry{check\_expired\_activities() (universe.Universe method)|hyperpage}{69}
-\indexentry{decay\_needs() (universe.Universe method)|hyperpage}{69}
-\indexentry{initial\_step() (universe.Universe method)|hyperpage}{69}
-\indexentry{initialize\_needs() (universe.Universe method)|hyperpage}{70}
-\indexentry{print\_activity\_info() (universe.Universe method)|hyperpage}{70}
-\indexentry{reset() (universe.Universe method)|hyperpage}{70}
-\indexentry{run() (universe.Universe method)|hyperpage}{70}
-\indexentry{select\_activity() (universe.Universe method)|hyperpage}{71}
-\indexentry{set\_alarm() (universe.Universe method)|hyperpage}{71}
-\indexentry{test\_func() (universe.Universe method)|hyperpage}{71}
-\indexentry{toString() (universe.Universe method)|hyperpage}{71}
-\indexentry{update\_clock() (universe.Universe method)|hyperpage}{72}
-\indexentry{update\_history() (universe.Universe method)|hyperpage}{72}
-\indexentry{update\_history\_new() (universe.Universe method)|hyperpage}{72}
-\indexentry{work (module)|hyperpage}{72}
-\indexentry{Work (class in work)|hyperpage}{72}
-\indexentry{advertise() (work.Work method)|hyperpage}{72}
-\indexentry{end() (work.Work method)|hyperpage}{73}
-\indexentry{end\_work() (work.Work method)|hyperpage}{73}
-\indexentry{halt() (work.Work method)|hyperpage}{73}
-\indexentry{halt\_work() (work.Work method)|hyperpage}{73}
-\indexentry{set\_end\_time() (work.Work method)|hyperpage}{73}
-\indexentry{start() (work.Work method)|hyperpage}{73}
-\indexentry{start\_work() (work.Work method)|hyperpage}{74}
-\indexentry{test\_func() (work.Work method)|hyperpage}{74}
-\indexentry{workplace (module)|hyperpage}{74}
-\indexentry{Workplace (class in workplace)|hyperpage}{74}
-\indexentry{main (module)|hyperpage}{75}
-\indexentry{get\_diary() (in module main)|hyperpage}{75}
-\indexentry{plot\_cdfs() (in module main)|hyperpage}{75}
-\indexentry{plot\_histograms() (in module main)|hyperpage}{75}
-\indexentry{save\_output() (in module main)|hyperpage}{76}
-\indexentry{main\_params (module)|hyperpage}{76}
-\indexentry{set\_no\_variation() (in module main\_params)|hyperpage}{76}
-\indexentry{scenario (module)|hyperpage}{76}
-\indexentry{Duo (class in scenario)|hyperpage}{76}
-\indexentry{Scenario (class in scenario)|hyperpage}{76}
-\indexentry{activity\_diary() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{default\_location() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{initialize() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{run() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{set\_home() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{set\_state() (scenario.Scenario method)|hyperpage}{77}
-\indexentry{Solo (class in scenario)|hyperpage}{78}
-\indexentry{singleton (module)|hyperpage}{78}
-\indexentry{Singleton (class in singleton)|hyperpage}{78}
-\indexentry{print\_params() (singleton.Singleton method)|hyperpage}{78}
-\indexentry{set() (singleton.Singleton method)|hyperpage}{78}
+\indexentry{activity (module)|hyperpage}{13}
+\indexentry{Activity (class in activity)|hyperpage}{13}
+\indexentry{advertise() (activity.Activity method)|hyperpage}{14}
+\indexentry{advertise\_interruption() (activity.Activity method)|hyperpage}{14}
+\indexentry{end() (activity.Activity method)|hyperpage}{14}
+\indexentry{halt() (activity.Activity method)|hyperpage}{14}
+\indexentry{print\_id() (activity.Activity method)|hyperpage}{15}
+\indexentry{start() (activity.Activity method)|hyperpage}{15}
+\indexentry{toString() (activity.Activity method)|hyperpage}{15}
+\indexentry{asset (module)|hyperpage}{15}
+\indexentry{Asset (class in asset)|hyperpage}{15}
+\indexentry{free() (asset.Asset method)|hyperpage}{15}
+\indexentry{initialize() (asset.Asset method)|hyperpage}{16}
+\indexentry{print\_category() (asset.Asset method)|hyperpage}{16}
+\indexentry{reset() (asset.Asset method)|hyperpage}{16}
+\indexentry{toString() (asset.Asset method)|hyperpage}{16}
+\indexentry{update() (asset.Asset method)|hyperpage}{16}
+\indexentry{bed (module)|hyperpage}{17}
+\indexentry{Bed (class in bed)|hyperpage}{17}
+\indexentry{bio (module)|hyperpage}{17}
+\indexentry{Bio (class in bio)|hyperpage}{17}
+\indexentry{calc\_awake\_duration() (bio.Bio method)|hyperpage}{18}
+\indexentry{print\_gender() (bio.Bio method)|hyperpage}{18}
+\indexentry{set\_sleep\_params() (bio.Bio method)|hyperpage}{18}
+\indexentry{toString() (bio.Bio method)|hyperpage}{18}
+\indexentry{update\_sleep\_dt() (bio.Bio method)|hyperpage}{18}
+\indexentry{update\_sleep\_end() (bio.Bio method)|hyperpage}{18}
+\indexentry{update\_sleep\_end\_univ() (bio.Bio method)|hyperpage}{18}
+\indexentry{update\_sleep\_start() (bio.Bio method)|hyperpage}{18}
+\indexentry{update\_sleep\_start\_univ() (bio.Bio method)|hyperpage}{19}
+\indexentry{update\_time\_univ() (bio.Bio method)|hyperpage}{19}
+\indexentry{chad (module)|hyperpage}{19}
+\indexentry{CHAD (class in chad)|hyperpage}{19}
+\indexentry{activity\_times() (chad.CHAD method)|hyperpage}{19}
+\indexentry{get\_data() (chad.CHAD method)|hyperpage}{20}
+\indexentry{sum\_time() (chad.CHAD method)|hyperpage}{20}
+\indexentry{toString() (chad.CHAD method)|hyperpage}{20}
+\indexentry{CHAD\_RAW (class in chad)|hyperpage}{20}
+\indexentry{clean\_data() (chad.CHAD\_RAW method)|hyperpage}{20}
+\indexentry{clean\_dates() (chad.CHAD\_RAW method)|hyperpage}{20}
+\indexentry{clean\_events() (chad.CHAD\_RAW method)|hyperpage}{20}
+\indexentry{convert\_activity\_code() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{convert\_military\_to\_decimal\_time() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_PID() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_data\_by\_age() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_events() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_events\_raw() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_quest() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{get\_quest\_raw() (chad.CHAD\_RAW method)|hyperpage}{21}
+\indexentry{set\_dates() (chad.CHAD\_RAW method)|hyperpage}{22}
+\indexentry{set\_times() (chad.CHAD\_RAW method)|hyperpage}{22}
+\indexentry{sample\_stats() (in module chad)|hyperpage}{22}
+\indexentry{chad\_code (module)|hyperpage}{22}
+\indexentry{commute (module)|hyperpage}{23}
+\indexentry{Commute (class in commute)|hyperpage}{23}
+\indexentry{end() (commute.Commute method)|hyperpage}{23}
+\indexentry{end\_commute() (commute.Commute method)|hyperpage}{23}
+\indexentry{start() (commute.Commute method)|hyperpage}{23}
+\indexentry{start\_commute() (commute.Commute method)|hyperpage}{24}
+\indexentry{Commute\_From\_Work (class in commute)|hyperpage}{24}
+\indexentry{advertise() (commute.Commute\_From\_Work method)|hyperpage}{24}
+\indexentry{calc\_end\_time() (commute.Commute\_From\_Work method)|hyperpage}{24}
+\indexentry{end() (commute.Commute\_From\_Work method)|hyperpage}{25}
+\indexentry{end\_commute() (commute.Commute\_From\_Work method)|hyperpage}{25}
+\indexentry{start() (commute.Commute\_From\_Work method)|hyperpage}{25}
+\indexentry{Commute\_To\_Work (class in commute)|hyperpage}{25}
+\indexentry{advertise() (commute.Commute\_To\_Work method)|hyperpage}{25}
+\indexentry{calc\_end\_time() (commute.Commute\_To\_Work method)|hyperpage}{26}
+\indexentry{end() (commute.Commute\_To\_Work method)|hyperpage}{26}
+\indexentry{end\_commute() (commute.Commute\_To\_Work method)|hyperpage}{26}
+\indexentry{start() (commute.Commute\_To\_Work method)|hyperpage}{26}
+\indexentry{start\_commute() (commute.Commute\_To\_Work method)|hyperpage}{26}
+\indexentry{diary (module)|hyperpage}{27}
+\indexentry{Diary (class in diary)|hyperpage}{27}
+\indexentry{create\_activity\_diary() (diary.Diary method)|hyperpage}{27}
+\indexentry{get\_day\_end() (diary.Diary method)|hyperpage}{28}
+\indexentry{get\_weekday\_data() (diary.Diary method)|hyperpage}{28}
+\indexentry{get\_weekday\_idx() (diary.Diary method)|hyperpage}{28}
+\indexentry{get\_weekend\_data() (diary.Diary method)|hyperpage}{28}
+\indexentry{get\_weekend\_idx() (diary.Diary method)|hyperpage}{28}
+\indexentry{group\_activity() (diary.Diary method)|hyperpage}{28}
+\indexentry{group\_activity\_indices() (diary.Diary method)|hyperpage}{29}
+\indexentry{group\_activity\_key() (diary.Diary method)|hyperpage}{29}
+\indexentry{is\_weekend() (diary.Diary method)|hyperpage}{29}
+\indexentry{same\_day() (diary.Diary method)|hyperpage}{29}
+\indexentry{toString() (diary.Diary method)|hyperpage}{29}
+\indexentry{eat (module)|hyperpage}{30}
+\indexentry{Eat (class in eat)|hyperpage}{30}
+\indexentry{advertise() (eat.Eat method)|hyperpage}{30}
+\indexentry{advertise\_help() (eat.Eat method)|hyperpage}{30}
+\indexentry{advertise\_interruption() (eat.Eat method)|hyperpage}{30}
+\indexentry{end() (eat.Eat method)|hyperpage}{31}
+\indexentry{end\_meal() (eat.Eat method)|hyperpage}{31}
+\indexentry{set\_end\_time() (eat.Eat method)|hyperpage}{31}
+\indexentry{start() (eat.Eat method)|hyperpage}{31}
+\indexentry{start\_meal() (eat.Eat method)|hyperpage}{31}
+\indexentry{test\_func() (eat.Eat method)|hyperpage}{32}
+\indexentry{Eat\_Breakfast (class in eat)|hyperpage}{32}
+\indexentry{advertise() (eat.Eat\_Breakfast method)|hyperpage}{32}
+\indexentry{end\_meal() (eat.Eat\_Breakfast method)|hyperpage}{32}
+\indexentry{start\_meal() (eat.Eat\_Breakfast method)|hyperpage}{33}
+\indexentry{Eat\_Dinner (class in eat)|hyperpage}{33}
+\indexentry{advertise() (eat.Eat\_Dinner method)|hyperpage}{33}
+\indexentry{end\_meal() (eat.Eat\_Dinner method)|hyperpage}{33}
+\indexentry{start\_meal() (eat.Eat\_Dinner method)|hyperpage}{33}
+\indexentry{Eat\_Lunch (class in eat)|hyperpage}{34}
+\indexentry{advertise() (eat.Eat\_Lunch method)|hyperpage}{34}
+\indexentry{end\_meal() (eat.Eat\_Lunch method)|hyperpage}{34}
+\indexentry{start\_meal() (eat.Eat\_Lunch method)|hyperpage}{34}
+\indexentry{food (module)|hyperpage}{35}
+\indexentry{Food (class in food)|hyperpage}{35}
+\indexentry{home (module)|hyperpage}{35}
+\indexentry{Home (class in home)|hyperpage}{35}
+\indexentry{advertise() (home.Home method)|hyperpage}{35}
+\indexentry{initialize() (home.Home method)|hyperpage}{36}
+\indexentry{print\_category() (home.Home method)|hyperpage}{36}
+\indexentry{reset() (home.Home method)|hyperpage}{36}
+\indexentry{set\_population() (home.Home method)|hyperpage}{36}
+\indexentry{set\_revenue() (home.Home method)|hyperpage}{36}
+\indexentry{toString() (home.Home method)|hyperpage}{36}
+\indexentry{hunger (module)|hyperpage}{37}
+\indexentry{Hunger (class in hunger)|hyperpage}{37}
+\indexentry{decay() (hunger.Hunger method)|hyperpage}{37}
+\indexentry{decay\_new() (hunger.Hunger method)|hyperpage}{37}
+\indexentry{initialize() (hunger.Hunger method)|hyperpage}{38}
+\indexentry{is\_meal\_time() (hunger.Hunger method)|hyperpage}{38}
+\indexentry{is\_meal\_time\_all() (hunger.Hunger method)|hyperpage}{38}
+\indexentry{perceive() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{reset() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{set\_decay\_rate() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{set\_decay\_rate\_new() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{set\_recharge\_rate() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{set\_suggested\_recharge\_rate() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{toString() (hunger.Hunger method)|hyperpage}{39}
+\indexentry{income (module)|hyperpage}{40}
+\indexentry{Income (class in income)|hyperpage}{40}
+\indexentry{decay() (income.Income method)|hyperpage}{40}
+\indexentry{initialize() (income.Income method)|hyperpage}{40}
+\indexentry{perceive() (income.Income method)|hyperpage}{40}
+\indexentry{interrupt (module)|hyperpage}{41}
+\indexentry{Interrupt (class in interrupt)|hyperpage}{41}
+\indexentry{advertise() (interrupt.Interrupt method)|hyperpage}{41}
+\indexentry{start() (interrupt.Interrupt method)|hyperpage}{41}
+\indexentry{interruption (module)|hyperpage}{41}
+\indexentry{Interruption (class in interruption)|hyperpage}{41}
+\indexentry{decay() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{get\_time\_to\_next\_work\_lunch() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{initialize() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{is\_lunch\_time() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{perceive() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{reset() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{reset\_minor() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{stop\_work\_to\_eat() (interruption.Interruption method)|hyperpage}{42}
+\indexentry{location (module)|hyperpage}{43}
+\indexentry{Location (class in location)|hyperpage}{43}
+\indexentry{print\_geo() (location.Location method)|hyperpage}{43}
+\indexentry{print\_local() (location.Location method)|hyperpage}{43}
+\indexentry{reset() (location.Location method)|hyperpage}{43}
+\indexentry{toString() (location.Location method)|hyperpage}{43}
+\indexentry{meal (module)|hyperpage}{44}
+\indexentry{Meal (class in meal)|hyperpage}{44}
+\indexentry{initialize() (meal.Meal method)|hyperpage}{44}
+\indexentry{print\_id() (meal.Meal method)|hyperpage}{44}
+\indexentry{set\_meal() (meal.Meal method)|hyperpage}{44}
+\indexentry{toString() (meal.Meal method)|hyperpage}{45}
+\indexentry{update() (meal.Meal method)|hyperpage}{45}
+\indexentry{update\_day() (meal.Meal method)|hyperpage}{45}
+\indexentry{update\_dt() (meal.Meal method)|hyperpage}{45}
+\indexentry{update\_start() (meal.Meal method)|hyperpage}{45}
+\indexentry{update\_start\_univ() (meal.Meal method)|hyperpage}{45}
+\indexentry{my\_globals (module)|hyperpage}{45}
+\indexentry{check\_filename\_extension() (in module my\_globals)|hyperpage}{45}
+\indexentry{fill\_out\_data() (in module my\_globals)|hyperpage}{46}
+\indexentry{fill\_out\_time() (in module my\_globals)|hyperpage}{46}
+\indexentry{from\_periodic() (in module my\_globals)|hyperpage}{46}
+\indexentry{get\_ecdf() (in module my\_globals)|hyperpage}{46}
+\indexentry{group\_time() (in module my\_globals)|hyperpage}{46}
+\indexentry{hours\_to\_minutes() (in module my\_globals)|hyperpage}{47}
+\indexentry{initialize\_random\_number\_generator() (in module my\_globals)|hyperpage}{47}
+\indexentry{load() (in module my\_globals)|hyperpage}{47}
+\indexentry{sample() (in module my\_globals)|hyperpage}{47}
+\indexentry{sample\_normal() (in module my\_globals)|hyperpage}{47}
+\indexentry{save() (in module my\_globals)|hyperpage}{47}
+\indexentry{save\_diary\_to\_csv() (in module my\_globals)|hyperpage}{47}
+\indexentry{save\_zip() (in module my\_globals)|hyperpage}{48}
+\indexentry{set\_distribution() (in module my\_globals)|hyperpage}{48}
+\indexentry{set\_distribution\_dt() (in module my\_globals)|hyperpage}{48}
+\indexentry{to\_periodic() (in module my\_globals)|hyperpage}{48}
+\indexentry{need (module)|hyperpage}{49}
+\indexentry{Need (class in need)|hyperpage}{49}
+\indexentry{decay() (need.Need method)|hyperpage}{49}
+\indexentry{initialize() (need.Need method)|hyperpage}{49}
+\indexentry{print\_category() (need.Need method)|hyperpage}{49}
+\indexentry{reset() (need.Need method)|hyperpage}{49}
+\indexentry{toString() (need.Need method)|hyperpage}{50}
+\indexentry{under\_threshold() (need.Need method)|hyperpage}{50}
+\indexentry{weight() (need.Need method)|hyperpage}{50}
+\indexentry{occupation (module)|hyperpage}{50}
+\indexentry{Occupation (class in occupation)|hyperpage}{50}
+\indexentry{is\_summer\_vacation() (occupation.Occupation method)|hyperpage}{51}
+\indexentry{print\_category() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{print\_id() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_commute\_distribution() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_is\_job() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_is\_same\_day() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_job\_params() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_job\_preset() (occupation.Occupation method)|hyperpage}{52}
+\indexentry{set\_no\_job() (occupation.Occupation method)|hyperpage}{53}
+\indexentry{set\_standard\_job() (occupation.Occupation method)|hyperpage}{53}
+\indexentry{set\_student() (occupation.Occupation method)|hyperpage}{53}
+\indexentry{set\_work\_distribution() (occupation.Occupation method)|hyperpage}{53}
+\indexentry{toString() (occupation.Occupation method)|hyperpage}{53}
+\indexentry{update\_commute\_from\_work\_dt() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{update\_commute\_to\_work\_dt() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{update\_commute\_to\_work\_start() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{update\_work\_dt() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{update\_work\_end() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{update\_work\_start() (occupation.Occupation method)|hyperpage}{54}
+\indexentry{is\_work\_time() (in module occupation)|hyperpage}{54}
+\indexentry{is\_work\_time\_help() (in module occupation)|hyperpage}{54}
+\indexentry{set\_grave\_shift() (in module occupation)|hyperpage}{54}
+\indexentry{set\_no\_job() (in module occupation)|hyperpage}{55}
+\indexentry{set\_standard\_job() (in module occupation)|hyperpage}{55}
+\indexentry{set\_student() (in module occupation)|hyperpage}{55}
+\indexentry{params (module)|hyperpage}{55}
+\indexentry{Params (class in params)|hyperpage}{55}
+\indexentry{get\_info\_mean() (params.Params method)|hyperpage}{59}
+\indexentry{get\_info\_std() (params.Params method)|hyperpage}{59}
+\indexentry{init\_help() (params.Params method)|hyperpage}{59}
+\indexentry{init\_meal() (params.Params method)|hyperpage}{59}
+\indexentry{init\_meal\_old() (params.Params method)|hyperpage}{60}
+\indexentry{set\_no\_variation() (params.Params method)|hyperpage}{60}
+\indexentry{set\_num\_steps() (params.Params method)|hyperpage}{60}
+\indexentry{tester() (params.Params method)|hyperpage}{60}
+\indexentry{toString() (params.Params method)|hyperpage}{61}
+\indexentry{person (module)|hyperpage}{61}
+\indexentry{Person (class in person)|hyperpage}{61}
+\indexentry{get\_diary() (person.Person method)|hyperpage}{62}
+\indexentry{print\_basic\_info() (person.Person method)|hyperpage}{62}
+\indexentry{reset() (person.Person method)|hyperpage}{63}
+\indexentry{reset\_history() (person.Person method)|hyperpage}{63}
+\indexentry{reset\_needs() (person.Person method)|hyperpage}{63}
+\indexentry{toString() (person.Person method)|hyperpage}{63}
+\indexentry{update\_history() (person.Person method)|hyperpage}{63}
+\indexentry{update\_history\_activity() (person.Person method)|hyperpage}{63}
+\indexentry{update\_history\_needs() (person.Person method)|hyperpage}{63}
+\indexentry{rest (module)|hyperpage}{64}
+\indexentry{Rest (class in rest)|hyperpage}{64}
+\indexentry{decay() (rest.Rest method)|hyperpage}{64}
+\indexentry{decay\_new() (rest.Rest method)|hyperpage}{64}
+\indexentry{initialize() (rest.Rest method)|hyperpage}{65}
+\indexentry{is\_workday() (rest.Rest method)|hyperpage}{65}
+\indexentry{perceive() (rest.Rest method)|hyperpage}{65}
+\indexentry{reset() (rest.Rest method)|hyperpage}{66}
+\indexentry{set\_decay\_rate() (rest.Rest method)|hyperpage}{66}
+\indexentry{set\_recharge\_rate() (rest.Rest method)|hyperpage}{66}
+\indexentry{set\_suggested\_recharge\_rate() (rest.Rest method)|hyperpage}{66}
+\indexentry{should\_be\_asleep() (rest.Rest method)|hyperpage}{67}
+\indexentry{toString() (rest.Rest method)|hyperpage}{67}
+\indexentry{scheduler (module)|hyperpage}{67}
+\indexentry{Scheduler (class in scheduler)|hyperpage}{67}
+\indexentry{get\_next\_event\_time() (scheduler.Scheduler method)|hyperpage}{68}
+\indexentry{toString() (scheduler.Scheduler method)|hyperpage}{68}
+\indexentry{update() (scheduler.Scheduler method)|hyperpage}{68}
+\indexentry{sleep (module)|hyperpage}{68}
+\indexentry{Sleep (class in sleep)|hyperpage}{68}
+\indexentry{advertise() (sleep.Sleep method)|hyperpage}{68}
+\indexentry{end() (sleep.Sleep method)|hyperpage}{68}
+\indexentry{end\_sleep() (sleep.Sleep method)|hyperpage}{69}
+\indexentry{is\_workday() (sleep.Sleep method)|hyperpage}{69}
+\indexentry{set\_end\_time() (sleep.Sleep method)|hyperpage}{69}
+\indexentry{start() (sleep.Sleep method)|hyperpage}{69}
+\indexentry{start\_sleep() (sleep.Sleep method)|hyperpage}{69}
+\indexentry{toString() (sleep.Sleep method)|hyperpage}{70}
+\indexentry{social (module)|hyperpage}{70}
+\indexentry{Social (class in social)|hyperpage}{70}
+\indexentry{duration\_to\_next\_commute\_event() (social.Social method)|hyperpage}{70}
+\indexentry{duration\_to\_next\_meal() (social.Social method)|hyperpage}{71}
+\indexentry{duration\_to\_work\_event() (social.Social method)|hyperpage}{71}
+\indexentry{get\_current\_meal() (social.Social method)|hyperpage}{71}
+\indexentry{get\_meal() (social.Social method)|hyperpage}{72}
+\indexentry{get\_next\_meal() (social.Social method)|hyperpage}{72}
+\indexentry{print\_child\_status() (social.Social method)|hyperpage}{72}
+\indexentry{set\_child\_flag() (social.Social method)|hyperpage}{72}
+\indexentry{set\_job() (social.Social method)|hyperpage}{72}
+\indexentry{set\_work\_alarm() (social.Social method)|hyperpage}{72}
+\indexentry{test\_func() (social.Social method)|hyperpage}{72}
+\indexentry{toString() (social.Social method)|hyperpage}{73}
+\indexentry{state (module)|hyperpage}{73}
+\indexentry{State (class in state)|hyperpage}{73}
+\indexentry{end\_activity() (state.State method)|hyperpage}{73}
+\indexentry{halt\_activity() (state.State method)|hyperpage}{74}
+\indexentry{print\_activity() (state.State method)|hyperpage}{74}
+\indexentry{print\_asset() (state.State method)|hyperpage}{74}
+\indexentry{print\_status() (state.State method)|hyperpage}{74}
+\indexentry{reset() (state.State method)|hyperpage}{74}
+\indexentry{reset\_rounding\_parameters() (state.State method)|hyperpage}{74}
+\indexentry{reset\_time\_status() (state.State method)|hyperpage}{74}
+\indexentry{run\_activity() (state.State method)|hyperpage}{74}
+\indexentry{start\_activity() (state.State method)|hyperpage}{75}
+\indexentry{toString() (state.State method)|hyperpage}{75}
+\indexentry{temporal (module)|hyperpage}{75}
+\indexentry{Temporal (class in temporal)|hyperpage}{75}
+\indexentry{print\_day\_night() (temporal.Temporal method)|hyperpage}{75}
+\indexentry{print\_day\_of\_week() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{print\_season() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{print\_time\_of\_day\_to\_military() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{reset() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{set\_day\_of\_week() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{set\_season() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{set\_time() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{set\_time\_of\_day() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{toString() (temporal.Temporal method)|hyperpage}{76}
+\indexentry{update\_time() (temporal.Temporal method)|hyperpage}{77}
+\indexentry{convert\_cyclical\_to\_decimal() (in module temporal)|hyperpage}{77}
+\indexentry{convert\_cylical\_to\_universal() (in module temporal)|hyperpage}{77}
+\indexentry{convert\_decimal\_to\_min() (in module temporal)|hyperpage}{77}
+\indexentry{convert\_universal\_to\_decimal() (in module temporal)|hyperpage}{77}
+\indexentry{print\_military\_time() (in module temporal)|hyperpage}{77}
+\indexentry{transport (module)|hyperpage}{77}
+\indexentry{Transport (class in transport)|hyperpage}{78}
+\indexentry{initialize() (transport.Transport method)|hyperpage}{78}
+\indexentry{travel (module)|hyperpage}{78}
+\indexentry{Travel (class in travel)|hyperpage}{78}
+\indexentry{decay() (travel.Travel method)|hyperpage}{78}
+\indexentry{decay\_work\_commute() (travel.Travel method)|hyperpage}{78}
+\indexentry{initialize() (travel.Travel method)|hyperpage}{78}
+\indexentry{perceive() (travel.Travel method)|hyperpage}{79}
+\indexentry{universe (module)|hyperpage}{79}
+\indexentry{Universe (class in universe)|hyperpage}{79}
+\indexentry{address\_needs() (universe.Universe method)|hyperpage}{79}
+\indexentry{advertise() (universe.Universe method)|hyperpage}{80}
+\indexentry{check\_expired\_activities() (universe.Universe method)|hyperpage}{80}
+\indexentry{decay\_needs() (universe.Universe method)|hyperpage}{80}
+\indexentry{initial\_step() (universe.Universe method)|hyperpage}{80}
+\indexentry{initialize\_needs() (universe.Universe method)|hyperpage}{80}
+\indexentry{print\_activity\_info() (universe.Universe method)|hyperpage}{81}
+\indexentry{reset() (universe.Universe method)|hyperpage}{81}
+\indexentry{run() (universe.Universe method)|hyperpage}{81}
+\indexentry{select\_activity() (universe.Universe method)|hyperpage}{82}
+\indexentry{set\_alarm() (universe.Universe method)|hyperpage}{82}
+\indexentry{test\_func() (universe.Universe method)|hyperpage}{82}
+\indexentry{toString() (universe.Universe method)|hyperpage}{82}
+\indexentry{update\_clock() (universe.Universe method)|hyperpage}{82}
+\indexentry{update\_history() (universe.Universe method)|hyperpage}{83}
+\indexentry{update\_history\_new() (universe.Universe method)|hyperpage}{83}
+\indexentry{work (module)|hyperpage}{83}
+\indexentry{Work (class in work)|hyperpage}{83}
+\indexentry{advertise() (work.Work method)|hyperpage}{83}
+\indexentry{end() (work.Work method)|hyperpage}{83}
+\indexentry{end\_work() (work.Work method)|hyperpage}{83}
+\indexentry{halt() (work.Work method)|hyperpage}{84}
+\indexentry{halt\_work() (work.Work method)|hyperpage}{84}
+\indexentry{set\_end\_time() (work.Work method)|hyperpage}{84}
+\indexentry{start() (work.Work method)|hyperpage}{84}
+\indexentry{start\_work() (work.Work method)|hyperpage}{84}
+\indexentry{test\_func() (work.Work method)|hyperpage}{85}
+\indexentry{workplace (module)|hyperpage}{85}
+\indexentry{Workplace (class in workplace)|hyperpage}{85}
+\indexentry{main (module)|hyperpage}{85}
+\indexentry{plot() (in module main)|hyperpage}{85}
+\indexentry{main\_params (module)|hyperpage}{86}
+\indexentry{set\_no\_variation() (in module main\_params)|hyperpage}{86}
+\indexentry{scenario (module)|hyperpage}{86}
+\indexentry{Duo (class in scenario)|hyperpage}{86}
+\indexentry{Scenario (class in scenario)|hyperpage}{86}
+\indexentry{activity\_diary() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{default\_location() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{initialize() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{run() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{set\_home() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{set\_state() (scenario.Scenario method)|hyperpage}{87}
+\indexentry{Solo (class in scenario)|hyperpage}{88}
+\indexentry{singleton (module)|hyperpage}{88}
+\indexentry{Singleton (class in singleton)|hyperpage}{88}
+\indexentry{print\_params() (singleton.Singleton method)|hyperpage}{88}
+\indexentry{set() (singleton.Singleton method)|hyperpage}{88}
+\indexentry{analysis (module)|hyperpage}{89}
+\indexentry{get\_error() (in module analysis)|hyperpage}{89}
+\indexentry{get\_moments() (in module analysis)|hyperpage}{90}
+\indexentry{get\_proper\_data() (in module analysis)|hyperpage}{90}
+\indexentry{get\_verification\_info() (in module analysis)|hyperpage}{90}
+\indexentry{save\_figures() (in module analysis)|hyperpage}{90}
+\indexentry{analyzer (module)|hyperpage}{91}
+\indexentry{get\_activity\_data() (in module analyzer)|hyperpage}{91}
+\indexentry{get\_moments() (in module analyzer)|hyperpage}{91}
+\indexentry{get\_simulation\_data() (in module analyzer)|hyperpage}{91}
+\indexentry{get\_verify\_fpath() (in module analyzer)|hyperpage}{92}
+\indexentry{load\_plot\_data() (in module analyzer)|hyperpage}{92}
+\indexentry{plot\_cdf() (in module analyzer)|hyperpage}{92}
+\indexentry{plot\_cdf\_new() (in module analyzer)|hyperpage}{92}
+\indexentry{plot\_verify\_dt() (in module analyzer)|hyperpage}{92}
+\indexentry{plot\_verify\_end() (in module analyzer)|hyperpage}{93}
+\indexentry{plot\_verify\_start() (in module analyzer)|hyperpage}{93}
+\indexentry{run() (in module analyzer)|hyperpage}{93}
+\indexentry{verify() (in module analyzer)|hyperpage}{94}
+\indexentry{chad\_demography (module)|hyperpage}{94}
+\indexentry{CHAD\_demography (class in chad\_demography)|hyperpage}{94}
+\indexentry{set\_dt\_bounds() (chad\_demography.CHAD\_demography method)|hyperpage}{99}
+\indexentry{set\_end\_bounds() (chad\_demography.CHAD\_demography method)|hyperpage}{99}
+\indexentry{chad\_demography\_adult\_non\_work (module)|hyperpage}{99}
+\indexentry{CHAD\_demography\_adult\_non\_work (class in chad\_demography\_adult\_non\_work)|hyperpage}{99}
+\indexentry{chad\_demography\_adult\_work (module)|hyperpage}{100}
+\indexentry{CHAD\_demography\_adult\_work (class in chad\_demography\_adult\_work)|hyperpage}{100}
+\indexentry{chad\_demography\_child\_school (module)|hyperpage}{100}
+\indexentry{CHAD\_demography\_child\_school (class in chad\_demography\_child\_school)|hyperpage}{100}
+\indexentry{chad\_demography\_child\_young (module)|hyperpage}{101}
+\indexentry{CHAD\_demography\_child\_young (class in chad\_demography\_child\_young)|hyperpage}{101}
+\indexentry{chad\_params (module)|hyperpage}{104}
+\indexentry{CHAD\_params (class in chad\_params)|hyperpage}{104}
+\indexentry{get\_dt() (chad\_params.CHAD\_params method)|hyperpage}{105}
+\indexentry{get\_end() (chad\_params.CHAD\_params method)|hyperpage}{105}
+\indexentry{get\_record() (chad\_params.CHAD\_params method)|hyperpage}{105}
+\indexentry{get\_record\_help() (chad\_params.CHAD\_params method)|hyperpage}{106}
+\indexentry{get\_start() (chad\_params.CHAD\_params method)|hyperpage}{106}
+\indexentry{get\_stats() (chad\_params.CHAD\_params method)|hyperpage}{106}
+\indexentry{toString() (chad\_params.CHAD\_params method)|hyperpage}{107}
+\indexentry{commute\_from\_work\_trial (module)|hyperpage}{107}
+\indexentry{Commute\_From\_Work\_Trial (class in commute\_from\_work\_trial)|hyperpage}{107}
+\indexentry{adjust\_params() (commute\_from\_work\_trial.Commute\_From\_Work\_Trial method)|hyperpage}{107}
+\indexentry{create\_universe() (commute\_from\_work\_trial.Commute\_From\_Work\_Trial method)|hyperpage}{107}
+\indexentry{initialize() (commute\_from\_work\_trial.Commute\_From\_Work\_Trial method)|hyperpage}{108}
+\indexentry{commute\_to\_work\_trial (module)|hyperpage}{108}
+\indexentry{Commute\_To\_Work\_Trial (class in commute\_to\_work\_trial)|hyperpage}{108}
+\indexentry{adjust\_params() (commute\_to\_work\_trial.Commute\_To\_Work\_Trial method)|hyperpage}{108}
+\indexentry{create\_universe() (commute\_to\_work\_trial.Commute\_To\_Work\_Trial method)|hyperpage}{109}
+\indexentry{initialize() (commute\_to\_work\_trial.Commute\_To\_Work\_Trial method)|hyperpage}{109}
+\indexentry{driver (module)|hyperpage}{115}
+\indexentry{create\_trials() (in module driver)|hyperpage}{116}
+\indexentry{delete\_batch\_files() (in module driver)|hyperpage}{116}
+\indexentry{get\_batch\_filenames() (in module driver)|hyperpage}{116}
+\indexentry{get\_chad\_demo() (in module driver)|hyperpage}{116}
+\indexentry{get\_cmd\_line\_params() (in module driver)|hyperpage}{117}
+\indexentry{get\_current\_batch\_size() (in module driver)|hyperpage}{117}
+\indexentry{get\_fnames() (in module driver)|hyperpage}{117}
+\indexentry{get\_loaded\_trials\_for\_batch() (in module driver)|hyperpage}{117}
+\indexentry{get\_max\_batch\_size() (in module driver)|hyperpage}{118}
+\indexentry{get\_results() (in module driver)|hyperpage}{118}
+\indexentry{initialize\_trials() (in module driver)|hyperpage}{118}
+\indexentry{is\_batch\_file() (in module driver)|hyperpage}{118}
+\indexentry{load\_trials\_for\_batches() (in module driver)|hyperpage}{118}
+\indexentry{print\_end() (in module driver)|hyperpage}{119}
+\indexentry{print\_start() (in module driver)|hyperpage}{119}
+\indexentry{print\_starting\_info() (in module driver)|hyperpage}{119}
+\indexentry{run() (in module driver)|hyperpage}{119}
+\indexentry{run\_batch() (in module driver)|hyperpage}{119}
+\indexentry{run\_everything() (in module driver)|hyperpage}{120}
+\indexentry{run\_parallel() (in module driver)|hyperpage}{120}
+\indexentry{run\_serial() (in module driver)|hyperpage}{121}
+\indexentry{run\_trials\_parallel() (in module driver)|hyperpage}{121}
+\indexentry{save() (in module driver)|hyperpage}{121}
+\indexentry{save\_batch\_data\_as\_one\_file() (in module driver)|hyperpage}{121}
+\indexentry{save\_batch\_trials\_as\_one\_file() (in module driver)|hyperpage}{121}
+\indexentry{save\_diary\_to\_csv() (in module driver)|hyperpage}{121}
+\indexentry{save\_for\_batch() (in module driver)|hyperpage}{122}
+\indexentry{set\_save\_files\_for\_batch() (in module driver)|hyperpage}{122}
+\indexentry{set\_save\_path() (in module driver)|hyperpage}{122}
+\indexentry{driver\_params (module)|hyperpage}{122}
+\indexentry{driver\_result (module)|hyperpage}{123}
+\indexentry{Batch\_Result (class in driver\_result)|hyperpage}{123}
+\indexentry{Driver\_Result (class in driver\_result)|hyperpage}{123}
+\indexentry{add\_id() (driver\_result.Driver\_Result method)|hyperpage}{123}
+\indexentry{get\_all\_data() (driver\_result.Driver\_Result method)|hyperpage}{123}
+\indexentry{get\_combined\_diary() (driver\_result.Driver\_Result method)|hyperpage}{123}
+\indexentry{eat\_breakfast\_trial (module)|hyperpage}{124}
+\indexentry{Eat\_Breakfast\_Trial (class in eat\_breakfast\_trial)|hyperpage}{124}
+\indexentry{adjust\_params() (eat\_breakfast\_trial.Eat\_Breakfast\_Trial method)|hyperpage}{124}
+\indexentry{create\_universe() (eat\_breakfast\_trial.Eat\_Breakfast\_Trial method)|hyperpage}{124}
+\indexentry{initialize() (eat\_breakfast\_trial.Eat\_Breakfast\_Trial method)|hyperpage}{124}
+\indexentry{initialize\_person() (eat\_breakfast\_trial.Eat\_Breakfast\_Trial method)|hyperpage}{125}
+\indexentry{eat\_dinner\_trial (module)|hyperpage}{125}
+\indexentry{Eat\_Dinner\_Trial (class in eat\_dinner\_trial)|hyperpage}{125}
+\indexentry{adjust\_params() (eat\_dinner\_trial.Eat\_Dinner\_Trial method)|hyperpage}{125}
+\indexentry{create\_universe() (eat\_dinner\_trial.Eat\_Dinner\_Trial method)|hyperpage}{126}
+\indexentry{initialize() (eat\_dinner\_trial.Eat\_Dinner\_Trial method)|hyperpage}{126}
+\indexentry{initialize\_person() (eat\_dinner\_trial.Eat\_Dinner\_Trial method)|hyperpage}{126}
+\indexentry{eat\_lunch\_trial (module)|hyperpage}{126}
+\indexentry{Eat\_Lunch\_Trial (class in eat\_lunch\_trial)|hyperpage}{126}
+\indexentry{adjust\_params() (eat\_lunch\_trial.Eat\_Lunch\_Trial method)|hyperpage}{127}
+\indexentry{create\_universe() (eat\_lunch\_trial.Eat\_Lunch\_Trial method)|hyperpage}{127}
+\indexentry{initialize() (eat\_lunch\_trial.Eat\_Lunch\_Trial method)|hyperpage}{127}
+\indexentry{initialize\_person() (eat\_lunch\_trial.Eat\_Lunch\_Trial method)|hyperpage}{127}
+\indexentry{evaluation (module)|hyperpage}{128}
+\indexentry{compare\_abm\_to\_chad() (in module evaluation)|hyperpage}{128}
+\indexentry{compare\_abm\_to\_chad\_help() (in module evaluation)|hyperpage}{128}
+\indexentry{get\_solo\_data() (in module evaluation)|hyperpage}{128}
+\indexentry{plot() (in module evaluation)|hyperpage}{129}
+\indexentry{plot\_predicted\_observed() (in module evaluation)|hyperpage}{129}
+\indexentry{plot\_residual() (in module evaluation)|hyperpage}{130}
+\indexentry{residual() (in module evaluation)|hyperpage}{130}
+\indexentry{residual\_analysis() (in module evaluation)|hyperpage}{130}
+\indexentry{sample\_activitiy\_abm\_work() (in module evaluation)|hyperpage}{131}
+\indexentry{sample\_activity\_abm() (in module evaluation)|hyperpage}{131}
+\indexentry{save\_figs\_dt() (in module evaluation)|hyperpage}{131}
+\indexentry{save\_figs\_end() (in module evaluation)|hyperpage}{131}
+\indexentry{save\_figs\_start() (in module evaluation)|hyperpage}{132}
+\indexentry{save\_figures() (in module evaluation)|hyperpage}{132}
+\indexentry{fig\_driver (module)|hyperpage}{132}
+\indexentry{compare\_single\_omni() (in module fig\_driver)|hyperpage}{132}
+\indexentry{plot\_cdfs() (in module fig\_driver)|hyperpage}{133}
+\indexentry{plot\_cdfs2() (in module fig\_driver)|hyperpage}{133}
+\indexentry{my\_debug (module)|hyperpage}{163}
+\indexentry{omni\_trial (module)|hyperpage}{163}
+\indexentry{Omni\_Trial (class in omni\_trial)|hyperpage}{163}
+\indexentry{adjust\_commute\_from\_work() (omni\_trial.Omni\_Trial method)|hyperpage}{163}
+\indexentry{adjust\_commute\_to\_work() (omni\_trial.Omni\_Trial method)|hyperpage}{163}
+\indexentry{adjust\_eat\_breakfast() (omni\_trial.Omni\_Trial method)|hyperpage}{164}
+\indexentry{adjust\_eat\_dinner() (omni\_trial.Omni\_Trial method)|hyperpage}{164}
+\indexentry{adjust\_eat\_lunch() (omni\_trial.Omni\_Trial method)|hyperpage}{164}
+\indexentry{adjust\_params() (omni\_trial.Omni\_Trial method)|hyperpage}{165}
+\indexentry{adjust\_params\_adult\_non\_work() (omni\_trial.Omni\_Trial method)|hyperpage}{165}
+\indexentry{adjust\_params\_adult\_work() (omni\_trial.Omni\_Trial method)|hyperpage}{165}
+\indexentry{adjust\_params\_child\_school() (omni\_trial.Omni\_Trial method)|hyperpage}{166}
+\indexentry{adjust\_params\_child\_young() (omni\_trial.Omni\_Trial method)|hyperpage}{166}
+\indexentry{adjust\_sleep() (omni\_trial.Omni\_Trial method)|hyperpage}{167}
+\indexentry{adjust\_work() (omni\_trial.Omni\_Trial method)|hyperpage}{167}
+\indexentry{initialize() (omni\_trial.Omni\_Trial method)|hyperpage}{167}
+\indexentry{sleep\_trial (module)|hyperpage}{167}
+\indexentry{Sleep\_Trial (class in sleep\_trial)|hyperpage}{167}
+\indexentry{adjust\_params() (sleep\_trial.Sleep\_Trial method)|hyperpage}{168}
+\indexentry{create\_universe() (sleep\_trial.Sleep\_Trial method)|hyperpage}{168}
+\indexentry{initialize() (sleep\_trial.Sleep\_Trial method)|hyperpage}{168}
+\indexentry{sample\_start() (sleep\_trial.Sleep\_Trial method)|hyperpage}{168}
+\indexentry{trial (module)|hyperpage}{169}
+\indexentry{Trial (class in trial)|hyperpage}{169}
+\indexentry{add\_person\_to\_universe() (trial.Trial method)|hyperpage}{169}
+\indexentry{assign\_chad\_params() (trial.Trial method)|hyperpage}{170}
+\indexentry{check\_spacing() (trial.Trial method)|hyperpage}{170}
+\indexentry{create\_universe() (trial.Trial method)|hyperpage}{170}
+\indexentry{get\_chad\_stats\_data\_dt() (trial.Trial method)|hyperpage}{170}
+\indexentry{get\_chad\_stats\_data\_end() (trial.Trial method)|hyperpage}{171}
+\indexentry{get\_chad\_stats\_data\_start() (trial.Trial method)|hyperpage}{171}
+\indexentry{get\_diary() (trial.Trial method)|hyperpage}{171}
+\indexentry{get\_diary\_help() (trial.Trial method)|hyperpage}{171}
+\indexentry{get\_stats\_data() (trial.Trial method)|hyperpage}{171}
+\indexentry{get\_stats\_data\_dt() (trial.Trial method)|hyperpage}{172}
+\indexentry{get\_stats\_data\_help() (trial.Trial method)|hyperpage}{172}
+\indexentry{get\_stats\_data\_start\_end() (trial.Trial method)|hyperpage}{172}
+\indexentry{get\_stats\_data\_start\_end\_help() (trial.Trial method)|hyperpage}{173}
+\indexentry{initialize() (trial.Trial method)|hyperpage}{173}
+\indexentry{initialize\_person() (trial.Trial method)|hyperpage}{173}
+\indexentry{pseudo\_intraindividual\_variation() (trial.Trial method)|hyperpage}{173}
+\indexentry{run() (trial.Trial method)|hyperpage}{174}
+\indexentry{sample() (trial.Trial method)|hyperpage}{175}
+\indexentry{variation (module)|hyperpage}{175}
+\indexentry{f() (in module variation)|hyperpage}{175}
+\indexentry{integrate\_residual() (in module variation)|hyperpage}{175}
+\indexentry{run\_initial() (in module variation)|hyperpage}{175}
+\indexentry{run\_simulation() (in module variation)|hyperpage}{175}
+\indexentry{run\_trial\_parallel() (in module variation)|hyperpage}{175}
+\indexentry{run\_uni\_parallel() (in module variation)|hyperpage}{175}
+\indexentry{run\_universe\_parallel() (in module variation)|hyperpage}{175}
+\indexentry{sweep() (in module variation)|hyperpage}{175}
+\indexentry{sweep\_parallel() (in module variation)|hyperpage}{175}
+\indexentry{work\_trial (module)|hyperpage}{176}
+\indexentry{Work\_Trial (class in work\_trial)|hyperpage}{176}
+\indexentry{adjust\_params() (work\_trial.Work\_Trial method)|hyperpage}{176}
+\indexentry{create\_universe() (work\_trial.Work\_Trial method)|hyperpage}{176}
+\indexentry{initialize() (work\_trial.Work\_Trial method)|hyperpage}{176}
+\indexentry{plotter (module)|hyperpage}{183}
+\indexentry{calc\_log\_weight() (in module plotter)|hyperpage}{183}
+\indexentry{calc\_weight() (in module plotter)|hyperpage}{183}
+\indexentry{get\_figure\_data() (in module plotter)|hyperpage}{183}
+\indexentry{get\_satiation\_and\_weight() (in module plotter)|hyperpage}{184}
+\indexentry{load\_fig\_data() (in module plotter)|hyperpage}{184}
+\indexentry{plot\_activity\_cdfs() (in module plotter)|hyperpage}{184}
+\indexentry{plot\_activity\_histograms() (in module plotter)|hyperpage}{184}
+\indexentry{plot\_count() (in module plotter)|hyperpage}{184}
+\indexentry{plot\_history() (in module plotter)|hyperpage}{185}
+\indexentry{plot\_longitude() (in module plotter)|hyperpage}{185}
+\indexentry{plot\_longitude\_help() (in module plotter)|hyperpage}{185}
+\indexentry{plot\_satiation\_and\_weight() (in module plotter)|hyperpage}{185}
+\indexentry{separate\_activities\_into\_days() (in module plotter)|hyperpage}{186}
+\indexentry{datum (module)|hyperpage}{194}
+\indexentry{analyze\_commute() (in module datum)|hyperpage}{194}
+\indexentry{analyze\_commute\_school() (in module datum)|hyperpage}{194}
+\indexentry{analyze\_eat() (in module datum)|hyperpage}{194}
+\indexentry{analyze\_education() (in module datum)|hyperpage}{194}
+\indexentry{analyze\_moments() (in module datum)|hyperpage}{195}
+\indexentry{analyze\_sleep() (in module datum)|hyperpage}{195}
+\indexentry{analyze\_work() (in module datum)|hyperpage}{195}
+\indexentry{filter\_commute() (in module datum)|hyperpage}{195}
+\indexentry{get\_commute\_data() (in module datum)|hyperpage}{196}
+\indexentry{get\_data\_help() (in module datum)|hyperpage}{196}
+\indexentry{get\_end\_date() (in module datum)|hyperpage}{196}
+\indexentry{get\_fulltime\_data() (in module datum)|hyperpage}{197}
+\indexentry{get\_longitude() (in module datum)|hyperpage}{197}
+\indexentry{get\_meals() (in module datum)|hyperpage}{197}
+\indexentry{get\_moments() (in module datum)|hyperpage}{197}
+\indexentry{get\_skipped\_meals() (in module datum)|hyperpage}{198}
+\indexentry{get\_solo() (in module datum)|hyperpage}{198}
+\indexentry{get\_stats() (in module datum)|hyperpage}{198}
+\indexentry{get\_stats\_individual() (in module datum)|hyperpage}{199}
+\indexentry{get\_stats\_weekend() (in module datum)|hyperpage}{199}
+\indexentry{get\_weekend\_index() (in module datum)|hyperpage}{199}
+\indexentry{get\_weekend\_index\_df() (in module datum)|hyperpage}{200}
+\indexentry{histogram() (in module datum)|hyperpage}{200}
+\indexentry{merge() (in module datum)|hyperpage}{200}
+\indexentry{merge\_end\_of\_day() (in module datum)|hyperpage}{200}
+\indexentry{periodicity\_CHADID() (in module datum)|hyperpage}{200}
+\indexentry{periodicity\_PID() (in module datum)|hyperpage}{200}
+\indexentry{periodicity\_sleep() (in module datum)|hyperpage}{201}
+\indexentry{save() (in module datum)|hyperpage}{201}
+\indexentry{sequential\_data() (in module datum)|hyperpage}{201}
+\indexentry{sequential\_days() (in module datum)|hyperpage}{201}
+\indexentry{demography (module)|hyperpage}{210}
+\indexentry{filter\_adult() (in module demography)|hyperpage}{210}
+\indexentry{get\_adult() (in module demography)|hyperpage}{210}
+\indexentry{get\_adult\_non\_work() (in module demography)|hyperpage}{210}
+\indexentry{get\_adult\_work() (in module demography)|hyperpage}{210}
+\indexentry{get\_all() (in module demography)|hyperpage}{211}
+\indexentry{get\_child\_school() (in module demography)|hyperpage}{211}
+\indexentry{get\_child\_young() (in module demography)|hyperpage}{211}
+\indexentry{load() (in module demography)|hyperpage}{211}
+\indexentry{save() (in module demography)|hyperpage}{211}

@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>driver_result module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="eat_breakfast_trial module" href="eat_breakfast_trial.html" />
+    <link rel="prev" title="driver_params module" href="driver_params.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-driver_result">
+<span id="driver-result-module"></span><h1>driver_result module<a class="headerlink" href="#module-driver_result" title="Permalink to this headline">¶</a></h1>
+<p>This module holds the results from running the Monte-Carlo simulations.</p>
+<p>This module contains class <a class="reference internal" href="#driver_result.Driver_Result" title="driver_result.Driver_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Driver_Result</span></code></a> and <a class="reference internal" href="#driver_result.Batch_Result" title="driver_result.Batch_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Batch_Result</span></code></a>.</p>
+<dl class="class">
+<dt id="driver_result.Batch_Result">
+<em class="property">class </em><code class="descclassname">driver_result.</code><code class="descname">Batch_Result</code><span class="sig-paren">(</span><em>dr_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver_result.html#Batch_Result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver_result.Batch_Result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#driver_result.Driver_Result" title="driver_result.Driver_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Driver_Result</span></code></a></p>
+<p>This class holds the results from batch runs from the driver in one object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dr_list</strong> (list of <a class="reference internal" href="#driver_result.Driver_Result" title="driver_result.Driver_Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">driver_result.Driver_Result</span></code></a>) – the results from the simulation from each batch that was used.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="driver_result.Driver_Result">
+<em class="property">class </em><code class="descclassname">driver_result.</code><code class="descname">Driver_Result</code><span class="sig-paren">(</span><em>diaries</em>, <em>chad_param_list</em>, <em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver_result.html#Driver_Result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver_result.Driver_Result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class holds the result of running driver.run().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>diaries</strong> (list of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a>) – the activity diaries for each household in the simulation</li>
+<li><strong>chad_param_list</strong> (list of <a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><code class="xref py py-class docutils literal notranslate"><span class="pre">chad_params.CHAD_params</span></code></a>) – the CHAD parameters used for sampling the CHAD data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demography identifier</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diaries</strong> – the activity diaries for each household in the simulation</li>
+<li><strong>chad_param_list</strong> – the CHAD parameters used for sampling the CHAD data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demography identifier</li>
+<li><strong>num_hhld</strong> (<em>int</em>) – the number of households</li>
+<li><strong>num_people</strong> (<em>int</em>) – the number of people in the simulation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="driver_result.Driver_Result.add_id">
+<code class="descname">add_id</code><span class="sig-paren">(</span><em>df_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver_result.html#Driver_Result.add_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver_result.Driver_Result.add_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adds an integer identifier to each simulated agent’s activity diary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df_list</strong> (<em>list of pandas.core.frame.DataFrame</em>) – the activity diaries for the simulated agents</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the updated activity diaries for each agent</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="driver_result.Driver_Result.get_all_data">
+<code class="descname">get_all_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver_result.html#Driver_Result.get_all_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver_result.Driver_Result.get_all_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the diaries as a pandas data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">activity diaries for each person in the simulation</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype list of pandas.core.frame.DataFrame</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="driver_result.Driver_Result.get_combined_diary">
+<code class="descname">get_combined_diary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/driver_result.html#Driver_Result.get_combined_diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#driver_result.Driver_Result.get_combined_diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function combines all of the activity diaries from the simulation into one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">all of the activity diaries from the simulated agents combine into one* dataframe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="driver_params.html" title="previous chapter">driver_params module</a></li>
+      <li>Next: <a href="eat_breakfast_trial.html" title="next chapter">eat_breakfast_trial module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/driver_result.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/driver_result.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

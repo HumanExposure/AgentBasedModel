@@ -13,15 +13,14 @@
 
 """
 This module contains code that is responsible for running the simulation. This file contains \
-:class:`universe.Universe`. The Universe contains all agents and objects. The Universe is responsible for \
-running the simulation itself.
+:class:`universe.Universe`.
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general mathematical capabilities
 import numpy as np
@@ -30,13 +29,14 @@ import numpy as np
 import activity, home, need, scheduler, state, temporal
 
 # ===============================================
-# class
+# class Universe
 # ===============================================
 
 class Universe(object):
 
     """
-    The Universe is the governing engine of the simulation.
+    The Universe is the governing engine of the simulation. The Universe contains all agents \
+    and objects. The Universe is responsible for running the simulation itself.
 
     :param int num_steps: the number of time steps in the simulation
     :param int dt:  the step size in the simulation [minutes]
@@ -44,8 +44,8 @@ class Universe(object):
     :param int num_people: the number of people in the household
 
     :var temporal.Temporal clock: does the timekeeping in the simulation
-    :var home.Home "home": the home the Persons live in
-    :var list people: a list of all Person objects created in the Universe object
+    :var home.Home "home": the home the persons live in
+    :var list people: a list of all person objects created in the Universe object
     :var int t_start: the start time for the simulation [minutes, universal time]
     :var int t_end: the last time for the simulation [minutes, universal time]
     :var scheduler.Scheduler schedule: the schedule governing each agent's needs
@@ -55,7 +55,7 @@ class Universe(object):
     # Constructor
     # 
     #
-    def __init__(self, num_steps, dt, t_start, num_people):
+    def __init__(self, num_steps, dt, t_start, num_people, do_minute_by_minute=False):
 
         # create a clock.
         self.clock          = temporal.Temporal()
@@ -76,7 +76,8 @@ class Universe(object):
         self.people = []
 
         # the schedule
-        self.schedule = scheduler.Scheduler(clock=self.clock, num_people=num_people)
+        self.schedule = scheduler.Scheduler(clock=self.clock, num_people=num_people, \
+                                            do_minute_by_minute=do_minute_by_minute)
 
         return
 
@@ -88,19 +89,19 @@ class Universe(object):
     def address_needs(self, do_interruption=False):
 
         """
-        This function checks the needs of the agents
+        This function checks the needs of the agents. The function uses a recursion loop to \
+        choose activities.
 
-        The function uses a recursion loop to choose activities.
+        The recursion:
 
-        The Recursion:
+        #. gather all of the advertisements (object-person pairings)
+        #. assigns 1 activity to the Person with the highest score
+        #. that Person starts the activity, thereby updating the state of available activities in the home
+        #. the recursion starts again, where the Home advertises to all remaining Person(s)
 
-        #. Gather all of the advertisements (object-person pairings)
-        #. Assigns 1 activity to the Person with the highest score.
-        #. That Person starts the activity, thereby updating the state of available activities in the home.
-        #. The recursion starts again, where the Home advertises to all remaining Person(s).
-
-        :Note: If no activity will be done this time step to a Person, a Person is set to \
-            the temporary status :const:`state.IDLE_TEMP`, so that the Home knows not to advertise to that Person.
+        :Note: If no activity will be done this time step to a person, a person is set to \
+            the temporary status :const:`state.IDLE_TEMP`, so that the home knows not to advertise \
+            to that person.
 
         :param bool do_interruption: this flag indicates whether or not advertisements should be made \
             for activities that will interrupt the current activity (if True). If False, the advertisements \
@@ -199,12 +200,11 @@ class Universe(object):
         :return ads: ads is a list of dictionaries for advertisements:
 
                     Dictionary  (score, asset, activity, person) containing the various data for
-                    each advertisement: (score, asset, activity, person) coupling
+                    each advertisement: (score, asset, activity, person) coupling where the data types \
+                    are (float, :class:`asset.Asset`, :class:`activity.Activity`, :class:`person.Person`)
+
         :rtype: list
         """
-
-        # handle the interruptions
-        do_test = True
 
         # optimized way to get all of the advertisements
         # there is a list of ads for each person
@@ -220,14 +220,15 @@ class Universe(object):
             # the total amount of ads advertised across all people
             N = lambda z: len( [item for sublist in z for item in sublist] )
 
-            if do_test:
-                x = np.array( [ item['score'] <= 0 for sublist in ads for item in sublist ] )
-                if x.all():
-                    sam                             = self.people[0]
-                    #sam.interruption.magnitude      = 1.0
-                    sam.interruption.activity_start = None
-                    sam.interruption.activity_stop  = None
-                    ads = []
+            # handle the interruptions
+            x = np.array( [ item['score'] <= 0 for sublist in ads for item in sublist ] )
+            if x.all():
+                sam                             = self.people[0]
+                #sam.interruption.magnitude      = 1.0
+                sam.interruption.activity_start = None
+                sam.interruption.activity_stop  = None
+                ads = []
+
             else:
                 # if there are no advertisements from assets that address interruptions,
                 # set the interruption state to 0
@@ -354,7 +355,7 @@ class Universe(object):
     def initialize_needs(self):
 
         """
-        This function initializes the need state of each Person at the beginning of simulation based on \
+        This function initializes the need state of each person at the beginning of simulation based on \
         the current time.
 
         The needs are initialized in this order (the order matters)
@@ -368,11 +369,6 @@ class Universe(object):
 
         :return: None
         """
-
-        # for testing work
-        do_test = True
-
-        YEAR_2_MIN  = temporal.YEAR_2_MIN
 
         #
         # initialize the needs of each person
@@ -389,26 +385,6 @@ class Universe(object):
 
             # initialize interruption...
             p.interruption.initialize(p)
-
-            if do_test:
-                keys    = self.home.assets.keys()
-                dt      = 100 * YEAR_2_MIN
-
-                if 'workplace' not in keys:
-                    p.schedule.update(p.id, need.INCOME, dt)
-                    p.schedule.update(p.id, need.INTERRUPTION, dt)
-
-                if 'transport' not in keys:
-                    p.schedule.update(p.id, need.TRAVEL, dt)
-
-                if 'bed' not in keys:
-                    p.schedule.update(p.id, need.REST, dt)
-
-                if ('food' not in keys) and ('cafeteria' not in keys):
-                    p.schedule.update(p.id, need.HUNGER, dt)
-
-                if 'cafeteria' not in keys:
-                    p.schedule.update(p.id, need.INTERRUPTION, dt)
 
         return
 
@@ -496,7 +472,7 @@ class Universe(object):
 
         The function proceeds as following:
 
-        While the current time is less than the final time
+        While the current time is less than the final time:
 
         #. check for expired activities for all agents. If activities should have expired, tell the agent to end them
         #. start new activities by addressing the needs for all agents (assuming no interruption)
@@ -508,17 +484,18 @@ class Universe(object):
         #. decay the needs for all agents
         #. Repeat
 
-        For the last time step
+        For the last time step:
 
         #. update the clock
         #. decay the needs for each agent
         #. update the history of the status of each agent
 
-        .. note::
-            I must change N_MAX to N_MAX = DAY_2_MIN * 365
 
         :return:
         """
+
+        # the number of minutes in one year
+        YEAR_2_MIN   = temporal.YEAR_2_MIN
 
         # set the next scheduled time to stop the clock as the current time as the
         t_next = self.clock.t_univ
@@ -527,10 +504,7 @@ class Universe(object):
         self.clock.hist_time[self.clock.step] = self.clock.t_univ
 
         # the iterating variables: the current iteration and the maximum iterations in the loop, respectively
-        i, N_MAX = 0, 1e4 # 1e6
-
-        # print test function
-        do_test = False
+        i, N_MAX = 0, YEAR_2_MIN
 
         # while the current time is before the final time AND the iteration counter is under the maximum iteration
         # allowed
@@ -555,9 +529,6 @@ class Universe(object):
                     p.interruption.decay(p)
 
                 self.address_needs(do_interruption=True)
-
-                if do_test:
-                    self.test_func()
 
                 # update the history
                 self.update_history_new()
@@ -613,7 +584,7 @@ class Universe(object):
     # advance the clock
 
     # Given a list of activity advertisements,
-    # this function selects the Person with the largest activity score and
+    # this function selects the person with the largest activity score and
     # outputs the score, asset, activity, and person.
     #
     # input:
@@ -626,7 +597,7 @@ class Universe(object):
     def select_activity(self, ads):
 
         """
-        Given a list of activity advertisements, this function selects the Person
+        Given a list of activity advertisements, this function selects the person
         with the largest activity score and outputs the score, asset, activity, and person.
 
         :param list ads: a list of advertisements for this time step
@@ -702,7 +673,8 @@ class Universe(object):
 
         """
         .. note::
-            This function is just for debugging.
+            This function is just for debugging. This has **no** use in the current version. This function \
+            will be removed in future versions.
 
         :return:
         """

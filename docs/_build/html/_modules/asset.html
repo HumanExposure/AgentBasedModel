@@ -1,38 +1,27 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>asset &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>asset &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="../index.html" />
-    <link rel="up" title="Module code" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -103,21 +92,21 @@
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An asset is an object that allows the agent to perform an activity. Each asset \</span>
-<span class="sd">    contains a list Activities that an agent can use to perform actions.</span>
+<span class="sd">    contains a list of activities that an agent can use to perform actions.</span>
 
-<span class="sd">    :ivar dict activities: This is a dictionary of all the activities associated with this asset.</span>
-<span class="sd">    :ivar int category: This indicates the type of asset.</span>
-<span class="sd">    :ivar int id: This is an identifier number for the asset.</span>
-<span class="sd">    :ivar location.Location &#39;location&#39;: This is the location of the asset.</span>
-<span class="sd">    :ivar int max_users: This indicates the maximum number of users that can simultaneously access the asset.</span>
-<span class="sd">    :ivar int num_users: This is the current number of users for the asset.</span>
-<span class="sd">    :ivar int status: This is the state of the asset.</span>
+<span class="sd">    :ivar dict activities: a dictionary of all the activities associated with this asset</span>
+<span class="sd">    :ivar int category: a code that indicates the category type of asset</span>
+<span class="sd">    :ivar int id: an identifier number for the asset</span>
+<span class="sd">    :ivar location.Location &#39;location&#39;: the location of the asset</span>
+<span class="sd">    :ivar int max_users: the maximum number of users that can simultaneously access the asset</span>
+<span class="sd">    :ivar int num_users: the current number of users for the asset</span>
+<span class="sd">    :ivar int status: the state of the asset</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#</span>
     <span class="c1"># constructor</span>
     <span class="c1">#</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="c1"># the identifier of the asset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -147,8 +136,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function changes the state of an asset once it is freed by a Person by doing the following:</span>
 <span class="sd">        </span>
-<span class="sd">        #. Decreases the number of users of the asset by 1</span>
-<span class="sd">        #. If the number of users is zero, the status of the asset is set to idle (:const:`state.IDLE`)</span>
+<span class="sd">        #. decreases the number of users of the asset by 1</span>
+<span class="sd">        #. if the number of users is zero, the status of the asset is set to idle (:const:`state.IDLE`)</span>
 
 <span class="sd">        :return: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -160,8 +149,8 @@
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Asset.initialize"><a class="viewcode-back" href="../asset.html#asset.Asset.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">people</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -177,8 +166,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Asset.print_category"><a class="viewcode-back" href="../asset.html#asset.Asset.print_category">[docs]</a>    <span class="k">def</span> <span class="nf">print_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         This function represents the category as a string.</span>
@@ -192,15 +181,15 @@
 
         <span class="c1"># If the category is a valid option, return the category as a string</span>
         <span class="c1"># Else, return the error message</span>
-        <span class="k">return</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
-</div>
+        <span class="k">return</span> <span class="n">INT_2_STR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Asset.reset"><a class="viewcode-back" href="../asset.html#asset.Asset.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function does the following.</span>
+<span class="sd">        This function does the following:</span>
 <span class="sd">        </span>
-<span class="sd">        #. Sets the number of users to zero</span>
-<span class="sd">        #. Sets the asset&#39;s status to idle</span>
+<span class="sd">        #. sets the number of users to zero</span>
+<span class="sd">        #. sets the asset&#39;s status to idle</span>
 <span class="sd">        </span>
 <span class="sd">        :return: None </span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -208,8 +197,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span>  <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span>     <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">IDLE</span>
 
-        <span class="k">return</span>
-</div>
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="Asset.toString"><a class="viewcode-back" href="../asset.html#asset.Asset.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -236,16 +225,17 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;Location</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">msg</span>
-</div>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
 <div class="viewcode-block" id="Asset.update"><a class="viewcode-back" href="../asset.html#asset.Asset.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function changes the state of the asset once it is used by a Person.</span>
+<span class="sd">        This function changes the state of the asset once it is used by a person. The update does \</span>
+<span class="sd">        the following:</span>
 <span class="sd">        </span>
-<span class="sd">        #. Increases the number of people by 1</span>
-<span class="sd">        #. If the number of users is at the maximum number, set the asset&#39;s status to busy</span>
-<span class="sd">        #. If the number of users is less than the maximum number, set the assets&#39; status to busy but \</span>
+<span class="sd">        #. increases the number of people by 1</span>
+<span class="sd">        #. if the number of users is at the maximum number, set the asset&#39;s status to busy</span>
+<span class="sd">        #. if the number of users is less than the maximum number, set the asset&#39;s status to busy but \</span>
 <span class="sd">        able to be used by another agent</span>
 
 <span class="sd">        :return: None</span>
@@ -260,8 +250,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">BUSY_MULTI</span>
 
-        <span class="k">return</span>
-</pre></div></div></div>
+        <span class="k">return</span></div></div>
+
+</pre></div>
 
           </div>
         </div>
@@ -278,15 +269,14 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -294,10 +284,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

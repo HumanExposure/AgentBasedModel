@@ -1,0 +1,349 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>count_records notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="datum module" href="datum.html" />
+    <link rel="prev" title="commute_work notebook" href="commute_work.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="count-records-notebook">
+<h1>count_records notebook<a class="headerlink" href="#count-records-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 22, 2018</span>
+</pre></div>
+</div>
+<p>This function reports the amount of records from the Consolidated Human
+Activity Database (CHAD) records for each activity for each demographic
+that are suitable for use within the Agent-Based Model of Human Activity
+Patterns (ABMHAP) code.</p>
+<p>import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># import</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">run_chad&#39;</span><span class="p">)</span>
+
+<span class="c1"># math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># data frame capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># zipfile capability</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_work</span> <span class="k">as</span> <span class="nn">cdaw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_non_work</span> <span class="k">as</span> <span class="nn">cdanw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_school</span> <span class="k">as</span> <span class="nn">cdcs</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_young</span> <span class="k">as</span> <span class="nn">cdcy</span>
+
+<span class="kn">import</span> <span class="nn">chad</span>
+</pre></div>
+</div>
+<p>define functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">counter</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This create a dataframe that contains the amount of CHAD records for the single-entry \</span>
+<span class="sd">    and longitdinal data.</span>
+
+<span class="sd">    :param demos: the demographics to compare the results to</span>
+<span class="sd">    :type demoos: list of demography.Demography</span>
+<span class="sd">    :param names: the names of the demographcs, respectively</span>
+<span class="sd">    :type names: list of str</span>
+<span class="sd">    :param int key: the ABMHAP activity code</span>
+
+<span class="sd">    :return: a table the shows how many individuals have single-entry and longitudinal data \</span>
+<span class="sd">    within each demographic</span>
+<span class="sd">    :retype: pandas.core.frame.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">:</span>
+        <span class="n">do_periodic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">solo_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">demos</span><span class="p">),</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">long_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">solo_count</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">demos</span><span class="p">):</span>
+        <span class="n">solo</span><span class="p">,</span> <span class="n">long</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">fname_zip</span><span class="p">,</span> <span class="n">demo</span><span class="o">.</span><span class="n">fname_stats</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">chad</span><span class="o">.</span><span class="n">RECORD</span><span class="p">],</span> <span class="n">demo</span><span class="o">.</span><span class="n">int_2_param</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                       <span class="n">do_periodic</span><span class="p">)</span>
+
+        <span class="n">solo_count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="n">solo</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">)</span>
+        <span class="n">long_count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="n">long</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span> <span class="p">(</span><span class="n">solo_count</span><span class="p">,</span> <span class="n">long_count</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;long&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">names</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">fname_zip</span><span class="p">,</span> <span class="n">fname_record</span><span class="p">,</span> <span class="n">s_param</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function opens the demographic data and counts the number of both the single-entry \</span>
+<span class="sd">    (solo) records and the longitudinal (multiple-entry) records that can be used within \</span>
+<span class="sd">    ABMHAP according to the sepcific activity&#39;s requirements for filtering CHAD data</span>
+
+<span class="sd">    :param str fname_zip: the file name of the .zip file of the CHAD data for a specific \</span>
+<span class="sd">    demographic</span>
+<span class="sd">    :param str fname_record: the file name of the CHAD record data for a given activity \</span>
+<span class="sd">    within the specific demographic</span>
+<span class="sd">    :param chad_params.CHAD_params: the CHAD sampling parameters for the specific activity</span>
+<span class="sd">    :param bool do_periodic: a flag to inicate whether (if True) or not (if False) \</span>
+<span class="sd">    to express time of day in hours [-12, 12)</span>
+
+<span class="sd">    :return: for each person within the deographic in the CHAD data, the number of activity \</span>
+<span class="sd">    instances from the single-entry record data, multiple-entry record data</span>
+<span class="sd">    :rtype: numpy.ndarray, numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the zipfile of the data for the given demographic</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">fname_zip</span><span class="p">)</span>
+
+    <span class="c1"># count the number of activity instances per PID for the multiple-entry records</span>
+    <span class="n">long</span> <span class="o">=</span> <span class="n">f_temp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fname_record</span><span class="p">,</span> <span class="n">s_param</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># count the number of activity instances per PID for the single-entry records</span>
+    <span class="n">solo</span> <span class="o">=</span> <span class="n">f_temp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fname_record</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;solo&#39;</span><span class="p">),</span> <span class="n">s_param</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">solo</span><span class="p">,</span> <span class="n">long</span>
+
+<span class="k">def</span> <span class="nf">f_temp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fname_record</span><span class="p">,</span> <span class="n">s_param</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function reads the record file and counts the number of entries of a person in \</span>
+<span class="sd">    CHAD for a given activity with single-entry or multiple-entry data.</span>
+
+<span class="sd">    :param zipfile.Zipfile:</span>
+<span class="sd">    :param str fname_record: the file name of the CHAD record data for a given activity \</span>
+<span class="sd">    within the specific demographic</span>
+<span class="sd">    :param chad_params.CHAD_params: the CHAD sampling parameters for the specific activity</span>
+<span class="sd">    :param bool do_periodic: a flag to inicate whether (if True) or not (if False) \</span>
+<span class="sd">    to express time of day in hours [-12, 12)</span>
+
+<span class="sd">    :return: the number of activity instances per PID</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># read the record file</span>
+    <span class="n">df</span>      <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname_record</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># filter the dataframe for valid values for the reocrds</span>
+    <span class="n">df</span>      <span class="o">=</span> <span class="n">s_param</span><span class="o">.</span><span class="n">get_record</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># group the records by PID</span>
+    <span class="n">gb</span>      <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;PID&#39;</span><span class="p">)</span>
+
+    <span class="c1"># count the number of records per PID</span>
+    <span class="n">counts</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="nb">len</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">u</span><span class="p">))</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">PID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">counts</span>
+
+
+<span class="k">def</span> <span class="nf">print_count</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">do_periodic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function prints the counts of single-entry data and longitudinal data.</span>
+
+<span class="sd">    :param demography.Demography: the demographic of interest</span>
+<span class="sd">    :int key: activity code</span>
+<span class="sd">    :param bool do_periodic: a flag to inicate whether (if True) or not (if False) \</span>
+<span class="sd">    to express time of day in hours [-12, 12)</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># count the number of activity instances per PID for the given activity within</span>
+    <span class="c1"># both the single-entry data and longitudinal data</span>
+    <span class="n">solo</span><span class="p">,</span> <span class="n">long</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">fname_zip</span><span class="p">,</span> <span class="n">demo</span><span class="o">.</span><span class="n">fname_stats</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">chad</span><span class="o">.</span><span class="n">RECORD</span><span class="p">],</span> <span class="n">demo</span><span class="o">.</span><span class="n">int_2_param</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> \
+                  <span class="n">do_periodic</span><span class="p">)</span>
+
+    <span class="c1"># print the results</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;solo: </span><span class="si">%d</span><span class="se">\t</span><span class="s1">long: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">solo</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">long</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>load the demographics information</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># load demographics</span>
+<span class="c1">#</span>
+<span class="n">adult_work</span> <span class="o">=</span> <span class="n">cdaw</span><span class="o">.</span><span class="n">CHAD_demography_adult_work</span><span class="p">()</span>
+<span class="n">adult_non_work</span> <span class="o">=</span> <span class="n">cdanw</span><span class="o">.</span><span class="n">CHAD_demography_adult_non_work</span><span class="p">()</span>
+<span class="n">child_school</span> <span class="o">=</span> <span class="n">cdcs</span><span class="o">.</span><span class="n">CHAD_demography_child_school</span><span class="p">()</span>
+<span class="n">child_young</span> <span class="o">=</span> <span class="n">cdcy</span><span class="o">.</span><span class="n">CHAD_demography_child_young</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the demographics and names for the data frame rows</span>
+<span class="n">demos</span> <span class="o">=</span> <span class="p">[</span><span class="n">adult_work</span><span class="p">,</span> <span class="n">adult_non_work</span><span class="p">,</span> <span class="n">child_school</span><span class="p">,</span> <span class="n">child_young</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;adult_work&#39;</span><span class="p">,</span> <span class="s1">&#39;adult_non_work&#39;</span><span class="p">,</span> <span class="s1">&#39;child_school&#39;</span><span class="p">,</span> <span class="s1">&#39;child_young&#39;</span><span class="p">]</span>
+
+<span class="n">demos_work</span> <span class="o">=</span> <span class="p">[</span><span class="n">adult_work</span><span class="p">,</span> <span class="n">child_school</span><span class="p">]</span>
+<span class="n">names_work</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;adult_work&#39;</span><span class="p">,</span> <span class="s1">&#39;child_school&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>meals and sleep</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># breakfast</span>
+<span class="n">bf</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_BREAKFAST</span><span class="p">)</span>
+
+<span class="c1"># lunch</span>
+<span class="n">lunch</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span><span class="p">)</span>
+
+<span class="c1"># dinner</span>
+<span class="n">dinner</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_DINNER</span><span class="p">)</span>
+
+<span class="c1"># sleep</span>
+<span class="n">sleep</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_SLEEP</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>commuting, working</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">work</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos_work</span><span class="p">,</span> <span class="n">names_work</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_WORK</span><span class="p">)</span>
+<span class="n">commute_to_work</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos_work</span><span class="p">,</span> <span class="n">names_work</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_COMMUTE_TO_WORK</span><span class="p">)</span>
+<span class="n">commute_from_work</span> <span class="o">=</span> <span class="n">counter</span><span class="p">(</span><span class="n">demos_work</span><span class="p">,</span> <span class="n">names_work</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_COMMUTE_FROM_WORK</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>View</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sleep</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>single</th>
+      <th>long</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>adult_work</th>
+      <td>662.0</td>
+      <td>501.0</td>
+    </tr>
+    <tr>
+      <th>adult_non_work</th>
+      <td>620.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>child_school</th>
+      <td>903.0</td>
+      <td>139.0</td>
+    </tr>
+    <tr>
+      <th>child_young</th>
+      <td>115.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="commute_work.html" title="previous chapter">commute_work notebook</a></li>
+      <li>Next: <a href="datum.html" title="next chapter">datum module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/count_records.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/count_records.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

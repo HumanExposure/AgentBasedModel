@@ -21,16 +21,16 @@ includes other functions that are accessed outside of the Temporal class.
 """
 
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general math capabilities
 import numpy as np
 
-# --------------------------------------------------------
-# Constants
-# ---------------------------------------------------------
+# ===============================================
+# constants
+# ===============================================
 
 # days of the week
 SUNDAY      = 0
@@ -80,7 +80,7 @@ DAY_2_STR = {
     }
 
 # ===============================================
-# class
+# class Temporal
 # ===============================================
 
 class Temporal(object):
@@ -105,7 +105,7 @@ class Temporal(object):
     :var int dt: the step size in the simulation [minutes] (**antiquated**)
     :var int hour_of_day: the hour of the day [0, 23]
     :var bool is_weekday: a flag indicating if it's a weekday (Monday-Friday) if True. False, otherwise.
-    :var bool is_night: a flag indicating if the time of day is after DUSK and before DAWN if True. \
+    :var bool is_night: a flag indicating if the time of day is after **dusk** and before **dawn** if True. \
     False, otherwise.
     :var int min_of_day: the minute of the day [0, 60 - 1]
 
@@ -154,7 +154,7 @@ class Temporal(object):
         """
         Represents whether it's day or night as a string
 
-        :return msg: daytime / nighttime status (or an error message, if there is an error)
+        :return msg: daytime / nightime status (or an error message, if there is an error)
         :rtype: str
         """
 
@@ -237,10 +237,8 @@ class Temporal(object):
     def set_day_of_week(self):
 
         """
-        This function sets the day of the week.
-
-        In addition, this function sets the day count, the day of the week, and a flag indicating whether it \
-        is a weekday or not.
+        This function sets the day of the week. In addition, this function sets the day count, \
+        the day of the week, and a flag indicating whether it is a weekday or not.
 
         :return: None
         """
@@ -271,9 +269,7 @@ class Temporal(object):
     def set_time(self):
 
         """
-        This function sets all the time variable due to the universal time.
-
-        This function sets
+        This function sets all the time variable due to the universal time. This function sets
 
         #. the time of day
         #. the day of the week
@@ -327,9 +323,7 @@ class Temporal(object):
     def set_season(self):
 
         """
-        This function sets the season.
-
-        Day 0 is the beginning of winter
+        This function sets the season. Day 0 is the beginning of winter.
 
         :return: None
         """

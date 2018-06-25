@@ -17,15 +17,16 @@ This module contains constants and functions that are used for general use.
 This module contains information about the following constants:
 
 #. Identifiers for activity codes
-#. File names \ file paths for saving figures for the different demographics
-#. File names \ file paths for saving figures for the different activities
+#. File names \\ file paths for saving figures for the different demographics
+#. File names \\ file paths for saving figures for the different activities
 
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# -----------------------------------------------
+# ===============================================
 # import
-# -----------------------------------------------
+# ===============================================
+
 # general math capability
 import numpy as np
 
@@ -35,12 +36,11 @@ from statsmodels.distributions.empirical_distribution import ECDF
 # statistical capability
 import scipy.stats as stats
 
-import os, pickle, shutil
+import os, pickle, random, shutil
 
-
-# -----------------------------------------------
+# ===============================================
 # constants
-# -----------------------------------------------
+# ===============================================
 
 # these are keys values to be used in dictionaries for the respective activities
 KEY_IDLE                = -1
@@ -98,9 +98,35 @@ N_LONG = 2
 
 # file ending used for batch saves
 F_BATCH_ENDING = '_b%04d.pkl'
-# -----------------------------------------------
-# functions
-# -----------------------------------------------
+
+#
+# file extensions
+#
+
+# acceptable file extensions for python pickle files
+EXTENSION_PKL = ('.pkl', '.pickle')
+
+# ===============================================
+# function
+# ===============================================
+def check_filename_extension(fname, ext):
+
+    """
+    This function returns whether or not the given file name has the given
+    filename extension.
+
+    :param str fname: the file name
+    :param list or str ext: a single (or list) of acceptable filename extensions
+    :return:
+    """
+
+    # if the filename extension is just a string, create a list
+    if  type(ext) is str:
+        ext = [ext, ]
+
+    ok = np.array( [fname[-len(x):] == x for x in ext] ).any()
+
+    return ok
 
 def fill_out_data(t, y):
 
@@ -232,6 +258,23 @@ def hours_to_minutes(t):
 
     return x
 
+def initialize_random_number_generator(seed=None):
+
+    """
+    This function initializes the random number generators with a specified seed, if given (i.e., that is if
+    seed is not None). Both the *random* module and the *numpy.random* module's random number generator are \
+    seeded. This is useful for reproducing results.
+
+    :param int seed: the seed for the number generator
+    :return:
+    """
+
+    # initialize the random number generators
+    random.seed(seed)
+    np.random.seed(seed)
+
+    return
+
 def load(fname):
 
     """
@@ -241,6 +284,15 @@ def load(fname):
     :return: the data unpickled
     """
 
+    # if fname reflects a python pickle file
+    condition = check_filename_extension(fname, EXTENSION_PKL)
+
+    # message for assert failure
+    msg = 'fname: %s is NOT a pickle file' % fname
+
+    # assert the condition
+    assert condition, msg
+
     # open the file for reading
     fin = open(fname, 'rb')
 
@@ -249,6 +301,25 @@ def load(fname):
 
     # close the file
     fin.close()
+
+    return x
+
+def sample(data, N):
+
+    """
+    This function creates N samples of the empirical distribution of the values in the \
+    data array.
+
+    :param numpy.ndarray data: the data to sample
+    :param int N: the number of data points to sample
+    :return:
+    """
+
+    # randomly sample percentile numbers [0, 100]
+    p = 100 * np.random.rand(N)
+
+    # sample the data array according to pth percentile
+    x = np.percentile(a=data, q=p)
 
     return x
 
@@ -314,12 +385,58 @@ def save(x, fname):
 
     return
 
+def save_diary_to_csv(df, fname):
+
+    """
+    This function saves an activity diary as a .csv file. The output is changed from the
+    original data in the following manor. We add  + 1 minute to the end time so that
+    16:00 - 16:59 (original version) becomes 16:00 - 17:00 (saved version).
+
+    :param pandas.core.frame.DataFrame df: the activity-diary output of the simulation
+    :param str fname: the file name of the saved file. It must end with a .csv extension
+
+    :return:
+    """
+
+    # acceptable file extension
+    FILE_EXT = '.csv'
+
+    # condition to pass assert statement: filename must end in .csv
+    condition = fname[-len(FILE_EXT):] == FILE_EXT
+
+    # message for assert failure
+    msg = 'file name is NOT in a .csv format'
+
+    # assert that the file name is a .csv file
+    assert condition, msg
+
+    # the conversion of 1 hour into minutes
+    HOUR_2_MIN = 60
+
+    # copy the data frame to avoid changing the original data in df
+    data = df.copy()
+
+    # convert the end time in minutes.
+    # Add the + 1 minute to the end time so that 16:00 - 16:59 becomes 16:00 - 17:00
+    end = hours_to_minutes(data.end) + 1
+
+    # convert the end time into hours
+    data.end = end / HOUR_2_MIN
+
+    # create the directory for the save file if it does not exist
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
+
+    # save the data
+    data.to_csv(fname, index=False)
+
+    return
+
 def save_zip(out_file, source_dir):
 
     """
     This function compresses an entire directory as a zip file.
 
-    :param str out_file: the filename of the save zip file with out the .zip extension
+    :param str out_file: the filename of the save zip file without the .zip extension
     :param str source_dir: the directory to be compressed
     :return: the name of the compressed directory
     """

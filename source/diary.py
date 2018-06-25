@@ -37,13 +37,17 @@ from operator import itemgetter
 # agent-based model modules
 import activity, location, temporal
 
-# -----------------------------------------------
+# ===============================================
 # constants
-# -----------------------------------------------
+# ===============================================
 
 # the order of the columns in the activity-diary database
 COLNAMES = ['day', 'start', 'end', 'dt', 'act', 'loc']
 
+
+# ===============================================
+# class
+# ===============================================
 
 class Diary(object):
 
@@ -76,8 +80,8 @@ class Diary(object):
 
         The activity diary contains:
 
-        #. The start-time and end-time for each activity
-        #. The activity code
+        #. the start-time and end-time for each activity
+        #. the activity code
 
 
         :param numpy.ndarray t: the simulation times [universal time, minutes]
@@ -296,6 +300,7 @@ class Diary(object):
         
         :return: a list of each unique group-lists. Each group-list contains a tuple \
         for (time step, activity code)
+
         """
 
         # make a time_step-activity_code pairing
@@ -340,8 +345,7 @@ class Diary(object):
         necessary for creating an activity diary.
 
         :param tuple x: the data in the form of ( index, (time step, activity code) )
-
-        :return the key for sorting ( , activity code)
+        :return: the key for sorting ( , activity code)
         :rtype: tuple
         """
 
@@ -363,7 +367,7 @@ class Diary(object):
         """
         This function returns true if a day is in the weekend and false if it's in a weekday.
         
-        :param numpy.ndarray day: the day of the weekend
+        :param numpy.ndarray day: the day of the weekd 
         :return:  boolean index of whether or not a day is in the weekend (True) or not (False)
         :rtype: numpy.ndarray
         """
@@ -385,7 +389,7 @@ class Diary(object):
         This function returns true if the activity starts and ends on the same day.
         
         :param numpy.ndarray start: the time an activity starts [hours]
-        :param numpy.ndarray dt: the time an activity ends [hours]
+        :param numpy.ndarray dt: the duration of an activity, :math:`\\Delta{t}` [hours]
         
         :return: a boolean index of whether or not an activity started and ended on the same day
         :rtype: numpy.ndarray        
@@ -402,7 +406,7 @@ class Diary(object):
 
     def toString(self):
         """
-        This expresses the diary as a string
+        This function expresses the Diary object as a string
 
         :return: an expression of the diary as a string
         :rtype: string

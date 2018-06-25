@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>person module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>person module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="rest module" href="rest.html" />
     <link rel="prev" title="params module" href="params.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -44,31 +34,34 @@
   <div class="section" id="module-person">
 <span id="person-module"></span><h1>person module<a class="headerlink" href="#module-person" title="Permalink to this headline">¶</a></h1>
 <p>This module has code that governs information about the agent.</p>
-<p>This module contains information about class <a class="reference internal" href="#person.Person" title="person.Person"><code class="xref py py-class docutils literal"><span class="pre">person.Person</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This module contains information about class <a class="reference internal" href="#person.Person" title="person.Person"><code class="xref py py-class docutils literal notranslate"><span class="pre">person.Person</span></code></a>.</p>
 <dl class="class">
 <dt id="person.Person">
 <em class="property">class </em><code class="descclassname">person.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>house</em>, <em>clock</em>, <em>schedule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/person.html#Person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#person.Person" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class contains all of the information relevant for a Person.</p>
 <p>A person is parametrized by the following</p>
-<ul class="simple">
-<li>a place of residence</li>
-<li>a biology</li>
-<li>social behavior</li>
-<li>a location</li>
-<li>a history of activities and states</li>
-<li><dl class="first docutils">
-<dt>Needs</dt>
-<dd><ol class="first last arabic">
+<ul>
+<li><p class="first">a place of residence</p>
+</li>
+<li><p class="first">a biology</p>
+</li>
+<li><p class="first">social behavior</p>
+</li>
+<li><p class="first">a location</p>
+</li>
+<li><p class="first">a history of activities and states</p>
+</li>
+<li><p class="first">Needs</p>
+<blockquote>
+<div><ol class="arabic simple">
 <li>Hunger</li>
 <li>Rest</li>
 <li>Income</li>
 <li>Travel</li>
 <li>Interruption</li>
 </ol>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
@@ -76,42 +69,57 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>house</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) &#8211; the Home object the Person resides in. (will need to remove this)</li>
-<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; the time</li>
-<li><strong>schedule</strong> (<a class="reference internal" href="scheduler.html#scheduler.Scheduler" title="scheduler.Scheduler"><em>scheduler.Scheduler</em></a>) &#8211; the schedule</li>
+<li><strong>house</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) – the Home object the person resides in. (will need to remove this)</li>
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – the time</li>
+<li><strong>schedule</strong> (<a class="reference internal" href="scheduler.html#scheduler.Scheduler" title="scheduler.Scheduler"><em>scheduler.Scheduler</em></a>) – the schedule</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>'bio'</strong> (<a class="reference internal" href="bio.html#bio.Bio" title="bio.Bio"><em>bio.Bio</em></a>) &#8211; the biological characteristics</li>
-<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; keeps track of the current time. It is linked to the Universe clock</li>
-<li><strong>hist_state</strong> (<em>numpy.ndarray</em>) &#8211; the state history [int] for each time step</li>
-<li><strong>hist_activity</strong> (<em>numpy.ndarray</em>) &#8211; the activity history [int] for each time step</li>
-<li><strong>'home'</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) &#8211; this contains the place where the Person resides</li>
-<li><strong>id</strong> (<em>int</em>) &#8211; unique person identifier</li>
-<li><strong>'income'</strong> (<a class="reference internal" href="income.html#income.Income" title="income.Income"><em>income.Income</em></a>) &#8211; the need that concerns itself with working/school</li>
-<li><strong>'interruption'</strong> (<a class="reference internal" href="interruption.html#interruption.Interruption" title="interruption.Interruption"><em>interruption.Interruption</em></a>) &#8211; the need that concerns itself with interrupting an ongoing activity</li>
-<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) &#8211; the location data of a Person</li>
-<li><strong>needs</strong> (<em>dict</em>) &#8211; a dictionary of all of the  needs</li>
-<li><strong>'rest'</strong> (<a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><em>rest.Rest</em></a>) &#8211; the need that concerns itself with sleeping</li>
-<li><strong>socio</strong> (<a class="reference internal" href="social.html#social.Social" title="social.Social"><em>social.Social</em></a>) &#8211; the social characteristics of a Person</li>
-<li><strong>'state'</strong> (<a class="reference internal" href="state.html#state.State" title="state.State"><em>state.State</em></a>) &#8211; information about a Person&#8217;s state</li>
-<li><strong>'travel'</strong> (<a class="reference internal" href="travel.html#travel.Travel" title="travel.Travel"><em>travel.Travel</em></a>) &#8211; the need that concerns itself with moving from one area to another</li>
-<li><strong>hist_state</strong> &#8211; the state of the person at each time step</li>
-<li><strong>hist_activity</strong> &#8211; the activity code of the person at each time step</li>
-<li><strong>hist_local</strong> (<em>numpy.ndarray</em>) &#8211; the location code of the person at each time step</li>
-<li><strong>H</strong> (<em>numpy.ndarray</em>) &#8211; the satiation level for each need at each time step</li>
-<li><strong>need_vector</strong> (<em>numpy.ndarray</em>) &#8211; the satiation level for each need at a given time step</li>
+<li><strong>'bio'</strong> (<a class="reference internal" href="bio.html#bio.Bio" title="bio.Bio"><em>bio.Bio</em></a>) – the biological characteristics</li>
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – keeps track of the current time. It is linked to the Universe clock</li>
+<li><strong>hist_state</strong> (<em>numpy.ndarray</em>) – the state history [int] for each time step</li>
+<li><strong>hist_activity</strong> (<em>numpy.ndarray</em>) – the activity history [int] for each time step</li>
+<li><strong>'home'</strong> (<a class="reference internal" href="home.html#home.Home" title="home.Home"><em>home.Home</em></a>) – this contains the place where the person resides</li>
+<li><strong>id</strong> (<em>int</em>) – unique person identifier</li>
+<li><strong>'income'</strong> (<a class="reference internal" href="income.html#income.Income" title="income.Income"><em>income.Income</em></a>) – the need that concerns itself with working/school</li>
+<li><strong>'interruption'</strong> (<a class="reference internal" href="interruption.html#interruption.Interruption" title="interruption.Interruption"><em>interruption.Interruption</em></a>) – the need that concerns itself with interrupting an ongoing activity</li>
+<li><strong>'location'</strong> (<a class="reference internal" href="location.html#location.Location" title="location.Location"><em>location.Location</em></a>) – the location data of a person</li>
+<li><strong>needs</strong> (<em>dict</em>) – a dictionary of all of the  needs</li>
+<li><strong>'rest'</strong> (<a class="reference internal" href="rest.html#rest.Rest" title="rest.Rest"><em>rest.Rest</em></a>) – the need that concerns itself with sleeping</li>
+<li><strong>socio</strong> (<a class="reference internal" href="social.html#social.Social" title="social.Social"><em>social.Social</em></a>) – the social characteristics of a Person</li>
+<li><strong>'state'</strong> (<a class="reference internal" href="state.html#state.State" title="state.State"><em>state.State</em></a>) – information about a Person’s state</li>
+<li><strong>'travel'</strong> (<a class="reference internal" href="travel.html#travel.Travel" title="travel.Travel"><em>travel.Travel</em></a>) – the need that concerns itself with moving from one area to another</li>
+<li><strong>hist_state</strong> – the state of the person at each time step</li>
+<li><strong>hist_activity</strong> – the activity code of the person at each time step</li>
+<li><strong>hist_local</strong> (<em>numpy.ndarray</em>) – the location code of the person at each time step</li>
+<li><strong>H</strong> (<em>numpy.ndarray</em>) – the satiation level for each need at each time step</li>
+<li><strong>need_vector</strong> (<em>numpy.ndarray</em>) – the satiation level for each need at a given time step</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
+<dt id="person.Person.get_diary">
+<code class="descname">get_diary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/person.html#Person.get_diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#person.Person.get_diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function output the result of the simulation in terms of an activity diary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the activity diary describing the behavior of the agent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary">diary.Diary</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="person.Person.print_basic_info">
 <code class="descname">print_basic_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/person.html#Person.print_basic_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#person.Person.print_basic_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function expresses basic information about the Person as a string.</p>
-<p>This prints the following:</p>
+<dd><p>This function expresses basic information about the Person object as a string by         printing the following:</p>
 <ul class="simple">
 <li>person identifier</li>
 <li>home identifier</li>
@@ -206,7 +214,7 @@
 <dl class="method">
 <dt id="person.Person.update_history">
 <code class="descname">update_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/person.html#Person.update_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#person.Person.update_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function updates the history of the following values with their current values</p>
+<dd><p>This function updates the history of the following values with their current values:</p>
 <ul class="simple">
 <li>state history</li>
 <li>location history</li>
@@ -272,21 +280,20 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/person.txt"
+      <li><a href="_sources/person.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -294,14 +301,14 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/person.txt"
+      <a href="_sources/person.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

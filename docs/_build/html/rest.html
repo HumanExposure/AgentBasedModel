@@ -1,29 +1,20 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>rest module &mdash; ABMHAP 2017.08 documentation</title>
-    
+    <title>rest module &#8212; ABMHAP 2018.06 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2017.08',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ABMHAP 2017.08 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="scheduler module" href="scheduler.html" />
     <link rel="prev" title="person module" href="person.html" />
    
@@ -32,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
@@ -43,21 +33,20 @@
             
   <div class="section" id="module-rest">
 <span id="rest-module"></span><h1>rest module<a class="headerlink" href="#module-rest" title="Permalink to this headline">¶</a></h1>
-<p>This file contains information about the need dealing with resting.</p>
-<p>This module contains class <a class="reference internal" href="#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal"><span class="pre">rest.Rest</span></code></a>.</p>
-<p><em>Module author: Dr. Namdi Brandon</em></p>
+<p>This file contains information about the need dealing with Rest.</p>
+<p>This module contains class <a class="reference internal" href="#rest.Rest" title="rest.Rest"><code class="xref py py-class docutils literal notranslate"><span class="pre">rest.Rest</span></code></a>.</p>
 <dl class="class">
 <dt id="rest.Rest">
 <em class="property">class </em><code class="descclassname">rest.</code><code class="descname">Rest</code><span class="sig-paren">(</span><em>clock</em>, <em>num_sample_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="need.html#need.Need" title="need.Need"><code class="xref py py-class docutils literal"><span class="pre">need.Need</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="need.html#need.Need" title="need.Need"><code class="xref py py-class docutils literal notranslate"><span class="pre">need.Need</span></code></a></p>
 <p>This class contains relevant information about the rest need.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; this keeps track of the current time. It is linked to the Universe clock.</li>
-<li><strong>num_sample_points</strong> (<em>int</em>) &#8211; the number of temporal nodes in the simulation</li>
+<li><strong>clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – this keeps track of the current time. It is linked to the Universe clock.</li>
+<li><strong>num_sample_points</strong> (<em>int</em>) – the number of temporal nodes in the simulation</li>
 </ul>
 </td>
 </tr>
@@ -70,18 +59,17 @@
 <p class="first admonition-title">Warning</p>
 <p class="last">This function is old and antiquated.</p>
 </div>
-<p>This function decays the Rest magnitude</p>
-<p>Rest only decays if the person is <strong>not</strong> asleep.  The decay in sleep</p>
+<p>This function decays the Rest satiation. The satiation only decays if the person is         <strong>not</strong> asleep. The decay in sleep</p>
 <div class="math">
-<p><img src="_images/math/33f8444044bf8a173332adfc26f15233add32d40.png" alt="\delta &amp;= m_{decay} \Delta{t} \\
+<p><img src="_images/math/e8c2d0b75923cec7bf269bda3f93fbe4f61aafb1.png" alt="\delta &amp;= m_{decay} \Delta{t} \\
 n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 </div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/ed709d617583f7f3c46c265fb1d8026ab5ae6494.png" alt="m_{decay}"/> is the decay rate</li>
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of time in 1 time step of simulation [minutes]</li>
-<li><img class="math" src="_images/math/b35a9439ad8c8657b1b1d792ad5c2d77a52c0aef.png" alt="\delta"/> is the amount of decay of rest</li>
-<li><img class="math" src="_images/math/e284dae85a953a6609ab238a166b6bde62c1de89.png" alt="n(t)"/> is the satiation at time t</li>
+<li><img class="math" src="_images/math/509e79c93f908403603c9e7b095e3f939b9ff433.png" alt="m_{decay}"/> is the decay rate</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of time in 1 time step of simulation [minutes]</li>
+<li><img class="math" src="_images/math/a702e781dfc76762a3a132c2031fba8898430925.png" alt="\delta"/> is the amount of decay of rest</li>
+<li><img class="math" src="_images/math/a7fab7f8a2758d2cb887e67af0da614cb6ec9486.png" alt="n(t)"/> is the satiation at time t</li>
 </ul>
 </dd>
 </dl>
@@ -89,7 +77,7 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>status</strong> (<em>int</em>) &#8211; the current state of a person</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>status</strong> (<em>int</em>) – the current state of a person</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -100,18 +88,18 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.decay_new">
 <code class="descname">decay_new</code><span class="sig-paren">(</span><em>status</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.decay_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.decay_new" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function decays the Rest magnitude</p>
-<p>Rest only decays if the person is NOT asleep.  The decay in sleep</p>
+<dd><p>This function decays Rests’ satiation. The satiation only decays if the         person is <strong>not</strong> asleep. The decay in sleep is calculated by</p>
 <div class="math">
-<p><img src="_images/math/33f8444044bf8a173332adfc26f15233add32d40.png" alt="\delta &amp;= m_{decay} \Delta{t} \\
+<p><img src="_images/math/e8c2d0b75923cec7bf269bda3f93fbe4f61aafb1.png" alt="\delta &amp;= m_{decay} \Delta{t} \\
 n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 </div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/ed709d617583f7f3c46c265fb1d8026ab5ae6494.png" alt="m_{decay}"/> is the decay rate</li>
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of time in 1 time step of simulation [minutes]</li>
-<li><img class="math" src="_images/math/b35a9439ad8c8657b1b1d792ad5c2d77a52c0aef.png" alt="\delta"/> is the amount of decay of Rest</li>
-<li><img class="math" src="_images/math/e284dae85a953a6609ab238a166b6bde62c1de89.png" alt="n(t)"/> is the satiation at time t</li>
+<li><img class="math" src="_images/math/5ec053cf70dc1c98cc297322250569eda193e7a4.png" alt="t"/> the current time</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of time to decay the satiation [minutes]</li>
+<li><img class="math" src="_images/math/a702e781dfc76762a3a132c2031fba8898430925.png" alt="\delta"/> the change in the satiation for Rest</li>
+<li><img class="math" src="_images/math/509e79c93f908403603c9e7b095e3f939b9ff433.png" alt="m_{decay}"/> is the decay rate for Rest</li>
+<li><img class="math" src="_images/math/a7fab7f8a2758d2cb887e67af0da614cb6ec9486.png" alt="n(t)"/> is the satiation of Rest at time t</li>
 </ul>
 </dd>
 </dl>
@@ -120,8 +108,8 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>status</strong> (<em>int</em>) &#8211; the current state of a person</li>
-<li><strong>dt</strong> (<em>int</em>) &#8211; the duration of time [minutes] used to decay the need</li>
+<li><strong>status</strong> (<em>int</em>) – the current state of a person</li>
+<li><strong>dt</strong> (<em>int</em>) – the duration of time <img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> [minutes] used to decay the need</li>
 </ul>
 </td>
 </tr>
@@ -135,42 +123,43 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.initialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>The purpose of this code is to help initialize the Rest need and whatever activity that goes with         it, depending on any time the simulation begins</p>
+<dd><p>The purpose of this code is to help initialize Rest’s satiation and         whatever activity that goes with it, depending on any time the simulation begins.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This code is a work in progress</p>
+<p class="last">This code is a work in progress.</p>
 </div>
-<ol class="arabic simple">
-<li>update the sleep start and end time</li>
-<li>find out if the person should be asleep</li>
-<li><dl class="first docutils">
-<dt>if the Person is asleep, </dt>
-<dd><ul class="first last">
+<ol class="arabic">
+<li><p class="first">update the sleep start and end time</p>
+</li>
+<li><p class="first">find out if the person should be asleep</p>
+</li>
+<li><p class="first">if the Person is asleep,</p>
+<blockquote>
+<div><ul class="simple">
 <li>sets the appropriate duration of sleep left to do</li>
 <li>sets the rest magnitude to threshold</li>
 <li>sets the rest recharge rate</li>
 <li>sets the schedule to trigger when when the person is scheduled to wake up</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl class="first docutils">
-<dt>if the Person is not asleep, </dt>
-<dd><ul class="first last">
+<li><p class="first">if the Person is not asleep,</p>
+<blockquote>
+<div><ul class="simple">
 <li>sets the decay rate</li>
 <li>set the magnitude</li>
 <li>sets the schedule to trigger when when the person is scheduled to start sleeping</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li>update the schedule for the rest need</li>
+<li><p class="first">update the schedule for the rest need</p>
+</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) &#8211; the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="person.html#person.Person" title="person.Person"><em>person.Person</em></a>) – the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -186,7 +175,7 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>socio</strong> (<a class="reference internal" href="social.html#social.Social" title="social.Social"><em>social.Social</em></a>) &#8211; the social characteristics of the person of interest</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>socio</strong> (<a class="reference internal" href="social.html#social.Social" title="social.Social"><em>social.Social</em></a>) – the social characteristics of the person of interest</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True, if the sleep event resembles a workday. False, otherwise.</td>
 </tr>
@@ -199,13 +188,14 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <code class="descname">perceive</code><span class="sig-paren">(</span><em>future_clock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.perceive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.perceive" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions gives the updated rest magnitude if sleep is done from now until a later time         corresponding to clock.</p>
 <div class="math">
-<p><img src="_images/math/766bfec4448122a76e42be7da78fc2de8341f380.png" alt="\delta = m_{suggested}\Delta{t}"/></p>
+<p><img src="_images/math/27bbef923171b5229fcf4f1bf9a0abacfb6ff482.png" alt="\delta = m_{suggested}\Delta{t}"/></p>
 </div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/3c21aae8dfc822a9282263144067ec4fa497fd21.png" alt="m_{suggested}"/> is the suggested recharge rate</li>
+<li><img class="math" src="_images/math/a702e781dfc76762a3a132c2031fba8898430925.png" alt="\delta"/> is the amount of change in the satiation for Rest</li>
+<li><img class="math" src="_images/math/708e1d8b6fd15b731aab0d5d72a65bbe4ab7359f.png" alt="m_{suggested}"/> is the suggested recharge rate for Rest</li>
 <li><dl class="first docutils">
-<dt><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of time from now until the future time</dt>
+<dt><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of time from now until the future time</dt>
 <dd>given by future_clock</dd>
 </dl>
 </li>
@@ -216,7 +206,7 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>future_clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) &#8211; a clock corresponding to a future time</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>future_clock</strong> (<a class="reference internal" href="temporal.html#temporal.Temporal" title="temporal.Temporal"><em>temporal.Temporal</em></a>) – a clock corresponding to a future time</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the perceived rest level</td>
 </tr>
@@ -243,23 +233,23 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.set_decay_rate">
 <code class="descname">set_decay_rate</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.set_decay_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.set_decay_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function sets the decay rate.</p>
-<p>The decay rate (<img class="math" src="_images/math/ed709d617583f7f3c46c265fb1d8026ab5ae6494.png" alt="m_{decay}"/>) is assumed to be the slope of a linear function</p>
-<dl class="docutils">
+<dd><p>This function sets the decay rate. The decay rate (<img class="math" src="_images/math/509e79c93f908403603c9e7b095e3f939b9ff433.png" alt="m_{decay}"/>) is assumed         to be the slope of a linear function.</p>
+<div class="math">
+<p><img src="_images/math/a68b3a90801d7d52f27bf71d59a1d16a957304c2.png" alt="m_{decay} = -\frac{1 - \lambda}{\Delta{t}}"/></p>
+</div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of time expected to be awake</li>
-<li><img class="math" src="_images/math/1ab0134b6e0837594649c75a2ed83cfd85a2d03d.png" alt="\lambda"/> is the rest threshold</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of time expected to be awake</li>
+<li><img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/> is the Rest threshold</li>
+<li><img class="math" src="_images/math/509e79c93f908403603c9e7b095e3f939b9ff433.png" alt="m_{decay}"/> is the decay rate for Rest</li>
 </ul>
 </dd>
 </dl>
-<div class="math">
-<p><img src="_images/math/f7fd00329c236f6db9a8543dcc125df9a5d82044.png" alt="m_{decay} = \frac{-1 + \lambda}{\Delta{t}}"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the duration of sleep [minutes]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) – the duration of sleep <img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> [minutes]</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -270,23 +260,23 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.set_recharge_rate">
 <code class="descname">set_recharge_rate</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.set_recharge_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.set_recharge_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function sets the recharge rate.</p>
-<p>The recharge rate (<img class="math" src="_images/math/4aaaedad6c6cd9649c69d00c9bde7899f733131e.png" alt="m_{recharge}"/>) is assumed to be the slope of a linear function</p>
-<dl class="docutils">
+<dd><p>This function sets the recharge rate. The recharge rate (<img class="math" src="_images/math/3b12fdb86124019416eb90fc648db0723364dd46.png" alt="m_{recharge}"/>)         is assumed to be the slope of a linear function.</p>
+<div class="math">
+<p><img src="_images/math/77bb581fe2e70bd98021463f3adb5dac81cf0f99.png" alt="m_{recharge} = \frac{1 - \lambda}{ \Delta{t} }"/></p>
+</div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of sleep</li>
-<li><img class="math" src="_images/math/1ab0134b6e0837594649c75a2ed83cfd85a2d03d.png" alt="\lambda"/> is the rest need threshold</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of sleep</li>
+<li><img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/> is the threshold for Rest</li>
+<li><img class="math" src="_images/math/3b12fdb86124019416eb90fc648db0723364dd46.png" alt="m_{recharge}"/> is the recharge rate for Rest</li>
 </ul>
 </dd>
 </dl>
-<div class="math">
-<p><img src="_images/math/43e044a892256ec740a3293aaf7f65f6ad8ce54d.png" alt="m_{recharge} = \frac{1 - \lambda}{ \Delta{t} }"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the duration of sleep after rounding [minutes]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) – the duration of sleep after rounding <img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> [minutes]</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -297,22 +287,23 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.set_suggested_recharge_rate">
 <code class="descname">set_suggested_recharge_rate</code><span class="sig-paren">(</span><em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.set_suggested_recharge_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.set_suggested_recharge_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function sets the &#8220;suggested&#8221; recharge rate. That is, the rate of recharge assuming exact         arithmetic (there is no rounding in time, say to the nearest minute)</p>
-<dl class="docutils">
+<dd><p>This function sets the “suggested” recharge rate. That is, the rate of recharge assuming exact         arithmetic (there is no rounding in time, say to the nearest minute).</p>
+<div class="math">
+<p><img src="_images/math/c9cd2a9b30fb9740d391e4c20fcb38c8c27d7940.png" alt="m_{suggested} = \frac{ 1 - \lambda }{ \Delta{t} }"/></p>
+</div><dl class="docutils">
 <dt>where</dt>
 <dd><ul class="first last simple">
-<li><img class="math" src="_images/math/5093919381bed48447a69e90b18f35096ae652ec.png" alt="\Delta{t}"/> is the duration of sleep</li>
-<li><img class="math" src="_images/math/1ab0134b6e0837594649c75a2ed83cfd85a2d03d.png" alt="\lambda"/> is the rest need threshold</li>
+<li><img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> is the duration of sleep</li>
+<li><img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/> is the Rest threshold</li>
+<li><img class="math" src="_images/math/708e1d8b6fd15b731aab0d5d72a65bbe4ab7359f.png" alt="m_{suggested}"/> is the suggested recharge rate for Rest</li>
 </ul>
 </dd>
 </dl>
-<div class="math">
-<p><img src="_images/math/b6e21ae16b948c32f9197d03977cbe60192ec37f.png" alt="m_{suggested} = \frac{ 1 - \lambda }{ \Delta{t} }"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) &#8211; the duration of sleep [minutes]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dt</strong> (<em>int</em>) – the duration of sleep <img class="math" src="_images/math/f8b85c7725f713a6cc965f0ea2c1752fff180985.png" alt="\Delta{t}"/> [minutes]</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -323,18 +314,18 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
 <dl class="method">
 <dt id="rest.Rest.should_be_asleep">
 <code class="descname">should_be_asleep</code><span class="sig-paren">(</span><em>t_start</em>, <em>t_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rest.html#Rest.should_be_asleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rest.Rest.should_be_asleep" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function finds out if the person should be asleep for the initialization of the ABM module</p>
+<dd><p>This function finds out if the person should be asleep for the initialization         of the ABMHAP algorithm.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t_start</strong> (<em>int</em>) &#8211; start time of sleep [minutes, time of day]</li>
-<li><strong>t_end</strong> (<em>int</em>) &#8211; end time of sleep [minutes, time of day]</li>
+<li><strong>t_start</strong> (<em>int</em>) – start time of sleep [minutes, time of day]</li>
+<li><strong>t_end</strong> (<em>int</em>) – end time of sleep [minutes, time of day]</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a flag indicating whether a Person should be asleep (if True) or awake (if False)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a flag indicating whether a person should be asleep (if True) or awake (if False)</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
@@ -381,21 +372,20 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/rest.txt"
+      <li><a href="_sources/rest.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -403,14 +393,14 @@ n(t + \Delta{t}) &amp;= n(t) + \delta"/></p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Namdi Brandon.
+      &copy;2018, Namdi Brandon.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/rest.txt"
+      <a href="_sources/rest.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

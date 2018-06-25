@@ -28,9 +28,9 @@ This module contains class :class:`scheduler.Scheduler`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# --------------------------------
+# ===============================================
 # import
-# --------------------------------
+# ===============================================
 
 # general math capability
 import numpy as np
@@ -39,7 +39,7 @@ import numpy as np
 import need
 
 # ===============================================
-# class
+# class Scheduler
 # ===============================================
 
 class Scheduler(object):
@@ -59,9 +59,12 @@ class Scheduler(object):
     contains the times [minutes, universal time] that the simulation should not skip over
     :var int dt: the duration of time between events
     :var int t_old: the time [minutes, universal time] of the prior event
+    :var bool do_minute_by_minute: this flag controls whether the schedule should either \
+    go through time minute by minute (if True) or jump forward in time (if False). The default \
+    is to jump forward in time
     """
 
-    def __init__(self, clock, num_people):
+    def __init__(self, clock, num_people, do_minute_by_minute=False):
 
         self.clock = clock
 
@@ -72,6 +75,10 @@ class Scheduler(object):
         self.dt = 0
 
         self.t_old = self.clock.t_univ
+
+        # This flag controls whether the schedule should either go through time minute by minute \
+        # or jump forward in time (if False)
+        self.do_minute_by_minute    = do_minute_by_minute
 
         return
 
@@ -102,20 +109,33 @@ class Scheduler(object):
             # i.e. get indices of times greater than the current time
             idx = A > t_now
 
-            # if there is a time greater than the current time
-            if idx.any():
-                # get the next event time
-                t_next = np.min(A[idx])
+            #
+            # move minute by minute
+            #
+            if self.do_minute_by_minute:
+                t_next  = t_now + 1
 
+            #
+            # jump forward in time
+            #
             else:
-                # nothing scheduled should happen, increase the time by 1
-                t_next = t_now + 1
 
-            # this makes sure that we do not stay in a time loop
-            if (t_next == t_now):
-                t_next = t_now + 1
+                # if there is a time greater than the current time
+                if idx.any():
+                    # get the next event time
+                    t_next = np.min(A[idx])
 
+                else:
+                    # nothing scheduled should happen, increase the time by 1
+                    t_next = t_now + 1
+
+                # this makes sure that we do not stay in a time loop
+                if (t_next == t_now):
+                    t_next = t_now + 1
+
+            #
             # update the old scheduled event times
+            #
             A[idx == False] = t_next
 
         else:

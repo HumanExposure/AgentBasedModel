@@ -38,7 +38,7 @@ class Bed(asset.Asset):
 
     """
     This asset models a bed. It allows the agent to address the Rest (:class:`rest.Rest`) need by doing the \
-    sleep (:class:`sleep.Sleep`) action .
+    sleep (:class:`sleep.Sleep`) activity.
 
     """
 

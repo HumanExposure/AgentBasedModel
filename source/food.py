@@ -20,9 +20,9 @@ This module contains the following class: :class:`food.Food`.
 """
 
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general math capability
 import numpy as np
@@ -30,10 +30,9 @@ import numpy as np
 # agent-based model modules
 import asset, eat, location
 
-# ----------------------------------------------------------
-# constants
-# ----------------------------------------------------------
-
+# ===============================================
+# class Food
+# ===============================================
 
 class Food(asset.Asset):
 
@@ -42,9 +41,9 @@ class Food(asset.Asset):
 
     Activities in this asset:
 
-    #. :class:`eat_breakfast.Eat_Breakfast`
-    #. :class:`eat_lunch.Eat_Lunch`
-    #. :class:`eat_dinner.Eat_Dinner`
+    #. :class:`eat.Eat_Breakfast`
+    #. :class:`eat.Eat_Lunch`
+    #. :class:`eat.Eat_Dinner`
 
     """
     #

@@ -60,15 +60,15 @@ class Asset(object):
 
     """
     An asset is an object that allows the agent to perform an activity. Each asset \
-    contains a list Activities that an agent can use to perform actions.
+    contains a list of activities that an agent can use to perform actions.
 
-    :ivar dict activities: This is a dictionary of all the activities associated with this asset.
-    :ivar int category: This indicates the type of asset.
-    :ivar int id: This is an identifier number for the asset.
-    :ivar location.Location 'location': This is the location of the asset.
-    :ivar int max_users: This indicates the maximum number of users that can simultaneously access the asset.
-    :ivar int num_users: This is the current number of users for the asset.
-    :ivar int status: This is the state of the asset.
+    :ivar dict activities: a dictionary of all the activities associated with this asset
+    :ivar int category: a code that indicates the category type of asset
+    :ivar int id: an identifier number for the asset
+    :ivar location.Location 'location': the location of the asset
+    :ivar int max_users: the maximum number of users that can simultaneously access the asset
+    :ivar int num_users: the current number of users for the asset
+    :ivar int status: the state of the asset
 
     """
     #
@@ -104,8 +104,8 @@ class Asset(object):
         """
         This function changes the state of an asset once it is freed by a Person by doing the following:
         
-        #. Decreases the number of users of the asset by 1
-        #. If the number of users is zero, the status of the asset is set to idle (:const:`state.IDLE`)
+        #. decreases the number of users of the asset by 1
+        #. if the number of users is zero, the status of the asset is set to idle (:const:`state.IDLE`)
 
         :return: None
         """
@@ -154,10 +154,10 @@ class Asset(object):
     def reset(self):
 
         """
-        This function does the following.
+        This function does the following:
         
-        #. Sets the number of users to zero
-        #. Sets the asset's status to idle
+        #. sets the number of users to zero
+        #. sets the asset's status to idle
         
         :return: None 
         """
@@ -198,11 +198,12 @@ class Asset(object):
     def update(self):
 
         """
-        This function changes the state of the asset once it is used by a Person.
+        This function changes the state of the asset once it is used by a person. The update does \
+        the following:
         
-        #. Increases the number of people by 1
-        #. If the number of users is at the maximum number, set the asset's status to busy
-        #. If the number of users is less than the maximum number, set the assets' status to busy but \
+        #. increases the number of people by 1
+        #. if the number of users is at the maximum number, set the asset's status to busy
+        #. if the number of users is less than the maximum number, set the asset's status to busy but \
         able to be used by another agent
 
         :return: None

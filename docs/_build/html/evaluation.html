@@ -1,0 +1,470 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>evaluation module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="fig_driver module" href="fig_driver.html" />
+    <link rel="prev" title="eat_lunch_trial module" href="eat_lunch_trial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evaluation">
+<span id="evaluation-module"></span><h1>evaluation module<a class="headerlink" href="#module-evaluation" title="Permalink to this headline">¶</a></h1>
+<p>This module is used to for evaluating the accuracy of the Agent-Based Model of Human Activity Patterns (ABMHAP) simulation results vs. Consolidated Human Activity Database (CHAD) data.</p>
+<dl class="function">
+<dt id="evaluation.compare_abm_to_chad">
+<code class="descclassname">evaluation.</code><code class="descname">compare_abm_to_chad</code><span class="sig-paren">(</span><em>demo</em>, <em>df_list</em>, <em>trial_code</em>, <em>fidx=100</em>, <em>do_save=False</em>, <em>fpath=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#compare_abm_to_chad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.compare_abm_to_chad" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compares the results of the ABMHAP to the CHAD data by showing by</p>
+<ol class="arabic simple">
+<li>plotting cumulative distribution functions (CDF) of the predicted (ABMHAP) and     observed (CHAD) single-day data for each activity</li>
+<li>plotting the residual (that difference between the CDFs) between the predicted     (ABMHAP) and observed (CHAD) data for each activity</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>demo</strong> (<em>int</em>) – the demographic identifier</li>
+<li><strong>df_list</strong> (<em>list of  pandas.core.frame.DataFrame</em>) – the ABMHAP activity diaries to compare</li>
+<li><strong>trial_code</strong> (<em>int</em>) – the trial identifier</li>
+<li><strong>fidx</strong> (<em>int</em>) – the figure identifier for the first figure in a series of figures</li>
+<li><strong>do_save</strong> (<em>bool</em>) – a flag indicating whether (if True) or not (if False) to save     the figures</li>
+<li><strong>fpath</strong> (<em>str</em>) – the file path of the figures that are to be saved</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.compare_abm_to_chad_help">
+<code class="descclassname">evaluation.</code><code class="descname">compare_abm_to_chad_help</code><span class="sig-paren">(</span><em>df_abm</em>, <em>df_obs</em>, <em>act_code</em>, <em>fidx</em>, <em>do_save</em>, <em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#compare_abm_to_chad_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.compare_abm_to_chad_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compares the results of the ABMHAP to the CHAD data for a given activity by</p>
+<ol class="arabic simple">
+<li>plotting cumulative distribution functions (CDF) of the predicted (ABMHAP) and     observed (CHAD) single-day data for each activity</li>
+<li>plotting the residual (that difference between the CDFs) between the predicted     (ABMHAP) and observed (CHAD) data for each activity</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df_abm</strong> (<em>pandas.core.frame.DataFrame</em>) – the predicted (ABMHAP) data for the respective activity</li>
+<li><strong>df_obs</strong> (<em>pandas.core.frame.DataFrame</em>) – the single-day observed (CHAD) data for the respective activity</li>
+<li><strong>act_code</strong> (<em>float</em>) – the activity code</li>
+<li><strong>fidx</strong> (<em>int</em>) – the figure identifier of the first figure</li>
+<li><strong>do_save</strong> (<em>bool</em>) – a flag indicating whether (if True) or not (if False) to save     the figures</li>
+<li><strong>fpath</strong> (<em>str</em>) – the file path of the figures that are to be saved</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the last figure identifier plotted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.get_solo_data">
+<code class="descclassname">evaluation.</code><code class="descname">get_solo_data</code><span class="sig-paren">(</span><em>z</em>, <em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#get_solo_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.get_solo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets the single-day data from individuals with only single-day records      within CHAD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zipfile</em>) – the zipfile of the demographic data</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name for the CHAD individual records data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the CHAD single-day data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.plot">
+<code class="descclassname">evaluation.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>x</em>, <em>q</em>, <em>cdf</em>, <em>inv_cdf</em>, <em>act_code</em>, <em>fids</em>, <em>do_hours=True</em>, <em>dname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the following results of cumulative distribution function (CDF):</p>
+<ol class="arabic simple">
+<li>CDFs comparing the predicted and observed values</li>
+<li>CDFs showing the residual</li>
+<li>CDFs showing the scaled residual</li>
+<li>Inverted CDFs comparing the predicted and observed values</li>
+<li>Inverted CDFs showing the residual</li>
+<li>Inverted CDFs showing the scaled residual</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the range of values of the data</li>
+<li><strong>q</strong> (<em>numpy.ndarray</em>) – the qunatiles</li>
+<li><strong>cdf</strong> (<em>numpy.ndarray</em>) – the cumulative distribution function in units of percentage</li>
+<li><strong>inv_cdf</strong> (<em>numpy.ndarray</em>) – the cumulative distribution function in units of time</li>
+<li><strong>act_code</strong> (<em>numpy.ndarray</em>) – the activity codes of the respective activities</li>
+<li><strong>fids</strong> (<em>numpy.ndarray</em>) – the figure identifiers</li>
+<li><strong>do_hours</strong> (<em>bool</em>) – a flag indicating whether to plot the inverted CDF data in hours (if True)     or minutes (if false)</li>
+<li><strong>dname</strong> (<em>str</em>) – the name of the data to be plotted</li>
+<li><strong>off</strong> (<em>float</em>) – the percentage in which to put a vertical line indicating both the bottom and top     off-percentage of the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a figure containing CDFs comparing the predicted and observed values,     a figure containing CDFs showing the residual,     a figure containing CDFs showing the scaled residual,     a figure containing Inverted CDFs comparing the predicted and observed values,     a figure containing Inverted CDFs showing the residual,     a figure containing Inverted CDFs showing the scaled residual</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib.figure.Figure, matplotlib.figure.Figure, matplotlib.figure.Figure     matplotlib.figure.Figure, matplotlib.figure.Figure, matplotlib.figure.Figure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.plot_predicted_observed">
+<code class="descclassname">evaluation.</code><code class="descname">plot_predicted_observed</code><span class="sig-paren">(</span><em>x</em>, <em>pred</em>, <em>obs</em>, <em>xlabel</em>, <em>ylabel</em>, <em>title</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#plot_predicted_observed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.plot_predicted_observed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the predicted (ABMHAP) and observed (CHAD) data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the x-axis</li>
+<li><strong>pred</strong> (<em>numpy.ndarray</em>) – the predicted (ABMHAP) values</li>
+<li><strong>obs</strong> (<em>numpy.ndarray</em>) – the observed (CHAD) values from data</li>
+<li><strong>xlabel</strong> (<em>str</em>) – the x-axis label</li>
+<li><strong>ylabel</strong> (<em>str</em>) – the y-axis label</li>
+<li><strong>title</strong> (<em>str</em>) – the title of the figure</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.plot_residual">
+<code class="descclassname">evaluation.</code><code class="descname">plot_residual</code><span class="sig-paren">(</span><em>x</em>, <em>res</em>, <em>xlabel=''</em>, <em>ylabel=''</em>, <em>title=''</em>, <em>color='r'</em>, <em>label='Residual'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#plot_residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.plot_residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the residual between cumulative distribution functions (CDFs)     the ABMHAP and CHAD data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the x-axis data</li>
+<li><strong>res</strong> (<em>numpy.ndarray</em>) – the residual <img class="math" src="_images/math/ab84bbd3ef336a7f531380083cd9b5141ca98f59.png" alt="r(x)"/></li>
+<li><strong>xlabel</strong> (<em>str</em>) – the x-axis label</li>
+<li><strong>ylabel</strong> (<em>str</em>) – the y-axis label</li>
+<li><strong>title</strong> (<em>str</em>) – the title of the plot</li>
+<li><strong>color</strong> (<em>str</em>) – the color of the plot</li>
+<li><strong>label</strong> (<em>str</em>) – the label of the plot</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.residual">
+<code class="descclassname">evaluation.</code><code class="descname">residual</code><span class="sig-paren">(</span><em>pred</em>, <em>obs</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the residual between predicted values and observed values. Given the predicted and     observed values, this function does the following:</p>
+<ol class="arabic">
+<li><p class="first">Compute the empirical cumulative distribution function (CDF) between the predicted and observed data     in units [quantile vs hours]</p>
+</li>
+<li><p class="first">Compute the residual in the CDF between observed and predicted data</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/3652e39c4e916aa4e24f357337027aececeb67fa.png" alt="r(x) = cdf_{observed}(x) - cdf_{predicted}(x)"/></p>
+</div></div></blockquote>
+</li>
+<li><p class="first">Invert the residual so that the CDFs and residuals are in units [minutes vs quantile]</p>
+</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pred</strong> (<em>numpy.ndarray</em>) – the predicted (ABMHAP) values used to make the empirical CDF</li>
+<li><strong>obs</strong> (<em>numpy.ndarray</em>) – the observed (CHAD) values used to make the empirical CDF</li>
+<li><strong>x</strong> (<em>numpy.ndarray</em>) – the x-values</li>
+<li><strong>do_scaling</strong> (<em>bool</em>) – this scales the inverted cdf residual by the standard deviation of the observed values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the data for the cumulative distribution data (predicted, observed, residual, and scaled residual),     the data for the inverted cumulative distribution data (predicted, observed, residual, and scaled residual)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.residual_analysis">
+<code class="descclassname">evaluation.</code><code class="descname">residual_analysis</code><span class="sig-paren">(</span><em>pred</em>, <em>obs</em>, <em>N=1001</em>, <em>do_periodic=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#residual_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.residual_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes the predicted and observed values and computes the respective cumulative distribution     functions (CDFs) in units percentage and the inverted CDF which is the CDF in units of minutes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pred</strong> (<em>numpy.ndarray</em>) – the predicted values</li>
+<li><strong>obs</strong> (<em>numpy.ndarray</em>) – the observed values</li>
+<li><strong>N</strong> (<em>int</em>) – the number of points of the CDF vector</li>
+<li><strong>do_periodic</strong> (<em>bool</em>) – a flag to see if the time data should be in a [-12, 12) hour format</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the x values, CDF of residual, inverted CDF of residual</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, pandas.core.frame.DataFrame, pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.sample_activitiy_abm_work">
+<code class="descclassname">evaluation.</code><code class="descname">sample_activitiy_abm_work</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#sample_activitiy_abm_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.sample_activitiy_abm_work" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used in order to sample a random day of work activity data from the ABM. This function takes     takes into account that 1 work “event” consists of multiple work activity-diary entries.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function assumes that df only contains work activity data and is <strong>NOT</strong> empty</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The duration data here is the end of the last event - minus the start of the first event.         This is done to mimic how the duration data is stored in CHAD.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the diary of work activities for an individual</td>
+</tr>
+</tbody>
+</table>
+<p>:return:the sampled work data
+:rtype: pandas.core.frame.DataFrame</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.sample_activity_abm">
+<code class="descclassname">evaluation.</code><code class="descname">sample_activity_abm</code><span class="sig-paren">(</span><em>df_list</em>, <em>act</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#sample_activity_abm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.sample_activity_abm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an activity type, this function looks at each activity diary and samples 1 event of that activity type     should that diary have a matching activity-entry.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the work activity technically occurs twice (1 event before lunch and 1 event after lunch), the         activity needs to be merged as one event in order for the analysis to be correct.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df_list</strong> (<em>list of pandas.core.frame.DataFrame</em>) – the activity diaries</li>
+<li><strong>act</strong> (<em>float</em>) – the activity code</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the sampled activities</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.save_figs_dt">
+<code class="descclassname">evaluation.</code><code class="descname">save_figs_dt</code><span class="sig-paren">(</span><em>figs</em>, <em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#save_figs_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.save_figs_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function save plots about the activity duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>figs</strong> (<em>tuple</em>) – a tuple of figures to save about activity duration data</li>
+<li><strong>fpath</strong> (<em>str</em>) – the specific file path in which to plot the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.save_figs_end">
+<code class="descclassname">evaluation.</code><code class="descname">save_figs_end</code><span class="sig-paren">(</span><em>figs</em>, <em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#save_figs_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.save_figs_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function save plots about the activity end time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>figs</strong> (<em>tuple</em>) – a tuple of figures to save about activity end time data</li>
+<li><strong>fpath</strong> (<em>str</em>) – the specific file path in which to plot the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.save_figs_start">
+<code class="descclassname">evaluation.</code><code class="descname">save_figs_start</code><span class="sig-paren">(</span><em>figs</em>, <em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#save_figs_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.save_figs_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function save plots about the activity start time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>figs</strong> (<em>tuple</em>) – a tuple of figures to save about activity start time data</li>
+<li><strong>fpath</strong> (<em>str</em>) – the specific file path in which to plot the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="evaluation.save_figures">
+<code class="descclassname">evaluation.</code><code class="descname">save_figures</code><span class="sig-paren">(</span><em>act</em>, <em>figs_start</em>, <em>figs_end</em>, <em>figs_dt</em>, <em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/evaluation.html#save_figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evaluation.save_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves the plotted figures about duration and start time data of the results from     <a class="reference internal" href="#evaluation.compare_abm_to_chad" title="evaluation.compare_abm_to_chad"><code class="xref py py-func docutils literal notranslate"><span class="pre">compare_abm_to_chad()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>act</strong> (<em>int</em>) – the activity code</li>
+<li><strong>figs_start</strong> (<em>tuple</em>) – a tuple of figures to save about activity start time data about the random day sampling</li>
+<li><strong>figs_end</strong> (<em>tuple</em>) – a tuple of figures to save about activity end time data about the random day sampling</li>
+<li><strong>figs_dt</strong> (<em>tuple</em>) – a tuple of figures to save about activity duration data about the random day sampling</li>
+<li><strong>fpath</strong> (<em>str</em>) – the general file path to plot the data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="eat_lunch_trial.html" title="previous chapter">eat_lunch_trial module</a></li>
+      <li>Next: <a href="fig_driver.html" title="next chapter">fig_driver module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/evaluation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/evaluation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

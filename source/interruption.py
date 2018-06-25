@@ -19,9 +19,9 @@ This module contains class :class:`interruption.Interruption`.
 .. moduleauthor:: Dr. Namdi Brandon
 """
 
-# ----------------------------------------------------------
+# ===============================================
 # import
-# ----------------------------------------------------------
+# ===============================================
 
 # general math capabilities
 import numpy as np
@@ -39,11 +39,8 @@ class Interruption(need.Need):
     """
     This class enables a Person to interrupt a current activity.
 
-    Interruption is a minor Need (need-association). That is, this need-association is NOT \
-    independent of other needs.
-
-    :param temporal.Temporal clock: The clock governing time in the simulation
-    :param int num_sample_points: The number of time nodes in the simulation
+    :param temporal.Temporal clock: the clock governing time in the simulation
+    :param int num_sample_points: the number of time nodes in the simulation
 
     :var int category: the category of the interruption Need
     :var int activity_start: the category of the (interrupting) activity to start
@@ -90,6 +87,14 @@ class Interruption(need.Need):
 
     def get_time_to_next_work_lunch(self, p):
 
+        """
+        This function calculates the amount of time [in minutes] until the agent should
+        eat lunch at work.
+
+        :param person.Person p: the person of interest
+        :return: the amount of time [minutes] until the next time the agent should \
+        eat lunch at work
+        """
         DAY_2_MIN   = temporal.DAY_2_MIN
 
         # problem because work start  gets updated at work end when this
@@ -109,10 +114,10 @@ class Interruption(need.Need):
     def initialize(self, p):
 
         """
-        Initializes the need during the first step
+        Initializes the need at the beginning of the simulation.
 
-        :param person.Person p: Initialize the state of the interruption need-association at the \
-                         beginning of the simulation
+        :param person.Person p: the person of interest
+
         :return: None
         """
 
@@ -129,12 +134,12 @@ class Interruption(need.Need):
     def is_lunch_time(self, time_of_day, meals):
 
         """
-        This function indicates whether it is lunch time or not. This is used in the interruption to stop the work \
-        activity and begin the eat lunch activity.
+        This function indicates whether it is lunch time or not. This is used in the \
+        interruption to stop the work activity and begin the eat lunch activity.
 
         :param int time_of_day: the time of day [minutes]
-        :param list meals: a list of the meals (:class:`meal.Meal`) for the agents. Some of the entries in the list \
-        may be None.
+        :param list meals: a list of the meals (:class:`meal.Meal`) for the agents; some of the \
+        entries in the list may be None.
 
         :return is_lunch: a flag indicating whether it is lunch time
         """
@@ -187,8 +192,8 @@ class Interruption(need.Need):
 
     def reset(self):
         """
-        This function resets the interruption need completely in order to re run the simulation. In this reset, \
-        the history is also reset.
+        This function resets the Interruption need completely in order to re run \
+        the simulation. In this reset the history is also reset.
 
         :return:
         """
@@ -220,14 +225,14 @@ class Interruption(need.Need):
     def stop_work_to_eat(self, p):
 
         """
-        This function checks to see if an interruption should occur to allow a Person to \
+        This function checks to see if an interruption should occur to allow a person to \
         start the eating activity while doing the work activity
 
         An agent may stop the work activity to eat lunch if the following conditions are met:
 
-        #. The agent is hungry
-        #. The current activity is work
-        #. It is lunch time
+        #. the agent is hungry
+        #. the current activity is work
+        #. it is lunch time
 
         :param person.Person p: the person of interest
 

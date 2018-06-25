@@ -1,0 +1,628 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>trial module &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="variation module" href="variation.html" />
+    <link rel="prev" title="sleep_trial module" href="sleep_trial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-trial">
+<span id="trial-module"></span><h1>trial module<a class="headerlink" href="#module-trial" title="Permalink to this headline">¶</a></h1>
+<p>This is the module that is in charge of running simulations comparing the Agent-Based Model of Human Activity Patterns (ABMHAP) with the data from the Consolidated Human Activity Database (CHAD).</p>
+<p>This module contains the class <a class="reference internal" href="#trial.Trial" title="trial.Trial"><code class="xref py py-class docutils literal notranslate"><span class="pre">trial.Trial</span></code></a>.</p>
+<dl class="class">
+<dt id="trial.Trial">
+<em class="property">class </em><code class="descclassname">trial.</code><code class="descname">Trial</code><span class="sig-paren">(</span><em>parameters</em>, <em>sampling_params</em>, <em>demographic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is sets up runs for the ABMHAP initialized with data from CHAD.</p>
+<p>This is how to run a trial</p>
+<ol class="arabic simple">
+<li>create the Trial object via __init__()</li>
+<li>initialize the Trial. That is, one must set up the distribution for sampling means and standard deviations)      via initialize(). This is usually done by sending the appropriate files names to the function for the respective      distributions.</li>
+<li>create the universe for the simulation</li>
+<li>add the people to the household</li>
+<li>run the simulation</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters that describe the household</li>
+<li><strong>sampling_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the sampling parameters used to filter “good” CHAD activity data</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier used to parametrize the agent</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id</strong> (<em>int</em>) – the trial identifier</li>
+<li><strong>'params'</strong> (<a class="reference internal" href="params.html#params.Params" title="params.Params"><em>params.Params</em></a>) – the parameters that describe the household</li>
+<li><strong>sampling_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the sampling parameters used to filter “good” CHAD data</li>
+<li><strong>num_samples</strong> (<em>int</em>) – the number of ABMHAP samples (or trials) to be run</li>
+<li><strong>demographic</strong> (<em>int</em>) – the demographic identifier used to parametrize the agent</li>
+<li><strong>fname</strong> (<em>str</em>) – the name of the zipfile for the CHAD data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="trial.Trial.add_person_to_universe">
+<code class="descname">add_person_to_universe</code><span class="sig-paren">(</span><em>u</em>, <em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.add_person_to_universe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.add_person_to_universe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates a person and sets up the universe for simulation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function currently only assumes that each simulation has only 1 person / household.             This will need to be changed later. There will be conflicts with the idx and id.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) – the universe the simulation will run in</li>
+<li><strong>idx</strong> (<em>int</em>) – the index for <a class="reference internal" href="params.html#module-params" title="params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a> to access to parametrize this person.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return u:</th><td class="field-body"><p class="first">the updated/ initialized universe</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe">universe.Universe</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.assign_chad_params">
+<code class="descname">assign_chad_params</code><span class="sig-paren">(</span><em>z</em>, <em>f_stats</em>, <em>s_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.assign_chad_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.assign_chad_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the CHAD statistical parameters for a given activity to the agent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zipfile.ZipFile</em>) – the file name (.zip) for the demographic data</li>
+<li><strong>f_stats</strong> (<em>a dictionary of int - str</em>) – the file names of the statistical data relevant to the start time,         end time, duration, and CHAD records for a given activity</li>
+<li><strong>s_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit the sampling of         respective statistical data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">relevant parameters for each person in the household for         a given activity. The tuple contains the following [in hours]: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Rtype data:</th><td class="field-body"><p class="first last">tuple of numpy.ndarray, numpy.ndarray, numpy.ndarray,         numpy.ndarray, numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.check_spacing">
+<code class="descname">check_spacing</code><span class="sig-paren">(</span><em>start_mean</em>, <em>start_std</em>, <em>end_mean</em>, <em>end_std</em>, <em>spacing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.check_spacing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.check_spacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is done to make sure the minimum end time does not overlap with plausible start times. The         function returns the indices of agents with a parametrization that causes this overlap. This is         a concern for activities like sleeping where the agent can be assigned to end too early after         starting the sleep too quickly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_mean</strong> (<em>numpy.ndarray</em>) – the mean start time for the given activity for each person         in the household</li>
+<li><strong>start_std</strong> (<em>numpy.ndarray</em>) – the standard deviation of start time for the given activity         for each person in the household</li>
+<li><strong>end_mean</strong> (<em>numpy.ndarray</em>) – the mean end time for the given activity for each person in         the household</li>
+<li><strong>end_std</strong> (<em>numpy.ndarray</em>) – the standard deviation of end time for the given activity for         each person in the household</li>
+<li><strong>spacing</strong> (<em>float</em>) – the minimum amount</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the indices of the agents with improper parametrization</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.create_universe">
+<code class="descname">create_universe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.create_universe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.create_universe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates a universe object that simulations will run in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return u:</th><td class="field-body">the universe for the simulation to run in</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe">universe.Universe</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_chad_stats_data_dt">
+<code class="descname">get_chad_stats_data_dt</code><span class="sig-paren">(</span><em>z</em>, <em>fname</em>, <em>s_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_chad_stats_data_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_chad_stats_data_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obtains the CHAD data for activity duration data that are         suitable for ABMHAP simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zifpile.Zipfile</em>) – the zipfile of the activity data</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name for the data file for activity duration</li>
+<li><strong>s_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit the sampling of         respective statistical data for a given activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the CHAD data for activity duration suitable for ABMHAP simulation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_chad_stats_data_end">
+<code class="descname">get_chad_stats_data_end</code><span class="sig-paren">(</span><em>z</em>, <em>fname</em>, <em>s_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_chad_stats_data_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_chad_stats_data_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obtains the CHAD data for activity end time data that are         suitable for ABMHAP simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zifpile.Zipfile</em>) – the zipfile of the activity data</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name for the data file for activity duration</li>
+<li><strong>s_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit the sampling of         respective statistical data for a given activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the CHAD data for activity end time suitable for ABMHAP simulation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_chad_stats_data_start">
+<code class="descname">get_chad_stats_data_start</code><span class="sig-paren">(</span><em>z</em>, <em>fname</em>, <em>s_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_chad_stats_data_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_chad_stats_data_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obtains the CHAD data for activity start time data that are         suitable for ABMHAP simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zifpile.Zipfile</em>) – the zipfile of the activity data</li>
+<li><strong>fname</strong> (<em>str</em>) – the file name for the data file for activity duration</li>
+<li><strong>s_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit the sampling of         respective statistical data for a given activity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the CHAD data for activity duration suitable for ABMHAP simulation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_diary">
+<code class="descname">get_diary</code><span class="sig-paren">(</span><em>u</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_diary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes the simulation data in terms of a list of         <a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><code class="xref py py-class docutils literal notranslate"><span class="pre">universe.Universe</span></code></a> and creates a list         of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a> that contain the activity diaries.         One per each household in the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) – contains all of the simulation data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the activity diaries (1 entry per person)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of <a class="reference internal" href="diary.html#diary.Diary" title="diary.Diary"><code class="xref py py-class docutils literal notranslate"><span class="pre">diary.Diary</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_diary_help">
+<code class="descname">get_diary_help</code><span class="sig-paren">(</span><em>t</em>, <em>hist_act</em>, <em>hist_loc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_diary_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_diary_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes data on the activity start times, activity codes, and location codes         from an activity diary and fills out the activity, minute-by-minute in between two adjacent         activities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>numpy.ndarray</em>) – the start time from an activity diary</li>
+<li><strong>hist_act</strong> (<em>numpy.ndarray</em>) – the activity codes from an activity diary</li>
+<li><strong>hist_loc</strong> (<em>numpy.ndarray</em>) – the location codes from an activity diary</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the minute by minute information from an ABMHAP simulation for the         following: time information, activity codes, and location codes</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_stats_data">
+<code class="descname">get_stats_data</code><span class="sig-paren">(</span><em>z</em>, <em>f_stats</em>, <em>s_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_stats_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_stats_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the CHAD statistical parameters for a given activity to the agent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> (<em>zipfile.ZipFile</em>) – the file name (.zip) for the demographic data</li>
+<li><strong>f_stats</strong> (<em>a dictionary of int - str</em>) – the file names of the statistical data relevant to the start time,         end time, duration, and CHAD records for a given activity</li>
+<li><strong>s_params</strong> (<a class="reference internal" href="chad_params.html#chad_params.CHAD_params" title="chad_params.CHAD_params"><em>chad_params.CHAD_params</em></a>) – the parameters that limit the sampling of         respective statistical data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">relevant parameters for each person in the household for         a given activity. The tuple contains the following [in hours]: mean start time, standard         deviation of start time, mean end time, standard deviation of end time, mean duration,         and standard deviation of duration for each person in the household.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Rtype data:</th><td class="field-body"><p class="first last">tuple of numpy.ndarray, numpy.ndarray, numpy.ndarray,         numpy.ndarray, numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_stats_data_dt">
+<code class="descname">get_stats_data_dt</code><span class="sig-paren">(</span><em>df</em>, <em>num_people</em>, <em>n_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_stats_data_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_stats_data_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function samples the duration data from CHAD from a particular activity and         gets the mean and standard deviation of duration for the respective activity         for each person in the household.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – duration CHAD data</li>
+<li><strong>num_people</strong> (<em>int</em>) – the number of people in the household</li>
+<li><strong>n_data</strong> (<em>int</em>) – the minimum number of data points per         CHAD-person record used in sampling the CHAD data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the mean and standard deviation [in hours] for a given activity for         each person in the household</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_stats_data_help">
+<code class="descname">get_stats_data_help</code><span class="sig-paren">(</span><em>df</em>, <em>num_people</em>, <em>n_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_stats_data_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_stats_data_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function samples the CHAD data to obtain information         on the mean and standard deviation data. This is done by doing         the following</p>
+<ol class="arabic simple">
+<li>creating an empirical distribution for the mean and standard deviation of the data</li>
+<li>randomly choosing a value out of the distribution for each agent in the household</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD statistical data</li>
+<li><strong>num_people</strong> (<em>int</em>) – number of people in the household</li>
+<li><strong>n_data</strong> (<em>int</em>) – the minimum number of data points per CHAD-person record used in sampling the CHAD data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the mean and standard deviation [in hours] for a given activity for         each person in the household</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_stats_data_start_end">
+<code class="descname">get_stats_data_start_end</code><span class="sig-paren">(</span><em>df_start</em>, <em>df_end</em>, <em>num_people</em>, <em>n_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_stats_data_start_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_stats_data_start_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function samples data for activities that are parametrized         by both start time and end time activity-parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD data for start time [hours]</li>
+<li><strong>df_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD data for end time [hours]</li>
+<li><strong>num_people</strong> (<em>int</em>) – the number of people in the household</li>
+<li><strong>n_data</strong> (<em>int</em>) – the number of data points to be considered “longitudinal”</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the mean and standard deviation for the start time and end time respectively</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.get_stats_data_start_end_help">
+<code class="descname">get_stats_data_start_end_help</code><span class="sig-paren">(</span><em>df_start</em>, <em>df_end</em>, <em>num_people</em>, <em>n_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.get_stats_data_start_end_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.get_stats_data_start_end_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function samples data for activities that are parametrized         by both start time and end time activity-parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df_start</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD data for start time [hours]</li>
+<li><strong>df_end</strong> (<em>pandas.core.frame.DataFrame</em>) – the CHAD data for end time [hours]</li>
+<li><strong>num_people</strong> (<em>int</em>) – the number of people in the household</li>
+<li><strong>n_data</strong> (<em>int</em>) – the number of data points to be or not be considered “longitudinal”</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the mean and standard deviation for the start time and end time respectively</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>demo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes each activity in the trial for a given demographic by         using CHAD data to parametrize the activity-parameters (i.e., the mean         and standard deviation of star time, end time, and duration).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>demo</strong> (<a class="reference internal" href="chad_demography.html#chad_demography.CHAD_demography" title="chad_demography.CHAD_demography"><em>chad_demography.CHAD_demography</em></a>) – contains much information about the demographic</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a dictionary containing a tuple of the mean duration, standard deviation of duration,         mean start time, standard deviation of start time (in hours, float)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">a dictionary of int to numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.initialize_person">
+<code class="descname">initialize_person</code><span class="sig-paren">(</span><em>u</em>, <em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.initialize_person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.initialize_person" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates and initializes an agent with the proper parameters for         simulation.</p>
+<p>More specifically, the function does</p>
+<ol class="arabic simple">
+<li>creates the agent</li>
+<li>initializes the agent’s parameters to the respective values in <a class="reference internal" href="params.html#module-params" title="params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params</span></code></a></li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>u</strong> (<a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe"><em>universe.Universe</em></a>) – the universe the agent will reside in</li>
+<li><strong>idx</strong> (<em>int</em>) – the index of the agent within the household</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return p:</th><td class="field-body"><p class="first">the agent</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="singleton.html#singleton.Singleton" title="singleton.Singleton">singleton.Singleton</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.pseudo_intraindividual_variation">
+<code class="descname">pseudo_intraindividual_variation</code><span class="sig-paren">(</span><em>start_mean</em>, <em>end_mean</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.pseudo_intraindividual_variation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.pseudo_intraindividual_variation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function assigns intraindividual variation for start time and end time based data where
+there is <strong>no</strong> longitudinal data (hence the name “pseudo”). The variation is assigned by
+having the following assumptions:</p>
+<ol class="arabic simple">
+<li>Given that the mean start time and end time are assigned</li>
+<li>Calculate the mean duration based on the mean start time and mean end time</li>
+<li><dl class="first docutils">
+<dt>Calculate the variance of the start time and end time with the following assumptions</dt>
+<dd><ul class="first last">
+<li>assume that start time and end time are independent</li>
+<li>variance of start time is equal to the variance of the end time</li>
+<li>standard deviation of the duration is set to be the coefficient of variation times             the previously calculated mean duration</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p>These assumptions are expressed mathematically below where</p>
+<ul class="simple">
+<li><img class="math" src="_images/math/d6eeed49f840eb9639b2810c61da18bc8c74f738.png" alt="X_{start}, X_{end}, X_{\Delta{t}}"/> are random variables for the start time, end time,         and duration, respectively</li>
+<li><img class="math" src="_images/math/addf07033f70a6721ab535c887ae2119106683fc.png" alt="\sigma^2, \sigma, c_v"/> are the variance, standard deviation, and coefficient of variation</li>
+<li><img class="math" src="_images/math/98d7b283184b1e6854c14d4aa31b3dd45cce9039.png" alt="E[\cdot], Cov(\cdot, \cdot)"/> are the expected value operator and covariance  operator</li>
+</ul>
+<p>Given <img class="math" src="_images/math/4ffa672cac9857b30b7238947cf95b020a72482a.png" alt="X_{start}"/> and <img class="math" src="_images/math/8c70fac0370544214e0b9e4e1ad21aaa1d8f22fb.png" alt="X_{end}"/>,</p>
+<p>Let,</p>
+<div class="math">
+<p><img src="_images/math/5d097f7e45f0d4e6be4379f5b0ebca32f9c2d812.png" alt="X_{\Delta{t}} = X_{end} - X_{start}"/></p>
+</div><p>Then,</p>
+<div class="math">
+<p><img src="_images/math/7731a6aaf909a43f94bd45f4ab36b6ef3d8c279c.png" alt="\sigma^2_{\Delta{t}} = \sigma^2_{start}  + \sigma^2_{end} - 2*Cov(X_{start}, X_{end})"/></p>
+</div><p>Assuming <img class="math" src="_images/math/4ffa672cac9857b30b7238947cf95b020a72482a.png" alt="X_{start}"/> and <img class="math" src="_images/math/8c70fac0370544214e0b9e4e1ad21aaa1d8f22fb.png" alt="X_{end}"/> are independent, then,</p>
+<div class="math">
+<p><img src="_images/math/08bf8567834fd2397475c5628d3e7eb88523bcf8.png" alt="\sigma^2_{\Delta{t}} = \sigma^2_{start}  + \sigma^2_{end}"/></p>
+</div><p>Assuming <img class="math" src="_images/math/2a206aa293a38ca1db8e3b487b6c77ef7449039a.png" alt="\sigma^2_{start}  = \sigma^2_{end}"/>, then,</p>
+<div class="math">
+<p><img src="_images/math/b3d35ceb5a9142c3b1ab9e61ea2ca79bf8aa8d96.png" alt="\sigma^2_{\Delta{t}} = 2\sigma^2_{start}"/></p>
+</div><p>Finally,</p>
+<div class="math">
+<p><img src="_images/math/8d1e564b3a99700f3a8fe66041c33fc49f32af97.png" alt="\sigma_{start} &amp;= \frac{ \sigma_{\Delta{t}} }{ \sqrt{2} } \\
+\sigma_{start} = \sigma_{end} &amp;= \frac{ c_v E[ X_{\Delta{t}} ] }{ \sqrt{2} }"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start_mean</strong> (<em>numpy.ndarray</em>) – the mean start time [in hours] for each person bing parametrized</li>
+<li><strong>end_mean</strong> (<em>numpy.ndarray</em>) – the mean end time [in hours] for each person being parametrized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">standard deviation for start time and end time, respectively for each person being parametrized</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Rytpe:</th><td class="field-body"><p class="first last">numpy.ndarray, numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs 1 simulations of the ABMHAP using data from         CHAD. The function can handle having more than 1 person in the household.</p>
+<p>More specifically the function does the following for each simulation:</p>
+<ol class="arabic simple">
+<li>creates the universe</li>
+<li>create / initialize the person</li>
+<li>run the ABMHAP simulation</li>
+<li>store the results / data from the simulation</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return u:</th><td class="field-body">the results of the simulation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="universe.html#universe.Universe" title="universe.Universe">universe.Universe</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="trial.Trial.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trial.html#Trial.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trial.Trial.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function samples the statistical data (of activity moments) from the CHAD diaries.</p>
+<p>The function samples the <strong>distributions</strong> of both the means and the         the standard deviations independently of each other.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>pandas.core.frame.DataFrame</em>) – a list of statistical data (mean, standard deviation,         coefficient of variation) for activity information (duration, start, or end)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">values for the mean, standard deviation, and coefficient of variation, respectively</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.ndarray, numpy.ndarray, numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="sleep_trial.html" title="previous chapter">sleep_trial module</a></li>
+      <li>Next: <a href="variation.html" title="next chapter">variation module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/trial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/trial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

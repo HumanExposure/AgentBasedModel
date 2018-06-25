@@ -1,0 +1,438 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plot_diary notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="plotter module" href="plotter.html" />
+    <link rel="prev" title="work_trial module" href="work_trial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plot-diary-notebook">
+<h1>plot_diary notebook<a class="headerlink" href="#plot-diary-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 20, 2018</span>
+</pre></div>
+</div>
+<p>This file contains the functions necessary to visualize the activity
+diaries.</p>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting functions</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># mathematical capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># dataframe capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># agent-based model modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">temporal</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plotting scheme</span>
+<span class="o">%</span><span class="k">matplotlib</span> auto
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Using</span> <span class="n">matplotlib</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Qt5Agg</span>
+</pre></div>
+</div>
+<p>Functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_activity_diary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots the activity diary for a given agent. The information is represented</span>
+<span class="sd">    in terms of horizontal barcharts in which the agent is performing an activity and where</span>
+<span class="sd">    the x-axis is the time of day (in hours).</span>
+
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity diary of a given agent</span>
+<span class="sd">    :param bool show_legend: a flag indicating whether (if True) or not (if False) to show \</span>
+<span class="sd">    the legend in the plot</span>
+<span class="sd">    :param int fontsize: the font size of the text within the plot</span>
+<span class="sd">    :param int dpi: the resolution of the plot in dots per inch</span>
+
+<span class="sd">    :return: a tuple of a list of the lines that were plotted AND a list of the labels. This \</span>
+<span class="sd">    information is used in plotting the legend seperately</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set the font size for ticks, labels, titles, and legend</span>
+    <span class="n">fontsize_ticks</span> <span class="o">=</span> <span class="n">fontsize</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="n">fontsize</span>
+    <span class="n">fontsize_label</span> <span class="o">=</span> <span class="n">fontsize</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="n">fontsize</span>
+    <span class="n">fontsize_legend</span> <span class="o">=</span> <span class="n">fontsize</span>
+
+    <span class="c1"># set font axis parameters</span>
+    <span class="n">font_axis</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;family&#39;</span><span class="p">:</span> <span class="s1">&#39;serif&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;color&#39;</span><span class="p">:</span>  <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">fontsize_ticks</span><span class="p">,}</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># plot horizontal bars using matplotlib</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># create the plot</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+
+    <span class="c1"># a list of the lines plotted</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">align</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
+
+    <span class="c1"># the labels in chornological order</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span>
+
+    <span class="c1"># set the label for &quot;no actviity&quot; to &quot;Idle&quot;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">activity</span><span class="o">.</span><span class="n">NO_ACTIVITY</span><span class="p">]:</span>
+            <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Idle&#39;</span>
+
+    <span class="c1"># the flag to indicate whether the figure lines will be used for the legend</span>
+    <span class="n">do_legend</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+    <span class="n">do_legend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">do_legend</span><span class="p">)</span>
+
+    <span class="c1"># plot the diaries</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="p">):</span>
+
+        <span class="c1"># get the activity entry</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># get the corresponding color and label</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_COLOR</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">act</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">act</span><span class="p">]</span>
+
+        <span class="c1"># for the first entry</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># plot the entry in the beginning of the bar chart</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if the activity starts on one day and ends on the next,</span>
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+                <span class="c1"># plot the activity entry until midnight on the first days bar chart and</span>
+                <span class="c1"># and starting at midnight on the next day&#39;s bar chart</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">day</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># add the activity entry to the current day&#39;s bar chart</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
+
+        <span class="c1"># if it&#39;s the first time an activity is plotted, add it to the legend.</span>
+        <span class="k">if</span> <span class="n">do_legend</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">act</span><span class="p">]:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">do_legend</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">act</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># handle the text related to plotting</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># set the title</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Daily Activity Diary&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+
+    <span class="c1"># create the legend</span>
+    <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_legend</span><span class="p">)</span>
+
+    <span class="c1"># set the x limits</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">])</span>
+
+    <span class="c1"># set the x tick-marks</span>
+    <span class="n">xticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+
+    <span class="c1"># set the font size of the x ticks</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>
+
+    <span class="c1"># label axes</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time [h]&#39;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="n">font_axis</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="n">font_axis</span><span class="p">)</span>
+
+    <span class="c1"># invert yaxis</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">lines</span><span class="p">,</span> <span class="n">labels</span>
+
+<span class="k">def</span> <span class="nf">plot_longitude</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">titles</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function plots a chart showing the amount of time spent during each activity. The x-axis is the</span>
+<span class="sd">    time in hours and the y-axis is the duration (in minutes) represented in a log10 scale.</span>
+
+<span class="sd">    :param list data: a list of dataframes where each dataframe represents an activity diary of an agent.</span>
+<span class="sd">    :param list titles: a list of titles for each plot</span>
+<span class="sd">    :param int linewidth: the linewidth of the lines within the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the number of rows and columns (the dimensions) for the subplots</span>
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># create axes</span>
+    <span class="c1">#</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+    <span class="c1"># plot the graphs</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="p">[</span> <span class="n">plot_longitude_help</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">linewidth</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">)]</span>
+
+    <span class="c1"># the number of unique activities, including idle time</span>
+    <span class="n">K0</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># a list of each activity expressed as a string</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">K0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="c1"># show the legend</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span> <span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span> <span class="p">)</span>
+
+    <span class="c1"># the subplot title size</span>
+    <span class="n">fontsize_title</span><span class="o">=</span><span class="mi">18</span>
+
+    <span class="c1"># the tick size</span>
+    <span class="n">ticksize</span><span class="o">=</span><span class="mi">14</span>
+
+    <span class="c1"># for each plot, set the font size and the tick size</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">titles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">ticksize</span><span class="p">)</span>
+
+    <span class="c1"># set the main title</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Daily Activity Duration&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+
+    <span class="c1"># write axes for x and y</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration [minutes]&#39;</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set the x and y axes</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># the y-label size</span>
+    <span class="n">fontsize_label</span> <span class="o">=</span> <span class="mi">18</span>
+
+    <span class="c1"># set the ylabel</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">plot_longitude_help</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function actually handles plotting the longitude plot. This is to be used in</span>
+<span class="sd">    plot_longitude(). For each activity, the function plots the respectivie activity-duration</span>
+<span class="sd">    on a long10 scale on each day.</span>
+
+<span class="sd">    :param matplotlib.axes._subplots.AxesSubplot ax: for plotting object</span>
+<span class="sd">    :param pandas.core.frame.DataFrame df: the activity diary of a given agent</span>
+<span class="sd">    :param int linewidth: the linewidth of the lines within the plot</span>
+
+<span class="sd">    :return: a list of the unique activity codes in the activity diary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_COLOR</span>
+
+    <span class="c1"># the days in the simulation</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># the activities that were done by the person in the simulation</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">act</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># group activities by day</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">)</span>
+
+    <span class="c1"># for each activity, plot the duration</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="c1"># the duration data</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">days</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># for each day</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">days</span><span class="p">):</span>
+
+            <span class="c1"># get the activity data for the given day</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span><span class="o">.</span><span class="n">act</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+
+            <span class="c1"># if there the respectivie activity does not happen that day, return NaN</span>
+            <span class="c1"># this allows python to avoid plotting the activity on that specific day</span>
+            <span class="k">if</span> <span class="n">temp</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># convert the duration from hours to minutes</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temporal</span><span class="o">.</span><span class="n">HOUR_2_MIN</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="c1"># plot the data for the kth activity on a log10 scale</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s1">&#39;-*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">keys</span>
+</pre></div>
+</div>
+<p>Run</p>
+<p>Load Activity Diary</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># the file name of the activity diary</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_MY_DATA</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">main_result.csv&#39;</span>
+
+<span class="c1"># load the activity diary as a dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the activity diary</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># figure resolution [ dots per inch (dpi) ]</span>
+<span class="c1"># dpi needs to be at least 300 for submission to some journals</span>
+<span class="n">dpi</span><span class="o">=</span><span class="mi">300</span>
+
+<span class="c1"># font size of text within the figure</span>
+<span class="n">fontsize</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="c1"># plot the activity diary</span>
+<span class="n">lines</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">plot_activity_diary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1"># show the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Isolate the legend</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+
+<span class="c1"># plot the legend</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+
+<span class="c1"># do not plot anything else</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+<span class="c1"># show the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+C:UsersnbrandonAppDataLocalContinuumAnaconda3libsite-packagesmatplotliblegend.py:338: UserWarning: Automatic legend placement (loc=&quot;best&quot;) not implemented for figure legend. Falling back on &quot;upper right&quot;.
+  warnings.warn('Automatic legend placement (loc=&quot;best&quot;) not '
+</pre>
+<p>Longitudinal Activity-Duration Plots</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plot longitudinal plots of the daily activities</span>
+<span class="c1">#</span>
+
+<span class="c1"># the title</span>
+<span class="n">titles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Working Adult&#39;</span><span class="p">,)</span>
+
+<span class="c1"># the activity data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">,)</span>
+
+<span class="c1"># the width of the lines in the plots</span>
+<span class="n">linewidth</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># plot the activity durations</span>
+<span class="n">plot_longitude</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">titles</span><span class="o">=</span><span class="n">titles</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+<span class="c1"># show the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;No Activity&#39;</span><span class="p">,</span> <span class="s1">&#39;Eat Dinner&#39;</span><span class="p">,</span> <span class="s1">&#39;Sleep&#39;</span><span class="p">,</span> <span class="s1">&#39;Commute to Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Eat Lunch&#39;</span><span class="p">,</span> <span class="s1">&#39;Commute from Work&#39;</span><span class="p">,</span> <span class="s1">&#39;Eat Breakfast&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+C:UsersnbrandonAppDataLocalContinuumAnaconda3libsite-packagesmatplotliblegend.py:338: UserWarning: Automatic legend placement (loc=&quot;best&quot;) not implemented for figure legend. Falling back on &quot;upper right&quot;.
+  warnings.warn('Automatic legend placement (loc=&quot;best&quot;) not '
+</pre>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="work_trial.html" title="previous chapter">work_trial module</a></li>
+      <li>Next: <a href="plotter.html" title="next chapter">plotter module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/plot_diary.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/plot_diary.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

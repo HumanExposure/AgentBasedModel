@@ -1,0 +1,486 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>figure_loader_with_without_variation notebook &#8212; ABMHAP 2018.06 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="figure_residuals notebook" href="figure_residuals.html" />
+    <link rel="prev" title="figure_loader notebook" href="figure_loader.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="figure-loader-with-without-variation-notebook">
+<h1>figure_loader_with_without_variation notebook<a class="headerlink" href="#figure-loader-with-without-variation-notebook" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The United States Environmental Protection Agency through its Office of</span>
+<span class="c1"># Research and Development has developed this software. The code is made</span>
+<span class="c1"># publicly available to better communicate the research. All input data</span>
+<span class="c1"># used fora given application should be reviewed by the researcher so</span>
+<span class="c1"># that the model results are based on appropriate data for any given</span>
+<span class="c1"># application. This model is under continued development. The model and</span>
+<span class="c1"># data included herein do not represent and should not be construed to</span>
+<span class="c1"># represent any Agency determination or policy.</span>
+<span class="c1">#</span>
+<span class="c1"># This file was written by Dr. Namdi Brandon</span>
+<span class="c1"># ORCID: 0000-0001-7050-1538</span>
+<span class="c1"># March 20, 2018</span>
+</pre></div>
+</div>
+<p>This notebook loads the individual data about the cumuluative
+distribution functions (CDFs) comaparing the Agent-Based Model of Human
+Activity Patterns (ABMHAP) results to the Consolidated Human Activity
+Database (CHAD) data. The plots compare the distribution
+activity-parameter data from ABMHAP to CHAD. More specifically, the we
+compare the ABMHAP with intra-individual variation, ABMHAP without
+intra-individual variation, and CHAD single-day data.</p>
+<p>This module loads and plots a figure with the following:</p>
+<ol class="arabic simple">
+<li>CDFs of ABMHAP with intra-individual variation vs. ABMHAP without
+intra-individual variation vs. CHAD longitudinal data for
+activity-parameters</li>
+</ol>
+<p>Import</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">source&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">processing&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">plotting&#39;</span><span class="p">)</span>
+
+<span class="c1"># plotting capability</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">ticker</span>
+
+<span class="c1"># math capability</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># data frame capability</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># pickling capability</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># ABMHAP modules</span>
+<span class="kn">import</span> <span class="nn">my_globals</span> <span class="k">as</span> <span class="nn">mg</span>
+<span class="kn">import</span> <span class="nn">demography</span> <span class="k">as</span> <span class="nn">dmg</span>
+<span class="kn">import</span> <span class="nn">activity</span><span class="o">,</span> <span class="nn">analyzer</span><span class="o">,</span> <span class="nn">plotter</span><span class="o">,</span> <span class="nn">temporal</span>
+
+<span class="kn">import</span> <span class="nn">chad_demography_adult_work</span> <span class="k">as</span> <span class="nn">cdaw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_adult_non_work</span> <span class="k">as</span> <span class="nn">cdanw</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_school</span> <span class="k">as</span> <span class="nn">cdcs</span>
+<span class="kn">import</span> <span class="nn">chad_demography_child_young</span> <span class="k">as</span> <span class="nn">cdcy</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> auto
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Using</span> <span class="n">matplotlib</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Qt5Agg</span>
+</pre></div>
+</div>
+<p>define functions</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot subplots</span>
+
+<span class="k">def</span> <span class="nf">plot_subplots</span><span class="p">(</span><span class="n">data_list1</span><span class="p">,</span> <span class="n">data_list2</span><span class="p">,</span> <span class="n">data_list3</span><span class="p">,</span> <span class="n">do_cdf</span><span class="p">,</span> <span class="n">main_title</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">xlabels</span><span class="p">,</span> <span class="n">ylabels</span><span class="p">,</span> \
+                       <span class="n">xunits</span><span class="p">,</span> <span class="n">yunits</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">do_save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="c1"># the dimensions of a maximized figure. Base x Height [pixels]</span>
+    <span class="n">b_pixels</span><span class="p">,</span> <span class="n">h_pixels</span> <span class="o">=</span> <span class="mi">2400</span><span class="p">,</span> <span class="mi">1255</span>
+    <span class="n">my_dpi</span> <span class="o">=</span> <span class="mi">800</span>
+
+    <span class="n">b_in</span> <span class="o">=</span> <span class="n">b_pixels</span><span class="o">/</span><span class="n">my_dpi</span>
+    <span class="n">h_in</span> <span class="o">=</span> <span class="n">h_pixels</span><span class="o">/</span><span class="n">my_dpi</span>
+
+
+    <span class="c1"># set the figure size for saving to custom if savinig</span>
+    <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+        <span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_in</span><span class="p">,</span> <span class="n">h_in</span><span class="p">),</span> <span class="n">my_dpi</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="c1"># data_list is</span>
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">do_cdf</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+
+
+    <span class="c1">#</span>
+    <span class="c1"># plot</span>
+    <span class="c1">#</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">):</span>
+
+        <span class="c1"># indices</span>
+        <span class="n">irow</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="n">ncols</span>
+        <span class="n">jcol</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="n">ncols</span>
+
+        <span class="c1"># plot data</span>
+        <span class="n">temp1</span> <span class="o">=</span> <span class="n">data_list1</span><span class="p">[</span><span class="n">irow</span><span class="p">][</span><span class="n">jcol</span><span class="p">]</span>
+        <span class="n">temp2</span> <span class="o">=</span> <span class="n">data_list2</span><span class="p">[</span><span class="n">irow</span><span class="p">][</span><span class="n">jcol</span><span class="p">]</span>
+        <span class="n">temp3</span> <span class="o">=</span> <span class="n">data_list3</span><span class="p">[</span><span class="n">irow</span><span class="p">][</span><span class="n">jcol</span><span class="p">]</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># ii for testing if</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">temp1</span><span class="p">,</span> <span class="n">temp2</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">ii</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_data1</span><span class="p">,</span> <span class="n">y_data1</span> <span class="o">=</span> <span class="n">t1</span>
+                <span class="n">x_data2</span><span class="p">,</span> <span class="n">y_data2</span> <span class="o">=</span> <span class="n">t2</span>
+
+                <span class="k">if</span> <span class="n">counter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">c1</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>
+                    <span class="n">c2</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
+                    <span class="c1">#c2 = &#39;green&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">c1</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+                    <span class="n">c2</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+
+                <span class="k">if</span> <span class="n">do_cdf</span> <span class="ow">and</span> <span class="n">irow</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">x_data1</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_data1</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_data1</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_data2</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_data2</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_data1</span><span class="p">,</span> <span class="n">y_data1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_data2</span><span class="p">,</span> <span class="n">y_data2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+                <span class="c1"># access the CHAD data</span>
+                <span class="n">x_data3</span><span class="p">,</span> <span class="n">y_data3</span> <span class="o">=</span> <span class="n">temp3</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">irow</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="n">jcol</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+                    <span class="n">x_data3</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">from_periodic</span><span class="p">(</span><span class="n">x_data3</span><span class="p">,</span> <span class="n">do_hours</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_data3</span><span class="p">,</span> <span class="n">y_data3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+                <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1">#</span>
+            <span class="c1"># set the tick labels</span>
+            <span class="c1">#</span>
+            <span class="n">ticksize</span><span class="o">=</span><span class="mi">14</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">ticksize</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">irow</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">nbins</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">do_cdf</span> <span class="ow">and</span> <span class="n">irow</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="c1"># limit the xaxis to integernumbers</span>
+                <span class="n">x_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">lines</span><span class="p">]</span>
+                <span class="n">x_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">x_all</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_all</span><span class="p">)</span> <span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_all</span><span class="p">))</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_min</span> <span class="o">-</span> <span class="n">x_max</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">nbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">nbins</span><span class="p">))</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+
+                <span class="c1"># set the xticks</span>
+                <span class="c1"># testing</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x_min</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                <span class="n">xticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+
+
+    <span class="c1"># main title</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">main_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+
+    <span class="c1"># legend</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span> <span class="n">f</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set the x-axis labels</span>
+    <span class="c1">#</span>
+
+    <span class="n">fontsize_label</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">xlabel</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">axes</span><span class="p">[</span><span class="n">nrows</span><span class="o">-</span><span class="mi">1</span><span class="p">,:],</span> <span class="n">xlabels</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">do_cdf</span><span class="p">:</span>
+            <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+            <span class="n">xticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+            <span class="c1">##ax.set_xticks(xticks, fontsize=20)</span>
+            <span class="c1">#ax.set_xticklabels(labels=[], fontsize=20)</span>
+
+    <span class="c1"># set x titles</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="c1">#ax.set_title( activity.INT_2_STR[key], fontsize=fontsize_title )</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span> <span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># set the y-axis labels</span>
+    <span class="c1">#</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">[:,</span> <span class="n">ncols</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ylabels</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">270</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">yunits</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_label</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">do_cdf</span><span class="p">:</span>
+            <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">do_save</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">my_dpi</span><span class="p">)</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>set up the parameters</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># choose the deomography</span>
+<span class="c1">#</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span>
+
+<span class="n">chooser</span> <span class="o">=</span> <span class="p">{</span><span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_WORK</span><span class="p">:</span> <span class="n">cdaw</span><span class="o">.</span><span class="n">CHAD_demography_adult_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">ADULT_NON_WORK</span><span class="p">:</span> <span class="n">cdanw</span><span class="o">.</span><span class="n">CHAD_demography_adult_non_work</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_SCHOOL</span><span class="p">:</span> <span class="n">cdcs</span><span class="o">.</span><span class="n">CHAD_demography_child_school</span><span class="p">(),</span>
+           <span class="n">dmg</span><span class="o">.</span><span class="n">CHILD_YOUNG</span><span class="p">:</span> <span class="n">cdcy</span><span class="o">.</span><span class="n">CHAD_demography_child_young</span><span class="p">(),</span>
+           <span class="p">}</span>
+
+<span class="c1"># the CHAD demogramphy object</span>
+<span class="n">chad_demo</span> <span class="o">=</span> <span class="n">chooser</span><span class="p">[</span><span class="n">demo</span><span class="p">]</span>
+
+<span class="c1"># the CHAD sampling parameters</span>
+<span class="n">s_params</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">int_2_param</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the figures</span>
+<span class="n">do_save_fig</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># whether or not to show the plots</span>
+<span class="n">do_show</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># the linewidth</span>
+<span class="n">linewidth</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#fpath1 = mg.FDIR_SAVE_FIG + &#39;\\11_21_2017\\n8192_d364&#39; # with variation</span>
+<span class="c1">#fpath2 = mg.FDIR_SAVE_FIG + &#39;\\01_11_2018\\n8192_d007_no_variation&#39; # no variation</span>
+
+<span class="n">fpath1</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">12_07_2017</span><span class="se">\\</span><span class="s1">n8192_d364&#39;</span> <span class="c1"># with variation</span>
+<span class="n">fpath2</span> <span class="o">=</span> <span class="n">mg</span><span class="o">.</span><span class="n">FDIR_SAVE_FIG</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">01_16_2018_no_variation</span><span class="se">\\</span><span class="s1">n8192_d007&#39;</span> <span class="c1"># no variation</span>
+
+<span class="c1">#fpath_temp = mg.FDIR_SAVE_FIG + &#39;\\with_without_variation&#39;</span>
+<span class="c1">#fpath1 = fpath_temp + &#39;\\n8192_d007_with_variation&#39;</span>
+<span class="c1">#fpath2 = fpath_temp + &#39;\\n8192_d364_no_variation&#39;</span>
+
+<span class="n">fpath_figure_save1</span> <span class="o">=</span> <span class="n">fpath1</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_young&#39;</span>
+<span class="n">fpath_figure_save2</span> <span class="o">=</span> <span class="n">fpath2</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">child_young&#39;</span>
+
+<span class="c1"># print the save figure directory</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;the figure save path 1:</span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fpath_figure_save1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;the figure save path 2:</span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fpath_figure_save2</span><span class="p">)</span>
+
+<span class="c1"># different sets of activitiy data to plot</span>
+<span class="n">keys_all</span> <span class="o">=</span> <span class="n">chad_demo</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="n">keys_eat</span> <span class="o">=</span> <span class="p">[</span><span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_BREAKFAST</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_LUNCH</span><span class="p">,</span> <span class="n">mg</span><span class="o">.</span><span class="n">KEY_EAT_DINNER</span><span class="p">]</span>
+
+<span class="n">keys_not_eat</span> <span class="o">=</span> <span class="p">[</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_all</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys_eat</span> <span class="p">]</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+the figure save path 1:     ..my_datafig12_07_2017n8192_d364child_young
+the figure save path 2:     ..my_datafig01_16_2018_no_variationn8192_d007child_young
+</pre>
+<p>Plotting</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DO_ALL</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DO_MEALS</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">DO_NOT_MEALS</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># (the activites to plot, part of the file name that matches the keys)</span>
+<span class="n">chooser_keys</span> <span class="o">=</span> <span class="p">{</span> <span class="n">DO_ALL</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_all</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">),</span> \
+                <span class="n">DO_MEALS</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_eat</span><span class="p">,</span> <span class="s1">&#39;meals&#39;</span><span class="p">),</span>\
+                <span class="n">DO_NOT_MEALS</span><span class="p">:</span> <span class="p">(</span><span class="n">keys_not_eat</span><span class="p">,</span> <span class="s1">&#39;not_meals&#39;</span><span class="p">),</span>
+               <span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># set the activities to plot</span>
+<span class="c1">#</span>
+<span class="n">plot_keys</span> <span class="o">=</span> <span class="n">DO_ALL</span>
+
+<span class="n">keys</span><span class="p">,</span> <span class="n">fname_keys</span> <span class="o">=</span> <span class="n">chooser_keys</span><span class="p">[</span><span class="n">plot_keys</span><span class="p">]</span>
+<span class="n">name_keys</span> <span class="o">=</span> <span class="p">[</span> <span class="n">activity</span><span class="o">.</span><span class="n">INT_2_STR</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+
+<span class="c1"># labels on the right hand side of the plot</span>
+<span class="n">ylabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Start Time&#39;</span><span class="p">,</span> <span class="s1">&#39;End Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Plot CDFs vs Longitudinal data</p>
+<p>plot verification</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the figure directory of ABMHAP runs with intra-individual variation</span>
+<span class="n">fpaths1</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">get_verify_fpath</span><span class="p">(</span><span class="n">fpath_figure_save1</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+<span class="c1"># get the figure directory of ABMHAP runs with no intra-individual variation</span>
+<span class="n">fpaths2</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">get_verify_fpath</span><span class="p">(</span><span class="n">fpath_figure_save2</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load figure data with longitudinal data</span>
+
+<span class="c1"># file names</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_&#39;</span> <span class="o">+</span> <span class="n">fname_keys</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
+
+<span class="c1"># load figure data</span>
+<span class="n">data_list_all1</span><span class="p">,</span> <span class="n">fname_subplot1</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_figure_data</span><span class="p">(</span><span class="n">fpaths1</span><span class="p">,</span> <span class="n">fpath_figure_save1</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+<span class="n">data_list_all2</span><span class="p">,</span> <span class="n">fname_subplot2</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_figure_data</span><span class="p">(</span><span class="n">fpaths2</span><span class="p">,</span> <span class="n">fpath_figure_save2</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the data for a random single day</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load figure data of sinlge-day data</span>
+
+<span class="c1"># file names</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_&#39;</span> <span class="o">+</span> <span class="n">fname_keys</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
+
+<span class="n">fnames_load</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_start.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_end.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">cdf_dt.pkl&#39;</span><span class="p">)</span>
+
+<span class="c1"># load figure data from ABMHAP figures with intra-individual variation</span>
+<span class="n">data_list_all_single_day1</span><span class="p">,</span> <span class="n">fname_subplot1</span> <span class="o">=</span> \
+<span class="n">plotter</span><span class="o">.</span><span class="n">get_figure_data</span><span class="p">(</span><span class="n">fpaths1</span><span class="p">,</span> <span class="n">fpath_figure_save1</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fnames_load</span><span class="o">=</span><span class="n">fnames_load</span><span class="p">,</span> <span class="n">do_single_day</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># load figure data from ABMHAP figures with no intra-individual variation</span>
+<span class="n">data_list_all_single_day2</span><span class="p">,</span> <span class="n">fname_subplot2</span> <span class="o">=</span> \
+<span class="n">plotter</span><span class="o">.</span><span class="n">get_figure_data</span><span class="p">(</span><span class="n">fpaths2</span><span class="p">,</span> <span class="n">fpath_figure_save2</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fnames_load</span><span class="o">=</span><span class="n">fnames_load</span><span class="p">,</span> <span class="n">do_single_day</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fpath_figure_save2</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+'..\my_data\fig\01_16_2018_no_variation\n8192_d007\child_young'
+</pre>
+<p>plot the cdf</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># plot the verification cdf</span>
+<span class="c1">#</span>
+
+<span class="c1">#</span>
+<span class="c1"># plotting parameters</span>
+<span class="c1">#</span>
+<span class="n">do_cdf</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">]</span>
+<span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;With Intra&#39;</span><span class="p">,</span><span class="s1">&#39;No Intra&#39;</span><span class="p">,</span> <span class="s1">&#39;CHAD single day&#39;</span><span class="p">,</span> <span class="s1">&#39;CHAD means&#39;</span><span class="p">]</span>
+
+<span class="n">xunits</span> <span class="o">=</span> <span class="s1">&#39;Hours&#39;</span>
+<span class="n">yunits</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Quantile&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+
+<span class="n">main_title</span> <span class="o">=</span> <span class="s1">&#39;CDFs of Activity-parameters&#39;</span>
+
+<span class="n">xlabels</span> <span class="o">=</span> <span class="p">[</span><span class="n">xunits</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># plot</span>
+<span class="c1">#</span>
+
+<span class="c1"># set the data</span>
+<span class="n">data_list1</span> <span class="o">=</span> <span class="n">data_list_all_single_day1</span> <span class="c1"># with variaiton</span>
+<span class="n">data_list2</span> <span class="o">=</span> <span class="n">data_list_all_single_day2</span> <span class="c1"># no variation</span>
+<span class="n">data_list3</span> <span class="o">=</span> <span class="n">data_list_all_single_day1</span> <span class="c1"># acesses the CHAD random day data which is encapsulated within</span>
+                                        <span class="c1"># data_list[irow][icol][1]</span>
+
+<span class="c1"># plot the data</span>
+<span class="n">plot_subplots</span><span class="p">(</span><span class="n">data_list1</span><span class="o">=</span><span class="n">data_list1</span><span class="p">,</span> <span class="n">data_list2</span><span class="o">=</span><span class="n">data_list2</span><span class="p">,</span> <span class="n">data_list3</span><span class="o">=</span><span class="n">data_list3</span><span class="p">,</span> \
+                   <span class="n">do_cdf</span><span class="o">=</span><span class="n">do_cdf</span><span class="p">,</span> <span class="n">main_title</span><span class="o">=</span><span class="n">main_title</span><span class="p">,</span> \
+                   <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span> <span class="n">xlabels</span><span class="o">=</span><span class="n">xlabels</span><span class="p">,</span> <span class="n">ylabels</span><span class="o">=</span><span class="n">ylabels</span><span class="p">,</span> <span class="n">xunits</span><span class="o">=</span><span class="n">xunits</span><span class="p">,</span> <span class="n">yunits</span><span class="o">=</span><span class="n">yunits</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> \
+                   <span class="n">do_save</span><span class="o">=</span><span class="n">do_save_fig</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="n">fname_subplot1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">do_show</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<pre class="literal-block">
+C:UsersnbrandonAppDataLocalContinuumAnaconda3libsite-packagesmatplotliblegend.py:338: UserWarning: Automatic legend placement (loc=&quot;best&quot;) not implemented for figure legend. Falling back on &quot;upper right&quot;.
+  warnings.warn('Automatic legend placement (loc=&quot;best&quot;) not '
+</pre>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="figure_loader.html" title="previous chapter">figure_loader notebook</a></li>
+      <li>Next: <a href="figure_residuals.html" title="next chapter">figure_residuals notebook</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/figure_loader_with_without_variation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Namdi Brandon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/figure_loader_with_without_variation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
